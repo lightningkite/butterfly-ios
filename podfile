@@ -1,6 +1,6 @@
 platform :ios, '9.0'
 
-target 'Khrysalis' do
+target 'Butterfly' do
     pod 'Alamofire'
     pod 'AlamofireImage'
     pod 'KeychainAccess'
@@ -15,7 +15,7 @@ target 'Khrysalis' do
     pod 'DKImagePickerController/Resource'
 end
 
-target 'KhrysalisTests' do
+target 'ButterflyTests' do
     pod 'Alamofire'
     pod 'KeychainAccess'
     pod 'RxSwift'

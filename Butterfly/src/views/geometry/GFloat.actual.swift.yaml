@@ -1,0 +1,13 @@
+---
+
+- id: com.lightningkite.butterfly.views.geometry.GFloat
+  type: type
+  template:
+    pattern: CGFloat
+    imports: [CoreGraphics]
+
+- id: com.lightningkite.butterfly.views.geometry.toGFloat
+  type: call
+  template:
+    pattern: CGFloat(~this~)
+    imports: [CoreGraphics]

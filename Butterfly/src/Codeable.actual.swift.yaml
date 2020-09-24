@@ -1,0 +1,24 @@
+- id: com.lightningkite.butterfly.JsonList
+  type: type
+  template: NSArray
+- id: com.lightningkite.butterfly.JsonMap
+  type: type
+  template: NSDictionary
+- id: com.lightningkite.butterfly.IsCodable
+  type: type
+  template: Codable
+- id: com.lightningkite.butterfly.IsCodableAndHashable
+  type: type
+  template: Codable & Hashable
+- id: com.lightningkite.butterfly.IsCodableAndEquatable
+  type: type
+  template: Codable & Equatable
+- id: com.lightningkite.butterfly.IsCodable
+  type: type
+  template: Codable
+- id: com.lightningkite.butterfly.IsCodableAndHashable
+  type: type
+  template: Codable & Hashable
+- id: com.lightningkite.butterfly.IsCodableAndEquatable
+  type: type
+  template: Codable & Equatable
