@@ -1,6 +1,6 @@
 //
 //  GeoCoordinate.ios.swift
-//  Khrysalis
+//  Butterfly
 //
 //  Created by Joseph Ivie on 10/28/19.
 //  Copyright © 2019 Lightning Kite. All rights reserved.
@@ -16,7 +16,7 @@ public extension GeoCoordinate {
 }
 
 public extension CLLocationCoordinate2D {
-    func toKhrysalis() -> GeoCoordinate {
+    func toButterfly() -> GeoCoordinate {
         return GeoCoordinate(latitude: latitude, longitude: longitude)
     }
 }

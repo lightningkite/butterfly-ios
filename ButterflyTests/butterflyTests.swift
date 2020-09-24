@@ -1,15 +1,15 @@
 //
-//  khrysalisTests.swift
-//  khrysalisTests
+//  butterflyTests.swift
+//  butterflyTests
 //
 //  Created by Joseph Ivie on 9/27/19.
 //  Copyright © 2019 Lightning Kite. All rights reserved.
 //
 
 import XCTest
-@testable import Khrysalis
+@testable import Butterfly
 
-class khrysalisTests: XCTestCase {
+class butterflyTests: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.

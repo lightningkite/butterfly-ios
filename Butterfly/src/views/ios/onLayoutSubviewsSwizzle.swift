@@ -1,6 +1,6 @@
 //
 //  onLayoutSubviewsSwizzle.swift
-//  KhrysalisTemplate
+//  ButterflyTemplate
 //
 //  Created by Joseph Ivie on 8/6/19.
 //  Copyright © 2019 Joseph Ivie. All rights reserved.

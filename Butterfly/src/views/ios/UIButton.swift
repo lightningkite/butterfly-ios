@@ -1,6 +1,6 @@
 //
 //  UIButtonWithLayer.swift
-//  Khrysalis
+//  Butterfly
 //
 //  Created by Brady Svedin on 7/23/20.
 //  Copyright © 2019 Lightning Kite. All rights reserved.

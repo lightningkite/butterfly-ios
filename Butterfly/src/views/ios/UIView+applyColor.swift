@@ -1,6 +1,6 @@
 //
 //  UIView+applyColor.swift
-//  Khrysalis
+//  Butterfly
 //
 //  Created by Joseph Ivie on 7/2/20.
 //  Copyright © 2020 Lightning Kite. All rights reserved.

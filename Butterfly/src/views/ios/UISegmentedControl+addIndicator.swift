@@ -1,6 +1,6 @@
 //
 //  UISegmentedControl+addIndicator.swift
-//  KhrysalisTemplate
+//  ButterflyTemplate
 //
 //  Created by Joseph Ivie on 9/4/19.
 //  Copyright © 2019 Joseph Ivie. All rights reserved.

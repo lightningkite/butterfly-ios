@@ -7,19 +7,19 @@
 
 import UIKit
 
-open class KhrysalisAppDelegate: UIResponder, UIApplicationDelegate {
+open class ButterflyAppDelegate: UIResponder, UIApplicationDelegate {
 
     public var window: UIWindow?
-    public var viewController: KhrysalisViewController?
+    public var viewController: ButterflyViewController?
     open var main: ViewGenerator?
     
     open var keychainAccessGroup: String? {
         return nil
     }
-    open func makeViewController() -> KhrysalisViewController {
+    open func makeViewController() -> ButterflyViewController {
         let vc = makeMain()
         main = vc
-        return KhrysalisViewController(vc)
+        return ButterflyViewController(vc)
     }
     open func makeMain() -> ViewGenerator {
         fatalError("Not implemented")

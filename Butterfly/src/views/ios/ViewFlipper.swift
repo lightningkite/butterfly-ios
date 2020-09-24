@@ -1,6 +1,6 @@
 //
 //  ViewFlipper.swift
-//  Khrysalis
+//  Butterfly
 //
 //  Created by Joseph Ivie on 10/24/19.
 //  Copyright © 2019 Lightning Kite. All rights reserved.

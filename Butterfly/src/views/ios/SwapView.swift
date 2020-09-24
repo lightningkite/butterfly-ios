@@ -1,6 +1,6 @@
 //
 //  SwapView.swift
-//  Khrysalis
+//  Butterfly
 //
 //  Created by Joseph Ivie on 10/24/19.
 //  Copyright © 2019 Lightning Kite. All rights reserved.
@@ -69,7 +69,7 @@ open class SwapView: UIView {
                 animations: {
                     view.alpha = goal.alpha
                     view.frame = toFrame
-                    KhrysalisViewController.refreshBackgroundColorEvent.invokeAll(())
+                    ButterflyViewController.refreshBackgroundColorEvent.invokeAll(())
                 },
                 completion: { done in
                     view.setNeedsLayout()

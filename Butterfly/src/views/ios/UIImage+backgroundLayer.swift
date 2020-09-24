@@ -1,6 +1,6 @@
 //
 //  UIImage+background.swift
-//  Khrysalis
+//  Butterfly
 //
 //  Created by Joseph Ivie on 10/17/19.
 //  Copyright © 2019 Lightning Kite. All rights reserved.

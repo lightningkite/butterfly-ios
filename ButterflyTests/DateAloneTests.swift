@@ -1,13 +1,13 @@
 //
-//  khrysalisTests.swift
-//  khrysalisTests
+//  butterflyTests.swift
+//  butterflyTests
 //
 //  Created by Joseph Ivie on 9/27/19.
 //  Copyright © 2019 Lightning Kite. All rights reserved.
 //
 
 import XCTest
-@testable import Khrysalis
+@testable import Butterfly
 
 class DateAloneTests: XCTestCase {
     

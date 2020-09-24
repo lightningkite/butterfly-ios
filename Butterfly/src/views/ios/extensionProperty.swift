@@ -1,6 +1,6 @@
 //
 //  extensionProperty.swift
-//  KhrysalisTemplate
+//  ButterflyTemplate
 //
 //  Created by Joseph Ivie on 8/21/19.
 //  Copyright © 2019 Joseph Ivie. All rights reserved.

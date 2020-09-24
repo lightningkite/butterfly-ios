@@ -1,6 +1,6 @@
 //
 //  Matrix.actual.swift
-//  Khrysalis
+//  Butterfly
 //
 //  Created by Joseph Ivie on 7/16/20.
 //  Copyright © 2020 Lightning Kite. All rights reserved.

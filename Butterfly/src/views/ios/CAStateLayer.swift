@@ -1,6 +1,6 @@
 //
 //  CAStateLayer.swift
-//  Khrysalis Template
+//  Butterfly Template
 //
 //  Created by Joseph Ivie on 9/26/19.
 //  Copyright © 2019 Joseph Ivie. All rights reserved.

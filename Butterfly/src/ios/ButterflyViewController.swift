@@ -1,6 +1,6 @@
 //
-//  KhrysalisViewController.swift
-//  Khrysalis
+//  ButterflyViewController.swift
+//  Butterfly
 //
 //  Created by Joseph Ivie on 10/21/19.
 //  Copyright © 2019 Lightning Kite. All rights reserved.
@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 
-open class KhrysalisViewController: UIViewController, UINavigationControllerDelegate {
+open class ButterflyViewController: UIViewController, UINavigationControllerDelegate {
     
     open var main: ViewGenerator
     public init(_ main: ViewGenerator){
@@ -55,7 +55,7 @@ open class KhrysalisViewController: UIViewController, UINavigationControllerDele
                 }
             }
             var lastOccurrance = Date()
-            KhrysalisViewController.refreshBackgroundColorEvent.addWeak(referenceA: self) { (self, value) in
+            ButterflyViewController.refreshBackgroundColorEvent.addWeak(referenceA: self) { (self, value) in
                 let now = Date()
                 if now.timeIntervalSince(lastOccurrance) > 1 {
                     lastOccurrance = now
