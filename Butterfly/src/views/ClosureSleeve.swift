@@ -1,9 +1,7 @@
 //
 //  ClosureSleeve.swift
-//  PennyProfit
 //
 //  Created by Joseph Ivie on 1/2/19.
-//  Copyright © 2019 Shane Thompson. All rights reserved.
 //
 
 import Foundation

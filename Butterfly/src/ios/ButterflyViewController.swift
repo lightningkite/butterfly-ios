@@ -44,7 +44,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         self.view.addSubview(bottom)
         backgroundLayerBottom = bottom
         
-        let m = main.generate(dependency: ViewDependency(self))
+        let m = main.generate(dependency: ViewControllerAccess(self))
         innerView = m
         self.view.addSubview(innerView)
         
@@ -65,7 +65,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         }
         
         showDialogEvent.addWeak(referenceA: self){ (this, request) in
-            let dep = ViewDependency(self)
+            let dep = ViewControllerAccess(self)
             let message = request.string.get(dependency: dep)
             let alert = UIAlertController(title: "", message: message, preferredStyle: .alert)
             if let confirmation = request.confirmation {

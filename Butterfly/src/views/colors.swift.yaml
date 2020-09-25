@@ -1,0 +1,5 @@
+- id: com.lightningkite.butterfly.views.ColorValue
+  type: type
+  template:
+    pattern: UIColor
+    imports: [UIKit]
