@@ -165,11 +165,11 @@ public extension String {
         return String(format: fixedTemplate, arguments: fixedArgs)
     }
     func format(_ arguments: Any...) -> String {
-        return formatList(arguments)
+        return formatList(arguments: arguments)
     }
 
     func format(args: Any...) -> String {
-        return formatList(args)
+        return formatList(arguments: args)
     }
 }
 

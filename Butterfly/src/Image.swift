@@ -2,7 +2,6 @@
 // File: Image.kt
 // Package: com.lightningkite.butterfly
 import Foundation
-import Khrysalis
 
 public class Image {
     public init() {

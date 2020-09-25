@@ -2,7 +2,6 @@
 // File: views/geometry/Align.kt
 // Package: com.lightningkite.butterfly.views.geometry
 import Foundation
-import Khrysalis
 
 public enum Align: String, KEnum, StringEnum, CaseIterable {
     case start

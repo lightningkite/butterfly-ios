@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class TransformedMutableObservableProperty<A, B> : MutableObservableProperty<B> {
     public var basedOn: MutableObservableProperty<A>

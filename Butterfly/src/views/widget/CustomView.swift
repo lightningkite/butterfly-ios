@@ -51,7 +51,7 @@ public class CustomView: FrameLayout {
         guard let ctx = UIGraphicsGetCurrentContext() else { return }
 //        ctx.clear(rect)
         ctx.scale(1/scaleInformation.density, 1/scaleInformation.density)
-        delegate?.draw(CGContext: ctx, width: (rect.size.width) * scaleInformation.density, height: (rect.size.height) * scaleInformation.density, displayMetrics: scaleInformation)
+        delegate?.draw(canvas: ctx, width: (rect.size.width) * scaleInformation.density, height: (rect.size.height) * scaleInformation.density, displayMetrics: scaleInformation)
     }
     
     private var touchIds = Dictionary<UITouch, Int>()

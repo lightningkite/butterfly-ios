@@ -19,11 +19,11 @@ public final class ConnectedWebSocket: WebSocketDelegate, Disposable {
     }
 
     public func onNext(frame: WebSocketFrame) -> Void {
-        return onNext(frame)
+        return onNext(frame: frame)
     }
 
     public func onError(error: Error) -> Void {
-        return onError(error)
+        return onError(error: error)
     }
 
     public func didReceive(event: WebSocketEvent, client: WebSocket) {

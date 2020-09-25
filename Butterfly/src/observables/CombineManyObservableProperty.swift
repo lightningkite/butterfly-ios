@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class CombineManyObservableProperty<IN> : ObservableProperty<Array<IN>> {
     public var observables: Array<ObservableProperty<IN>>

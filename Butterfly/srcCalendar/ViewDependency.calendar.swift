@@ -4,10 +4,10 @@ import MapKit
 import EventKitUI
 
 
-//--- ViewDependency
-public extension ViewDependency {
+//--- ViewControllerAccess
+public extension ViewControllerAccess {
 
-    //--- ViewDependency.openEvent(String, String, String, Date, Date)
+    //--- ViewControllerAccess.openEvent(String, String, String, Date, Date)
     public func openEvent(_ title: String, _ description: String, _ location: String, _ start: Date, _ end: Date) -> Void {
         let store = EKEventStore()
         store.requestAccess(to: .event) { (hasPermission, error) in
@@ -32,7 +32,7 @@ public extension ViewDependency {
         return openEvent(title, description, location, start, end)
     }
 }
-extension ViewDependency: EKEventEditViewDelegate {
+extension ViewControllerAccess: EKEventEditViewDelegate {
     public func eventEditViewController(_ controller: EKEventEditViewController, didCompleteWith action: EKEventEditViewAction) {
         self.parentViewController.dismiss(animated: true) {[weak self] in
             

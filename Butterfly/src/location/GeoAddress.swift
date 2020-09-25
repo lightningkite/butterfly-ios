@@ -2,7 +2,6 @@
 // File: location/GeoAddress.kt
 // Package: com.lightningkite.butterfly.location
 import Foundation
-import Khrysalis
 
 public class GeoAddress : Codable, KDataClass {
     public var coordinate: GeoCoordinate?

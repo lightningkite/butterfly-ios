@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class ObservableStack<T : AnyObject> : ObservableProperty<Array<T>> {
     override public init() {

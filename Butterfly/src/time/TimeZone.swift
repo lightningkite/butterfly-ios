@@ -10,7 +10,7 @@ public extension TimeZone {
     }
 
     func getOffset(date: Int64) -> Int {
-        return getOffset(date)
+        return self.secondsFromGMT(for: Date(date)) * 1000
     }
 
     static func getDefault() -> TimeZone {

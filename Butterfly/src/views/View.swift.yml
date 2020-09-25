@@ -1,3 +1,16 @@
 - id: android.view.View.setBackgroundResource
   type: call
   template: ~this~.backgroundDrawable = ~0~
+
+- id: android.view.View
+  type: type
+  template:
+    pattern: UIView
+    imports: [UIKit]
+
+
+- id: android.widget.ImageView
+  type: type
+  template:
+    pattern: UIImageView
+    imports: [UIKit]

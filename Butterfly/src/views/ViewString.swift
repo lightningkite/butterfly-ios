@@ -2,11 +2,10 @@
 // File: views/ViewString.kt
 // Package: com.lightningkite.butterfly.views
 import Foundation
-import Khrysalis
 
 public protocol ViewString: AnyObject {
     
-    func get(dependency: ActivityAccess) -> String 
+    func get(dependency: ViewControllerAccess) -> String 
 }
 
 
@@ -17,7 +16,7 @@ public class ViewStringRaw : ViewString {
         //Necessary properties should be initialized now
     }
     
-    public func get(dependency: ActivityAccess) -> String { return self.string }
+    public func get(dependency: ViewControllerAccess) -> String { return self.string }
 }
 
 public class ViewStringResource : ViewString {
@@ -27,7 +26,7 @@ public class ViewStringResource : ViewString {
         //Necessary properties should be initialized now
     }
     
-    public func get(dependency: ActivityAccess) -> String { return dependency.getString(resource: self.resource) }
+    public func get(dependency: ViewControllerAccess) -> String { return dependency.getString(resource: self.resource) }
 }
 
 public class ViewStringTemplate : ViewString {
@@ -39,7 +38,7 @@ public class ViewStringTemplate : ViewString {
         //Necessary properties should be initialized now
     }
     
-    public func get(dependency: ActivityAccess) -> String {
+    public func get(dependency: ViewControllerAccess) -> String {
         let templateResolved = self.template.get(dependency: dependency)
         let fixedArguments = self.arguments.map({ (it) -> Any in (it as? ViewString)?.get(dependency: dependency) ?? it })
         return templateResolved.formatList(arguments: fixedArguments)
@@ -47,13 +46,13 @@ public class ViewStringTemplate : ViewString {
 }
 
 public class ViewStringComplex : ViewString {
-    public var getter:  (ActivityAccess) -> String
-    public init(getter: @escaping  (ActivityAccess) -> String) {
+    public var getter:  (ViewControllerAccess) -> String
+    public init(getter: @escaping  (ViewControllerAccess) -> String) {
         self.getter = getter
         //Necessary properties should be initialized now
     }
     
-    public func get(dependency: ActivityAccess) -> String { return self.getter(dependency) }
+    public func get(dependency: ViewControllerAccess) -> String { return self.getter(dependency) }
 }
 
 public class ViewStringList : ViewString {
@@ -65,7 +64,7 @@ public class ViewStringList : ViewString {
         //Necessary properties should be initialized now
     }
     
-    public func get(dependency: ActivityAccess) -> String {
+    public func get(dependency: ViewControllerAccess) -> String {
         return self.parts.map({ (it) -> String in it.get(dependency: dependency) }).joined(separator: self.separator)
     }
 }

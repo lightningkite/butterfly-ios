@@ -8,11 +8,13 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxRelay
 
 extension UIView {
 
     private static var extOngoing = ExtensionProperty<UIView, Bool>()
-    private static var ext = ExtensionProperty<UIView, StandardEvent<UIView>>()
+    private static var ext = ExtensionProperty<UIView, PublishSubject<UIView>>()
     var onLayoutSubviewsOngoing: Bool {
         get {
             return UIView.extOngoing.get(self) ?? false
@@ -21,12 +23,12 @@ extension UIView {
             UIView.extOngoing.set(self, value)
         }
     }
-    var onLayoutSubviews: StandardEvent<UIView> {
+    var onLayoutSubviews: PublishSubject<UIView> {
         get {
             if let current = UIView.ext.get(self) {
                 return current
             }
-            let new = StandardEvent<UIView>()
+            let new = PublishSubject<UIView>()
             new.add { view in
                 return false
             }
@@ -40,9 +42,8 @@ extension UIView {
 
     public func addOnLayoutSubviews(action:@escaping ()->Void) {
         action()
-        let _ = onLayoutSubviews.add(listener: { [weak self] view in
+        let _ = onLayoutSubviews.subscribeBy(onNext: { [weak self] view in
             action()
-            return false
         })
     }
 

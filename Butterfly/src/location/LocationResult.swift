@@ -2,7 +2,6 @@
 // File: location/LocationResult.kt
 // Package: com.lightningkite.butterfly.location
 import Foundation
-import Khrysalis
 
 public class LocationResult : KDataClass {
     public var coordinate: GeoCoordinate

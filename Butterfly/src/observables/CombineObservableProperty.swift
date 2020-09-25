@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class CombineObservableProperty<T, A, B> : ObservableProperty<T> {
     public var observableA: ObservableProperty<A>

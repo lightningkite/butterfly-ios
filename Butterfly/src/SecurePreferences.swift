@@ -33,7 +33,7 @@ public enum SecurePreferences {
 
     public static func clear() -> Void {
         for key in keychain.allKeys() {
-            remove(key)
+            SecurePreferences.remove(key: key)
         }
     }
 

@@ -9,16 +9,16 @@ import EventKitUI
 import DKImagePickerController
 
 
-//--- ViewDependency
-public extension ViewDependency {
-    //--- ViewDependency image helpers
-    private static let delegateExtension = ExtensionProperty<ViewDependency, ImageDelegate>()
+//--- ViewControllerAccess
+public extension ViewControllerAccess {
+    //--- ViewControllerAccess image helpers
+    private static let delegateExtension = ExtensionProperty<ViewControllerAccess, ImageDelegate>()
     private var imageDelegate: ImageDelegate {
-        if let existing = ViewDependency.delegateExtension.get(self) {
+        if let existing = ViewControllerAccess.delegateExtension.get(self) {
             return existing
         }
         let new = ImageDelegate()
-        ViewDependency.delegateExtension.set(self, new)
+        ViewControllerAccess.delegateExtension.set(self, new)
         return new
     }
 
@@ -33,7 +33,7 @@ public extension ViewDependency {
             }
         }
     }
-    //--- ViewDependency.requestImageGallery((URL)->Unit)
+    //--- ViewControllerAccess.requestImageGallery((URL)->Unit)
     func requestImageGallery(callback: @escaping (URL) -> Void) {
         withLibraryPermission {if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
                 let imageDelegate = self.imageDelegate
@@ -45,7 +45,7 @@ public extension ViewDependency {
         }
     }
     
-    //--- ViewDependency.requestVideoGallery((URL)->Unit)
+    //--- ViewControllerAccess.requestVideoGallery((URL)->Unit)
     func requestVideoGallery(callback: @escaping (URL) -> Void) -> Void {
         withLibraryPermission {if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
                 let imageDelegate = self.imageDelegate
@@ -58,7 +58,7 @@ public extension ViewDependency {
     }
 
 
-    //--- ViewDependency.requestVideosGallery((List<URL>)->Unit)
+    //--- ViewControllerAccess.requestVideosGallery((List<URL>)->Unit)
     func requestVideosGallery(callback: @escaping (Array<URL>) -> Void) -> Void {
         if PHPhotoLibrary.authorizationStatus() == .authorized {
             self.requestImagesGalleryRaw(type: .allVideos, callback: callback)
@@ -72,7 +72,7 @@ public extension ViewDependency {
     }
 
 
-    //--- ViewDependency.requestVideoCamera(Boolean, (URL)->Unit)
+    //--- ViewControllerAccess.requestVideoCamera(Boolean, (URL)->Unit)
     func requestVideoCamera(front: Bool = false, callback: @escaping (URL) -> Void) -> Void {
         withCameraPermission {
             DispatchQueue.main.async {
@@ -89,7 +89,7 @@ public extension ViewDependency {
         }
     }
 
-    //--- ViewDependency.requestMediasGallery((List<URL>)->Unit)
+    //--- ViewControllerAccess.requestMediasGallery((List<URL>)->Unit)
     func requestMediasGallery(callback: @escaping (Array<URL>) -> Void) -> Void {
         if PHPhotoLibrary.authorizationStatus() == .authorized {
             self.requestImagesGalleryRaw(type: .allAssets, callback: callback)
@@ -102,13 +102,13 @@ public extension ViewDependency {
         }
     }
     
-    //--- ViewDependency.requestMediaGallery((URL)->Unit)
+    //--- ViewControllerAccess.requestMediaGallery((URL)->Unit)
     func requestMediaGallery(callback: @escaping (URL) -> Void) -> Void {
         
     }
 
 
-    //--- ViewDependency.requestImagesGallery((List<URL>)->Unit)
+    //--- ViewControllerAccess.requestImagesGallery((List<URL>)->Unit)
     public func requestImagesGallery(callback: @escaping (Array<URL>) -> Void) -> Void {
         if PHPhotoLibrary.authorizationStatus() == .authorized {
             self.requestImagesGalleryRaw(type: .allPhotos, callback: callback)
@@ -149,7 +149,7 @@ public extension ViewDependency {
         self.parentViewController.present(pickerController, animated: true){}
     }
 
-    //--- ViewDependency.requestImageCamera((URL)->Unit)
+    //--- ViewControllerAccess.requestImageCamera((URL)->Unit)
     public func requestImageCamera(front:Bool = false, callback: @escaping (URL) -> Void) {
         withCameraPermission {
             DispatchQueue.main.async {

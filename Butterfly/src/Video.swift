@@ -2,7 +2,6 @@
 // File: Video.kt
 // Package: com.lightningkite.butterfly
 import Foundation
-import Khrysalis
 
 public class Video {
     public init() {

@@ -1,6 +1,7 @@
 //Stub file made with Butterfly 2 (by Lightning Kite)
 import Foundation
 import UIKit
+import RxSwift
 
 
 public typealias Bitmap = UIImage
@@ -14,7 +15,7 @@ public func loadImage(image: Image, onResult: @escaping (Bitmap?) -> Void) -> Vo
     case let image as ImageRaw:
         onResult(UIImage(data: image.raw))
     case let image as ImageRemoteUrl:
-        loadImage(image.url, onResult)
+        loadImage(url: image.url, onResult: onResult)
     default:
         onResult(nil)
     }
@@ -45,7 +46,7 @@ public func loadImage(url: String, onResult: @escaping (Bitmap?) -> Void) -> Voi
 
 public extension Image {
     func load(_ onResult: @escaping (Bitmap?) -> Void) -> Void {
-        return loadImage(self, onResult)
+        return loadImage(image: self, onResult: onResult)
     }
     func load() -> Single<Bitmap> {
         switch self {

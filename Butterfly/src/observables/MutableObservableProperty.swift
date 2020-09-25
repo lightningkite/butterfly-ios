@@ -2,7 +2,6 @@
 // File: observables/MutableObservableProperty.kt
 // Package: com.lightningkite.butterfly.observables
 import Foundation
-import Khrysalis
 
 open class MutableObservableProperty<T> : ObservableProperty<T> {
     override public init() {

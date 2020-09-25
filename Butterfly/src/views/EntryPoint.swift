@@ -2,7 +2,6 @@
 // File: views/EntryPoint.kt
 // Package: com.lightningkite.butterfly.views
 import Foundation
-import Khrysalis
 
 public protocol EntryPoint: AnyObject, HasBackAction {
     

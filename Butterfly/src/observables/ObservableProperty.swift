@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 open class ObservableProperty<T> {
     public init() {

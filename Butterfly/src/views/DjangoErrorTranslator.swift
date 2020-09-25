@@ -2,7 +2,6 @@
 // File: views/DjangoErrorTranslator.kt
 // Package: com.lightningkite.butterfly.views
 import Foundation
-import Khrysalis
 
 public class DjangoErrorTranslator {
     public var connectivityErrorResource: StringResource

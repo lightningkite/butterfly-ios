@@ -2,7 +2,6 @@
 // File: net/HttpModels.kt
 // Package: com.lightningkite.butterfly.net
 import Foundation
-import Khrysalis
 
 public enum HttpPhase: String, KEnum, StringEnum, CaseIterable {
     case Connect

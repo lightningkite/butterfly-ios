@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import RxSwift
 
 
 open class ButterflyViewController: UIViewController, UINavigationControllerDelegate {
@@ -23,7 +24,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         super.init(coder: coder)
     }
     
-    static public let refreshBackgroundColorEvent = StandardEvent<Void>()
+    static public let refreshBackgroundColorEvent = PublishSubject<Void>()
     
     weak var backgroundLayerBottom: UIView!
     weak var innerView: UIView!

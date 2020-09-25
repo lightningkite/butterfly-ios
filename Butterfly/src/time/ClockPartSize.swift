@@ -2,7 +2,6 @@
 // File: time/ClockPartSize.kt
 // Package: com.lightningkite.butterfly.time
 import Foundation
-import Khrysalis
 
 public enum ClockPartSize: String, KEnum, StringEnum, CaseIterable {
     case None

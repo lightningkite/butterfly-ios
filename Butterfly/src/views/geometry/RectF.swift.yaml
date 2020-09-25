@@ -5,3 +5,9 @@
   template:
       pattern: CGRect
       imports: [CoreGraphics]
+
+- id: android.graphics.RectF
+  type: call
+  template:
+      pattern: CGRect(~*~)
+      imports: [CoreGraphics]

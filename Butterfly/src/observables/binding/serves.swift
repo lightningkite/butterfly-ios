@@ -2,7 +2,6 @@
 // File: observables/binding/serves.kt
 // Package: com.lightningkite.butterfly.observables.binding
 import Foundation
-import Khrysalis
 
 public extension MutableObservableProperty {
     func serves(until: DisposeCondition, other: MutableObservableProperty<T>) -> Void {

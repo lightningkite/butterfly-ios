@@ -41,13 +41,13 @@ extension CALayer : CALayerToImage {
     }
     
     private static let baseSize = ExtensionProperty<CALayer, CGSize>()
-    private static let onResize = ExtensionProperty<CALayer, StandardEvent<CGRect>>()
-    public var onResize: StandardEvent<CGRect> {
+    private static let onResize = ExtensionProperty<CALayer, PublishSubject<CGRect>>()
+    public var onResize: PublishSubject<CGRect> {
         get {
             if let existing = CALayer.onResize.get(self) {
                 return existing
             } else {
-                let new = StandardEvent<CGRect>()
+                let new = PublishSubject<CGRect>()
                 CALayer.onResize.set(self, new)
                 return new
             }

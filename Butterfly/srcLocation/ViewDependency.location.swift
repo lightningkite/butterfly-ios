@@ -27,8 +27,8 @@ class LocationCache{
 //--- lastLocation
 var lastLocation: LocationCache? = nil
 
-public extension ViewDependency {
-    //--- ViewDependency.requestLocation(Double, Double, (LocationResult?,String?)->Unit)
+public extension ViewControllerAccess {
+    //--- ViewControllerAccess.requestLocation(Double, Double, (LocationResult?,String?)->Unit)
     func requestLocation(_ accuracyBetterThanMeters: Double = 10.0, _ timeoutInSeconds: Double = 100.0, _ onResult: @escaping (LocationResult?, String?) -> Void) -> Void {
         let singleTime = SingleTime()
         
@@ -55,7 +55,7 @@ public extension ViewDependency {
         return requestLocation(accuracyBetterThanMeters, timeoutInSeconds, onResult)
     }
     
-    //--- ViewDependency.requestLocationCached(Double, Double, (LocationResult?,String?)->Unit)
+    //--- ViewControllerAccess.requestLocationCached(Double, Double, (LocationResult?,String?)->Unit)
     func requestLocationCached(_ accuracyBetterThanMeters: Double = 10.0, _ timeoutInSeconds: Double = 100.0, _ onResult: @escaping (LocationResult?, String?)->Void) {
         requestLocationCached(accuracyBetterThanMeters: accuracyBetterThanMeters, timeoutInSeconds: timeoutInSeconds, onResult: onResult)
     }

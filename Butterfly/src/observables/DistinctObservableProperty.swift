@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class RxTransformationOnlyObservableProperty<T> : ObservableProperty<T> {
     public var basedOn: ObservableProperty<T>

@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class ConstantObservableProperty<T> : ObservableProperty<T> {
     public var underlyingValue: T

@@ -2,7 +2,6 @@
 // File: time/TimeAlone.ext.kt
 // Package: com.lightningkite.butterfly.time
 import Foundation
-import Khrysalis
 
 public extension TimeAlone {
     func normalize() -> Void {

@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.views
 import RxSwift
 import Foundation
-import Khrysalis
 
 public let lastDialog = (StandardObservableProperty(underlyingValue: nil as DialogRequest?) as StandardObservableProperty<DialogRequest?>)
 public let showDialogEvent: PublishSubject<DialogRequest> = PublishSubject()

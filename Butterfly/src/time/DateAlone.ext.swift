@@ -2,7 +2,6 @@
 // File: time/DateAlone.ext.kt
 // Package: com.lightningkite.butterfly.time
 import Foundation
-import Khrysalis
 
 public extension DateAlone {
     func set(other: DateAlone) -> DateAlone {

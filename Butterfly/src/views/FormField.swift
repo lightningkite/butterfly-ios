@@ -2,7 +2,6 @@
 // File: views/FormField.kt
 // Package: com.lightningkite.butterfly.views
 import Foundation
-import Khrysalis
 
 public class FormValidationError {
     public var field: UntypedFormField

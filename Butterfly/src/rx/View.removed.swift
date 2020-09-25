@@ -15,11 +15,6 @@ public extension UIView {
     }
 
     func refreshLifecycle(){
-        if let prop = UIView.lifecycleExtension.get(self) {
-            if prop.value != (window != nil) {
-                prop.value = window != nil
-            }
-        }
 
         let previouslyActive = UIView.beenActiveExtension.get(self) == true
         if !previouslyActive && window != nil {

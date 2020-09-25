@@ -2,8 +2,8 @@
 // File: views/CustomViewDelegate.kt
 // Package: com.lightningkite.butterfly.views
 import RxSwift
+import UIKit
 import Foundation
-import Khrysalis
 import CoreGraphics
 
 open class CustomViewDelegate {
@@ -16,7 +16,7 @@ open class CustomViewDelegate {
     }
     
     public var customView: CustomView?
-    open func generateAccessibilityView() -> View? { TODO() }
+    open func generateAccessibilityView() -> UIView? { TODO() }
     open func draw(canvas: CGContext, width: CGFloat, height: CGFloat, displayMetrics: DisplayMetrics) -> Void { TODO() }
     open func onTouchDown(id: Int, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) -> Bool { return false }
     open func onTouchMove(id: Int, x: CGFloat, y: CGFloat, width: CGFloat, height: CGFloat) -> Bool { return false }

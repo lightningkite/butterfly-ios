@@ -2,7 +2,6 @@
 // File: views/geometry/PolygonF.kt
 // Package: com.lightningkite.butterfly.views.geometry
 import Foundation
-import Khrysalis
 import CoreGraphics
 
 public class PolygonF : KDataClass {

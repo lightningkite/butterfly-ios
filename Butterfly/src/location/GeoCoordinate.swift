@@ -2,7 +2,6 @@
 // File: location/GeoCoordinate.kt
 // Package: com.lightningkite.butterfly.location
 import Foundation
-import Khrysalis
 
 public class GeoCoordinate : Codable, KDataClass {
     public var latitude: Double

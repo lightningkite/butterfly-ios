@@ -7,7 +7,7 @@ import MapKit
 
 public extension ViewControllerAccess {
 
-    public func share(shareTitle: String, message: String? = nil, url: String? = nil, image: Image? = nil) -> Void {
+    func share(shareTitle: String, message: String? = nil, url: String? = nil, image: Image? = nil) -> Void {
         var items: Array<Any> = []
         if let message = message {
             items.append(message)
@@ -15,14 +15,11 @@ public extension ViewControllerAccess {
         if let url = url, let fixed = URL(string: url) {
             items.append(fixed)
         }
-        if let image = image {
-            TODO()
-        }
         let vc = UIActivityViewController(activityItems: items, applicationActivities: nil)
         self.parentViewController.present(vc, animated: true, completion: nil)
     }
 
-    public func openUrl(url: String) -> Bool {
+    func openUrl(url: String) -> Bool {
         if let url = URL(string: url) {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
@@ -34,15 +31,15 @@ public extension ViewControllerAccess {
         return false
     }
 
-    public func openAndroidAppOrStore(packageName: String) {
-        openUrl("market://details?id=\(packageName)")
+    func openAndroidAppOrStore(packageName: String) {
+        let _ = openUrl(url: "market://details?id=\(packageName)")
     }
 
-    public func openIosStore(numberId: String) {
-        openUrl("https://apps.apple.com/us/app/taxbot/id\(numberId)")
+    func openIosStore(numberId: String) {
+        let _ = openUrl(url: "https://apps.apple.com/us/app/taxbot/id\(numberId)")
     }
 
-    public func openMap(coordinate: GeoCoordinate, label: String? = nil, zoom: Float? = nil) -> Void {
+    func openMap(coordinate: GeoCoordinate, label: String? = nil, zoom: Float? = nil) -> Void {
         var options: Array<(String, ()->Void)> = [
             ("Apple Maps", {
                 let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: coordinate.toIos(), addressDictionary: nil))

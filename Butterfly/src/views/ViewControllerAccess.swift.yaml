@@ -1,0 +1,6 @@
+
+- id: com.lightningkite.butterfly.android.ActivityAccess
+  type: type
+  template:
+    pattern: ViewControllerAccess
+    imports: [Butterfly]

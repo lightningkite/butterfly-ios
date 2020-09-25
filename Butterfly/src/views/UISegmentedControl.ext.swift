@@ -36,7 +36,7 @@ extension UISegmentedControl {
         let imageBounds = CGRect(x: 0, y: 0, width: 1, height: 1)
         UIGraphicsBeginImageContextWithOptions(imageBounds.size, false, 1)
         UIColor.clear.setFill()
-        UICGRectill(imageBounds)
+        UIRectFill(imageBounds)
         let clearImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         

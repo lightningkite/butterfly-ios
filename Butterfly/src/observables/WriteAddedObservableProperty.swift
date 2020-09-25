@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class WriteAddedObservableProperty<A> : MutableObservableProperty<A> {
     public var basedOn: ObservableProperty<A>

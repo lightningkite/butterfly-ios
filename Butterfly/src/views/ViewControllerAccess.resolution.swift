@@ -5,14 +5,14 @@ import AlamofireImage
 import MapKit
 
 
-public class ViewControllerAccess: NSObject {
-    public func getString(resource: StringResource) -> String {
+public extension ViewControllerAccess {
+    func getString(resource: StringResource) -> String {
         return resource
     }
-    public func getColor(resource: ColorResource) -> UIColor {
+    func getColor(resource: ColorResource) -> UIColor {
         return resource
     }
-    public var displayMetrics: DisplayMetrics {
+    var displayMetrics: DisplayMetrics {
         return DisplayMetrics(
             density: 1,
             scaledDensity: 1,

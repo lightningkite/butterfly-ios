@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxRelay
 
 
 public class DateButton : UIButtonWithLayer {
@@ -21,7 +23,7 @@ public class DateButton : UIButtonWithLayer {
         }
     }
 
-    public var onDateEntered = StandardEvent<Date>()
+    public var onDateEntered = PublishSubject<Date>()
     
     var format: DateFormatter = {
         let format = DateFormatter()

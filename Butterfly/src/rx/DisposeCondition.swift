@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.rx
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class DisposeCondition {
     public var call:  (Disposable) -> Void

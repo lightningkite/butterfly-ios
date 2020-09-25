@@ -3,7 +3,6 @@
 // Package: com.lightningkite.butterfly.observables
 import RxSwift
 import Foundation
-import Khrysalis
 
 public class FlatMappedObservableProperty<A, B> : ObservableProperty<B> {
     public var basedOn: ObservableProperty<A>
