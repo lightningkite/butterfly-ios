@@ -1,5 +1,5 @@
 ---
-- id: com.lightningkite.butterfly.views.android.MultilineEditText
+- id: com.lightningkite.butterfly.views.MultilineEditText
   type: type
   template: UITextView
   xmlDefer: [android.widget.EditText]
@@ -140,7 +140,7 @@
              )
              ~this~.addIndicator(color: ~value~)"
 
-- id: com.lightningkite.butterfly.views.android.PreviewVariedFlipper
+- id: com.lightningkite.butterfly.views.PreviewVariedFlipper
   type: type
   template: PreviewVariedFlipper
   xmlDefer: [android.widget.FrameLayout]
@@ -151,12 +151,12 @@
   xmlDefer: [android.view.View]
   xmlSetup: ~this~.backgroundColor = UIColor.clear
 
-- id: com.lightningkite.butterfly.views.android.VerticalRecyclerView
+- id: com.lightningkite.butterfly.views.VerticalRecyclerView
   type: type
   template: UICollectionView
   xmlDefer: [androidx.recyclerview.widget.RecyclerView]
 
-- id: com.lightningkite.butterfly.views.android.VerticalRecyclerView.dividerPositions
+- id: com.lightningkite.butterfly.views.VerticalRecyclerView.dividerPositions
   type: attribute
   template:
     split:
@@ -172,16 +172,16 @@
             end: ~this~.separatorStyle = .singleLine
             else: ~this~.separatorStyle = .none
 
-- id: com.lightningkite.butterfly.views.android.VerticalRecyclerView.dividerColor
+- id: com.lightningkite.butterfly.views.VerticalRecyclerView.dividerColor
   type: attribute
   isColor: true
   template: '~this~.separatorColor = ~value~'
 
-- id: com.lightningkite.butterfly.views.android.VerticalRecyclerView.dividerSize
+- id: com.lightningkite.butterfly.views.VerticalRecyclerView.dividerSize
   type: attribute
   template: '//It is not possible to have a different divider size currently, though requested.'
 
-- id: com.lightningkite.butterfly.views.android.VerticalRecyclerView.dividerHorizontalPadding
+- id: com.lightningkite.butterfly.views.VerticalRecyclerView.dividerHorizontalPadding
   type: attribute
   template: '~this~.separatorInset = UIEdgeInsets(top: 0, left: ~value~, bottom: 0, right: ~value~)'
 
@@ -212,7 +212,7 @@
   template: UIView
   xmlSkip: true
 
-- id: com.lightningkite.butterfly.views.android.SwapView
+- id: com.lightningkite.butterfly.views.SwapView
   type: type
   template: SwapView
   xmlDefer: [android.view.View]
