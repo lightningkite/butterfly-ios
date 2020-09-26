@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.author = { "Captain" => "joseph@lightningkite.com" }
   s.platform = :ios, "11.0"
   s.source = { :git => "https://github.com/lightningkite/butterfly.git", :tag => "#{s.version}", :submodules => true }
-  s.source_files =  "ios/Butterfly/**/*.{swift,swift.yml,swift.yaml}"
+  s.source_files =  "Butterfly/**/*.{swift,swift.yml,swift.yaml}"
 
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 
@@ -27,18 +27,18 @@ Pod::Spec.new do |s|
   s.dependency "Starscream"
 
   s.subspec 'Core' do |core|
-    core.source_files =  "ios/Butterfly/src/**/*.{swift,swift.yml,swift.yaml}"
+    core.source_files =  "Butterfly/src/**/*.{swift,swift.yml,swift.yaml}"
   end
   s.subspec 'Images' do |images|
-    images.source_files =  "ios/Butterfly/srcImages/**/*.{swift,swift.yml,swift.yaml}"
+    images.source_files =  "Butterfly/srcImages/**/*.{swift,swift.yml,swift.yaml}"
     images.dependency "DKImagePickerController/Core"
     images.dependency "DKImagePickerController/ImageDataManager"
     images.dependency "DKImagePickerController/Resource"
   end
   s.subspec 'Calendar' do |calendar|
-    calendar.source_files =  "ios/Butterfly/srcCalendar/**/*.{swift,swift.yml,swift.yaml}"
+    calendar.source_files =  "Butterfly/srcCalendar/**/*.{swift,swift.yml,swift.yaml}"
   end
   s.subspec 'Location' do |location|
-    location.source_files =  "ios/Butterfly/srcLocation/**/*.{swift,swift.yml,swift.yaml}"
+    location.source_files =  "Butterfly/srcLocation/**/*.{swift,swift.yml,swift.yaml}"
   end
 end

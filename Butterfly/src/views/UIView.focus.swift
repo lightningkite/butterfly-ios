@@ -12,15 +12,25 @@ import UIKit
 
 
 public extension UIView {
-    
-    private func findNextChildFocus(startingAtIndex: Int = 0) -> UIView? {
+
+    static let extensionFocusAtStartup = ExtensionProperty<UIView, Bool>()
+    var focusAtStartup: Bool {
+        get {
+            return UIView.extensionFocusAtStartup.get(self) ?? false
+        }
+        set(value){
+            UIView.extensionFocusAtStartup.set(self, value)
+        }
+    }
+
+    private func findNextChildFocus(startingAtIndex: Int = 0, startup: Bool = false) -> UIView? {
         var index = startingAtIndex
         while index < subviews.count - 1 {
             let sub = subviews[index]
-            if sub is UITextField {
+            if sub is UITextField, UIView.extensionFocusAtStartup.get(sub) != false {
                 return sub
             } else {
-                if let subFocus = sub.findNextChildFocus() {
+                if let subFocus = sub.findNextChildFocus(startup: startup) {
                     return subFocus
                 }
             }
@@ -42,8 +52,8 @@ public extension UIView {
         return nil
     }
     
-    func findFirstFocus() -> UIView? {
-        return findNextChildFocus()
+    func findFirstFocus(startup: Bool = false) -> UIView? {
+        return findNextChildFocus(startup: startup)
     }
 
     func findNextFocus(afterIndex: Int = 0) -> UIView? {

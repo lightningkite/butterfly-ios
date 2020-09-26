@@ -44,8 +44,8 @@ public extension UICollectionView {
 
 
     //--- RecyclerView.bindMulti(ViewControllerAccess, ObservableProperty<List<Any>>, (RVTypeHandler)->Unit)
-    func bindMulti(ViewControllerAccess: ViewControllerAccess, data: ObservableProperty<Array<Any>>, typeHandlerSetup: (RVTypeHandler) -> Void) -> Void {
-        let handler = RVTypeHandler(ViewControllerAccess)
+    func bindMulti(viewDependency: ViewControllerAccess, data: ObservableProperty<Array<Any>>, typeHandlerSetup: (RVTypeHandler) -> Void) -> Void {
+        let handler = RVTypeHandler(viewDependency)
         typeHandlerSetup(handler)
         post {
             
@@ -110,22 +110,22 @@ public extension UICollectionView {
 
 public class RVTypeHandler {
 
-    public var ViewControllerAccess: ViewControllerAccess
+    public var viewDependency: ViewControllerAccess
 
     //--- RVTypeHandler.Primary Constructor
-    public init(ViewControllerAccess: ViewControllerAccess) {
-        self.ViewControllerAccess = ViewControllerAccess
+    public init(viewDependency: ViewControllerAccess) {
+        self.viewDependency = viewDependency
         let typeCount: Int = 0
         self.typeCount = typeCount
         let handlers: Array<Handler> = Array<Handler>()
         self.handlers = handlers
         let defaultHandler: Handler = Handler(type: Any.self, defaultValue: (), handler: { (obs) in
-        newEmptyView(ViewControllerAccess)
+        newEmptyView(viewDependency)
         })
         self.defaultHandler = defaultHandler
     }
-    convenience public init(_ ViewControllerAccess: ViewControllerAccess) {
-        self.init(ViewControllerAccess: ViewControllerAccess)
+    convenience public init(_ viewDependency: ViewControllerAccess) {
+        self.init(viewDependency: viewDependency)
     }
 
     //--- RVTypeHandler.Handler.{

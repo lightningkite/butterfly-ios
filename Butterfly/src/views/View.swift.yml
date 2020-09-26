@@ -4,13 +4,8 @@
 
 - id: android.view.View
   type: type
-  template:
-    pattern: UIView
-    imports: [UIKit]
-
+  template: UIView
 
 - id: android.widget.ImageView
   type: type
-  template:
-    pattern: UIImageView
-    imports: [UIKit]
+  template: UIImageView

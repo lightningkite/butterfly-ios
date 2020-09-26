@@ -18,12 +18,17 @@ public final class ConnectedWebSocket: WebSocketDelegate, Disposable {
         underlyingSocket?.disconnect(closeCode: 1000)
     }
 
-    public func onNext(frame: WebSocketFrame) -> Void {
-        return onNext(frame: frame)
+    public func onNext(_ t: WebSocketFrame) -> Void {
+        if let text = t.text {
+            underlyingSocket?.write(string: text, completion: nil)
+        }
+        if let binary = t.binary {
+            underlyingSocket?.write(data: binary, completion: nil)
+        }
     }
 
-    public func onError(error: Error) -> Void {
-        return onError(error: error)
+    public func onError(_ error: Error) -> Void {
+        underlyingSocket?.disconnect(closeCode: 1011)
     }
 
     public func didReceive(event: WebSocketEvent, client: WebSocket) {

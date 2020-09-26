@@ -31,6 +31,15 @@ public extension CGMutablePath {
         self.closeSubpath()
     }
 
+    func arcTo(radius: CGSize, rotation: CGFloat, largeArcFlag: Bool, sweepFlag: Bool, end: CGPoint) {
+        arcTo(
+            radius,
+            rotation,
+            largeArcFlag,
+            sweepFlag,
+            end
+        )
+    }
     func arcTo(_ radius: CGSize, _ rotation: CGFloat, _ largeArcFlag: Bool, _ sweepFlag: Bool, _ end: CGPoint) {
         let start = self.currentPoint
         if radius.width == 0 || radius.height == 0 {

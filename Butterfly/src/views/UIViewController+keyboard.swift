@@ -23,7 +23,7 @@ public extension ViewControllerAccess {
                 dismissOld = true
             }
         }
-        if let root = root, let keyboardView = root.findFirstFocus() {
+        if let root = root, let keyboardView = root.findFirstFocus(startup: true) {
             keyboardView.requestFocus()
             dismissOld = false
         }
