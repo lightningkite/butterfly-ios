@@ -4,3 +4,8 @@
   template:
     pattern: ViewControllerAccess
     imports: [Butterfly]
+- id: com.lightningkite.butterfly.views.ViewDependency
+  type: type
+  template:
+    pattern: ViewControllerAccess
+    imports: [Butterfly]
