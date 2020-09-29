@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-
+@IBDesignable
 public class UIButtonWithInput: UIButtonWithLayer {
     private var underlyingInputAccessoryView: UIView? = nil
     private var underlyingCanBecomeFirstResponder: Bool = true

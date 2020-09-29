@@ -8,7 +8,7 @@
 
 import UIKit
 
-
+@available(*, deprecated, message: "Use SimplerStackView instead, which has a different API.")
 open class LinearLayout: UIView {
     
     public var padding: UIEdgeInsets = .zero {
@@ -138,12 +138,6 @@ open class LinearLayout: UIView {
     public override func didAddSubview(_ subview: UIView) {
         subview.refreshLifecycle()
     }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
-    }
-    
     
     internal var measurements: Dictionary<UIView, CGSize> = Dictionary()
     internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()

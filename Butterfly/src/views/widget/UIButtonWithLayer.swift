@@ -9,9 +9,10 @@
 import Foundation
 import UIKit
 
+@IBDesignable
 open class UIButtonWithLayer: UIButton {
     
-    public enum Position { case left, top, right, bottom, center }
+    public enum Position: Int { case left = 0, top, right, bottom, center }
     
     public var iconLayer: CALayer? {
         didSet {
@@ -47,21 +48,51 @@ open class UIButtonWithLayer: UIButton {
         }
     }
     private var iconLayerRatio: CGFloat = 1
+    
     public var iconPosition: Position = .center{
         didSet {
             setNeedsLayout()
         }
     }
+    
+    @IBInspectable
+    public var iconPositionInt: Int {
+        get {
+            return iconPosition.rawValue
+        }
+        set(value) {
+            if let x = Position(rawValue: value) {
+                iconPosition = x
+            }
+        }
+    }
+    
+    @IBInspectable
     public var iconPadding: CGFloat = 8 {
         didSet {
             setNeedsLayout()
         }
     }
+    
+    @IBInspectable
     public var iconTint: UIColor? = nil {
         didSet {
             refreshManipLayer()
         }
     }
+    
+    @IBInspectable
+    public var iconImage: UIImage? {
+        get {
+            return (iconLayer as? CAImageLayer)?.image
+        }
+        set(value) {
+            if let value = value {
+                iconLayer = CAImageLayer(value)
+            }
+        }
+    }
+    
     public var textGravity: AlignPair = .center{
         didSet {
             setNeedsLayout()
@@ -87,7 +118,48 @@ open class UIButtonWithLayer: UIButton {
 
     func setImageResource(_ image: DrawableResource ) {
         self.compoundDrawable = image
-        self.notifyParentSizeChanged()
+    }
+    
+    override open var intrinsicContentSize: CGSize {
+        get {
+            var result = CGSize.zero
+            let isHorizontal = iconPosition == .left || iconPosition == .right
+            let isVertical = iconPosition == .top || iconPosition == .bottom
+            let hasTitle = self.titleLabel?.text?.trimmingCharacters(in: .whitespaces).isEmpty == true
+            if let iconLayer = iconLayer {
+                if isHorizontal {
+                    result.width += iconLayer.frame.size.width
+                    if hasTitle {
+                        result.width += iconPadding
+                    }
+                } else {
+                    result.width = max(result.width, iconLayer.frame.size.width)
+                }
+                if isVertical {
+                    result.height += iconLayer.frame.size.height
+                    if hasTitle {
+                        result.height += iconPadding
+                    }
+                } else {
+                    result.height = max(result.height, iconLayer.frame.size.height)
+                }
+            }
+            if let title = self.titleLabel?.text, !title.trimmingCharacters(in: .whitespaces).isEmpty, let labelSize = titleLabel?.sizeThatFits(CGSize(width: 1000, height: 1000)) {
+                if isHorizontal {
+                    result.width += labelSize.width
+                } else {
+                    result.width = max(result.width, labelSize.width)
+                }
+                if isVertical {
+                    result.height += labelSize.height
+                } else {
+                    result.height = max(result.height, labelSize.height)
+                }
+            }
+            result.width += contentEdgeInsets.left + contentEdgeInsets.right
+            result.height += contentEdgeInsets.top + contentEdgeInsets.bottom
+            return result
+        }
     }
     
     override open func sizeThatFits(_ size: CGSize) -> CGSize {
