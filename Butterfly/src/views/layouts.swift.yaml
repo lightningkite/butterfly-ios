@@ -1,0 +1,125 @@
+---
+
+# android.view.View
+
+- id: android.view.View
+  type: type
+  template: UIView
+  xibName: view
+
+- id: android.view.View
+  type: get
+  template: UIView
+
+- id: alpha
+  type: attribute
+  valueType: number
+  attributes:
+    alpha: ~value~
+
+- id: background
+  type: attribute
+  valueType: drawable
+  isImage: true
+  attributes:
+    backgroundImage: ~image~
+
+- id: background
+  type: attribute
+  valueType: color
+  attributes:
+    backgroundImage: ~image~
+
+
+# AutoCompleteTextView
+- id: android.widget.AutoCompleteTextView
+  type: view
+  xibName: textField
+  customView: UIAutocompleteTextField
+  customModule: Butterfly
+
+# Button
+- id: android.widget.Button
+  type: button
+  xibName: button
+
+# CheckBox
+- id: android.widget.CheckBox
+  type: view
+  customView: CheckBox
+  customModule: Butterfly
+
+# EditText
+- id: android.widget.EditText
+  type: view
+  xibName: textField
+
+# ImageButton
+- id: android.widget.ImageButton
+  type: button
+  xibName: button
+
+# ImageView
+- id: android.widget.ImageView
+  type: view
+  xibName: imageView
+
+- id: adjustViewBounds
+  type: attribute
+  on: android.widget.ImageView
+  valueType: boolean
+
+# ProgressView
+- id: android.widget.ProgressView
+  type: view
+  xibName: progressView
+
+# Space
+- id: android.widget.Space
+  type: view
+  xibName: view
+
+# Spinner
+- id: android.widget.Spinner
+  type: view
+  xibName: activityIndicatorView
+
+# Switch
+- id: android.widget.Switch
+  type: view
+  xibName: switch
+
+# PageIndicatorView
+- id: com.rd.PageIndicatorView
+  type: view
+  xibName: pageControl
+
+# MultilineEditText
+- id: com.lightningkite.butterfly.views.widget.MultilineEditText
+  type: view
+  xibName: textView
+  attributes:
+    editable: "YES"
+
+# HorizontalScrollView
+- id: HorizontalScrollView
+  type: view
+  xibName: scrollView
+
+# HorizontalRecyclerView
+- id: com.lightningkite.khrysalis.views.android.HorizontalRecyclerView
+  type: view
+  xibName: collectionView
+  xibProperties:
+    collectionViewLayout:
+      xibName: collectionViewFlowLayout
+      scrollDirection: "horizontal"
+
+# VerticalRecyclerView
+- id: com.lightningkite.khrysalis.views.android.VerticalRecyclerView
+  type: view
+  xibName: collectionView
+  xibProperties:
+    collectionViewLayout:
+      xibName: collectionViewFlowLayout
+      scrollDirection: "vertical"

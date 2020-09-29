@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-
+@IBDesignable
 open class ViewFlipper: FrameLayout {
     private var previousSubview: UIView? = nil
     public var displayedChild: Int = 0 {

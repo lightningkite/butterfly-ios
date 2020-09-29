@@ -10,7 +10,7 @@ public extension UILabel {
             if self.textString != value {
                 self.textString = value
             }
-            self.notifyParentSizeChanged()
+
         }.until(self.removed)
     }
     func bindString(observable: ObservableProperty<String>) -> Void {
@@ -30,7 +30,7 @@ public extension UILabel {
             } else {
                 self.text = nil
             }
-            self.notifyParentSizeChanged()
+
         }.until(self.removed)
     }
     func bindStringRes(observable: ObservableProperty<StringResource?>) -> Void {
@@ -50,7 +50,7 @@ public extension UIButton {
             } else {
                 self.textString = ""
             }
-            self.notifyParentSizeChanged()
+
         }.until(self.removed)
     }
 }
@@ -63,7 +63,7 @@ public extension UILabel {
             if self.textString != textValue {
                 self.textString = textValue
             }
-            self.notifyParentSizeChanged()
+
         }.until(self.removed)
     }
     func bindText<T>(observable: ObservableProperty<T>, transform: @escaping (T) -> String) -> Void {
@@ -77,7 +77,7 @@ public extension HasLabelView where Self: UIView {
             if self.textString != value {
                 self.textString = value
             }
-            self.notifyParentSizeChanged()
+
         }.until(self.removed)
     }
     func bindString(observable: ObservableProperty<String>) -> Void {

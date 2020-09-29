@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-
+@IBDesignable
 open class SwapView: UIView {
     public enum Animation {
         case push
@@ -30,11 +30,7 @@ open class SwapView: UIView {
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         return current?.sizeThatFits(size) ?? .zero
     }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
-    }
+
     
     override public func layoutSubviews() {
         updateAnimations()
@@ -122,6 +118,7 @@ open class SwapView: UIView {
             updateAnimations()
         }
         if let new = to {
+            new.translatesAutoresizingMaskIntoConstraints = true
             if self.hiding {
                 visibility = UIView.VISIBLE
                 self.hiding = false

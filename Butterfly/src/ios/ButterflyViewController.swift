@@ -40,29 +40,21 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         self.view = UIView(frame: .zero)
         self.view.backgroundColor = defaultBackgroundColor
         
-        let bottom = UIView(frame: .zero)
-        bottom.backgroundColor = overrideBottomBackgroundColor ?? defaultBackgroundColor
-        self.view.addSubview(bottom)
-        backgroundLayerBottom = bottom
-        
         let m = main.generate(dependency: ViewControllerAccess(self))
         innerView = m
+        innerView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(innerView)
         
-        if !forceDefaultBackgroundColor {
-            if let main = main as? EntryPoint, let stack = main.mainStack {
-                stack.addAndRunWeak(self) { (self, value) in
-                    self.refreshBackingColor()
-                }
-            }
-            var lastOccurrance = Date()
-            ButterflyViewController.refreshBackgroundColorEvent.addWeak(referenceA: self) { (self, value) in
-                let now = Date()
-                if now.timeIntervalSince(lastOccurrance) > 1 {
-                    lastOccurrance = now
-                    self.refreshBackingColor()
-                }
-            }
+        if drawOverSystemWindows {
+            m.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+            m.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            m.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+            m.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        } else {
+            m.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor).isActive = true
+            m.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor).isActive = true
+            m.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
+            m.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         }
         
         showDialogEvent.addWeak(referenceA: self){ (this, request) in
@@ -98,101 +90,6 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
     
     private var suppressKeyboardUpdate: Bool = false
     
-    private var first = true
-    public func refreshBackingColor() {
-        guard !forceDefaultBackgroundColor else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: {
-            if self.first {
-                self.first = false
-                self.view.layer.backgroundColor = self.getBackingColor(self.innerView) ?? self.defaultBackgroundColor.cgColor
-                self.backgroundLayerBottom.layer.backgroundColor = self.getBackingColorBottom(self.innerView, currentY: 0, height: self.innerView.bounds.size.height-1) ?? self.defaultBackgroundColor.cgColor
-            } else {
-                UIView.animate(withDuration: 0.25, animations: {
-                    self.view.layer.backgroundColor = self.getBackingColor(self.innerView) ?? self.defaultBackgroundColor.cgColor
-                    self.backgroundLayerBottom.layer.backgroundColor = self.getBackingColorBottom(self.innerView, currentY: 0, height: self.innerView.bounds.size.height-1) ?? self.defaultBackgroundColor.cgColor
-                })
-            }
-        })
-    }
-    private func getBackingColor(_ view: UIView) -> CGColor? {
-        for child in view.subviews.reversed() {
-            if let backing = getBackingColor(child), !child.isHidden, child.includeInLayout, child.frame.origin == .zero {
-                return backing
-            }
-        }
-        if let backing = view.layer.guessBackingColor(), backing.alpha != 0.0 {
-            return backing
-        }
-        return nil
-    }
-    private func getBackingColorBottom(_ view: UIView, currentY: CGFloat, height: CGFloat) -> CGColor? {
-        for child in view.subviews.reversed() {
-            if !child.isHidden,
-                child.includeInLayout,
-                child.frame.origin.y + child.frame.size.height >= height,
-                let backing = getBackingColorBottom(
-                    child,
-                    currentY: currentY + child.frame.origin.y,
-                    height: height
-                ) {
-                return backing
-            }
-        }
-        if let backing = view.layer.guessBackingColor(), backing.alpha != 0.0 {
-            return backing
-        }
-        return nil
-    }
-    
-    override open func viewWillLayoutSubviews() {
-        layout()
-    }
-    
-    open func layout(){
-        guard
-            let innerView = innerView,
-            let backgroundLayerBottom = backgroundLayerBottom,
-            let selfView = self.view
-            else { return }
-        backgroundLayerBottom.frame = CGRect(
-            origin: CGPoint(
-                x: selfView.bounds.origin.x,
-                y: selfView.bounds.origin.y + selfView.bounds.size.height/2
-            ),
-            size: CGSize(
-                width: selfView.bounds.size.width,
-                height: selfView.bounds.size.height/2
-            )
-        )
-        var bottomPadding: CGFloat = 0
-        if #available(iOS 11.0, *) {
-            let window = UIApplication.shared.keyWindow
-            bottomPadding = window?.safeAreaInsets.bottom ?? 0
-        }
-        
-        var totalBottomPadding: CGFloat = 0
-        if keyboardHeight == 0 {
-            totalBottomPadding = bottomPadding
-        } else {
-            totalBottomPadding = keyboardHeight
-        }
-        let newInsets = UIEdgeInsets(
-            top: UIApplication.shared.statusBarFrame.height,
-            left: 0,
-            bottom: totalBottomPadding,
-            right: 0
-        )
-        if newInsets != UIView.fullScreenSafeInsetsObs.value {
-            UIView.fullScreenSafeInsetsObs.value = newInsets
-            innerView.updateSafeInsets(newInsets)
-        }
-        if drawOverSystemWindows {
-            innerView.frame = self.view.frame
-        } else {
-            innerView.frame = self.view.frame.inset(by: UIView.fullScreenSafeInsetsObs.value)
-        }
-        innerView.layoutSubviews()
-    }
     
     override open func viewDidAppear(_ animated: Bool) {
         addKeyboardObservers()
@@ -201,8 +98,6 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         super.viewDidDisappear(animated)
         removeKeyboardObservers()
     }
-    
-    var keyboardHeight: CGFloat = 0
     
     /// Asks the system to resign all first responders (usually input fields), which effectively
     /// causes the keyboard to dismiss itself.
@@ -275,8 +170,8 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
             UIView.animate(
                 withDuration: keyboardAnimationDuration.doubleValue,
                 animations: {
-                    self.keyboardHeight = keyboardHeight
-                    self.layout()
+                    self.additionalSafeAreaInsets.bottom = keyboardHeight
+                    self.view.layoutIfNeeded()
                 },
                 completion: { [weak self] _ in
                 }
@@ -306,8 +201,8 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
             UIView.animate(
                 withDuration: animationDuration.doubleValue,
                 animations: {
-                    self.keyboardHeight = 0
-                    self.layout()
+                    self.additionalSafeAreaInsets.bottom = 0
+                    self.view.layoutIfNeeded()
                 },
                 completion: { [weak self] _ in
                 }

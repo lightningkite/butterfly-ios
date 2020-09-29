@@ -11,7 +11,7 @@ public extension UISegmentedControl {
             self.insertSegment(withTitle: entry, at: self.numberOfSegments, animated: false)
         }
         if allowReselect{
-            if let self = self as? UISegmentedControlSquare {
+            if let self = self as? MaterialSegmentedControl {
                 self.reselectable = true
             }
             self.addAction(for: .valueChanged, action: { [weak self] in
@@ -35,7 +35,7 @@ public extension UISegmentedControl {
             self.insertSegment(withTitle: toString(entry), at: self.numberOfSegments, animated: false)
         }
         if allowReselect {
-            if let self = self as? UISegmentedControlSquare {
+            if let self = self as? MaterialSegmentedControl {
                 self.reselectable = true
             }
             self.addAction(for: .valueChanged, action: { [weak self] in
@@ -65,7 +65,7 @@ public extension UISegmentedControl {
                 }
         }).until(self.removed)
         if allowReselect {
-            if let self = self as? UISegmentedControlSquare {
+            if let self = self as? MaterialSegmentedControl {
                 self.reselectable = true
             }
             self.addAction(for: .valueChanged, action: { [weak self] in

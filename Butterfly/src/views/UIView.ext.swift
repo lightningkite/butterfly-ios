@@ -7,6 +7,33 @@ public enum ViewVisibility {
 public extension UIView {
     static var appForegroundColor: UIColor? = nil
     static var appAccentColor: UIColor? = nil
+    
+    @objc var elevation: CGFloat {
+        get {
+            return layer.shadowRadius
+        }
+        set(value) {
+            layer.shadowOffset = CGSize(width: 0, height: value)
+            layer.shadowRadius = value
+            layer.shadowOpacity = 0.5
+            layer.shadowColor = UIColor.black.cgColor
+        }
+    }
+    
+    static var projectDrawableMap: Dictionary<String, Drawable> = [:]
+    @objc var backgroundDrawableResource: String? {
+        set(key){
+            if let key = key, let value = UIView.projectDrawableMap[key] {
+                backgroundLayer = value.makeLayer(self)
+            } else {
+                backgroundLayer = nil
+            }
+        }
+        get {
+            return nil
+        }
+    }
+    
     var backgroundDrawable: Drawable? {
         set(value){
             if let value = value {
@@ -24,13 +51,13 @@ public extension UIView {
         }
     }
     
-    var rotation: Float{
+    @objc var rotation: CGFloat {
         set(value){
-            self.transform = CGAffineTransform(rotationAngle: CGFloat(Double(value) * (Double.pi / 180.0)))
+            self.transform = CGAffineTransform(rotationAngle: value * .pi / 180.0)
         }
         get{
             let rad = atan2(self.transform.b, self.transform.a)
-            return Float(rad * (180 / .pi))
+            return rad * (180 / .pi)
         }
     }
     
@@ -172,35 +199,12 @@ public extension UIView {
 
     static private let isIncludedExt = ExtensionProperty<UIView, Bool>()
 
-    var includeInLayout: Bool {
+    @objc var includeInLayout: Bool {
         get {
             return UIView.isIncludedExt.get(self) ?? true
         }
         set(value) {
             UIView.isIncludedExt.set(self, value)
-            self.notifyParentSizeChanged()
-        }
-    }
-
-    func notifyParentSizeChanged() {
-        if let p = self.superview {
-            p.setNeedsLayout()
-             var current = p
-             while
-                 !(current is LinearLayout) &&
-                     !(current is FrameLayout) &&
-                     !(current is UIScrollView)
-             {
-                 if let su = current.superview {
-                     current = su
-                     if let cell = current as? SizedUICollectionViewCell {
-                         cell.refreshSize()
-                         break
-                     }
-                 } else {
-                     break
-                 }
-             }
         }
     }
 

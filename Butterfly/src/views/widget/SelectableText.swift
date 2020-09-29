@@ -7,6 +7,7 @@
 
 import UIKit
 
+@IBDesignable
 public class SelectableText: UILabel {
 
     override public var canBecomeFirstResponder: Bool {

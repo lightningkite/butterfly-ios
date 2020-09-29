@@ -9,6 +9,7 @@
 import UIKit
 
 
+@available(*, deprecated, message: "Just use a plain UIView with constraints.")
 open class FrameLayout: UIView {
     public var padding: UIEdgeInsets = .zero {
         didSet {
@@ -123,11 +124,6 @@ open class FrameLayout: UIView {
             output.height = max(output.height, viewSize.height + padding.total(.y) + combined.total(.y))
         }
         return output
-    }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
     }
     
     override public func layoutSubviews() {

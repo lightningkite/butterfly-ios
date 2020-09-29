@@ -1,17 +1,18 @@
 import UIKit
 
+@IBDesignable
 public class UITextFieldPadded: UITextField {
 
     public var padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) {
         didSet {
-            self.notifyParentSizeChanged()
             self.setNeedsDisplay()
+            self.setNeedsLayout()
         }
     }
     public var compoundPadding: CGFloat = 8 {
         didSet {
-            self.notifyParentSizeChanged()
             self.setNeedsDisplay()
+            self.setNeedsLayout()
         }
     }
     
@@ -60,12 +61,14 @@ public class UIAutoCompleteTextFieldPadded: UIAutoCompleteTextField {
     
     public var padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) {
         didSet {
-            self.notifyParentSizeChanged()
+            self.setNeedsDisplay()
+            self.setNeedsLayout()
         }
     }
     public var compoundPadding: CGFloat = 8 {
         didSet {
-            self.notifyParentSizeChanged()
+            self.setNeedsDisplay()
+            self.setNeedsLayout()
         }
     }
     

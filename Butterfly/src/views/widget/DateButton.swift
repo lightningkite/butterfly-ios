@@ -12,6 +12,7 @@ import RxSwift
 import RxRelay
 
 
+@IBDesignable
 public class DateButton : UIButtonWithLayer {
 
     var mode: UIDatePicker.Mode {

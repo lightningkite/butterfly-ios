@@ -5,6 +5,7 @@ import CoreGraphics
 
 
 //--- CustomView.{
+@IBDesignable
 public class CustomView: FrameLayout {
     
     //--- CustomView.Primary Constructor
