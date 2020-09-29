@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-
+@IBDesignable
 public class TimeButton : DateButton {
 
     private var internalMinuteInterval: Int = 1

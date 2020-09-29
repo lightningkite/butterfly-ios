@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+@IBDesignable
 open class UIButtonWithLayer: UIButton {
     
     public enum Position { case left, top, right, bottom, center }
@@ -87,7 +88,6 @@ open class UIButtonWithLayer: UIButton {
 
     func setImageResource(_ image: DrawableResource ) {
         self.compoundDrawable = image
-        self.notifyParentSizeChanged()
     }
     
     override open func sizeThatFits(_ size: CGSize) -> CGSize {

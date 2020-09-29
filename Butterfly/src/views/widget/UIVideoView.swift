@@ -2,6 +2,7 @@ import UIKit
 import AVKit
 import AVFoundation
 
+@IBDesignable
 public class UIVideoView: UIView {
 
     public let controller = AVPlayerViewController()

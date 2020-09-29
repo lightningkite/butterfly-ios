@@ -1,63 +1,90 @@
-//
-//  UISegmentedControl+addIndicator.swift
-//  ButterflyTemplate
-//
-//  Created by Joseph Ivie on 9/4/19.
-//  Copyright © 2019 Joseph Ivie. All rights reserved.
-//
 
-import Foundation
 import UIKit
 
+@IBDesignable
+public class MaterialSegmentedControl: UISegmentedControl {
+    override public init(frame: CGRect) {
+        super.init(frame: frame)
+        startup()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        startup()
+    }
+    
+    private func startup(){
+        materialTabStyle()
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        layer.cornerRadius = 0
+    }
+    public var desiredHeight: CGFloat = 32
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        return CGSize(width: size.width, height: desiredHeight)
+    }
 
-extension UIView {
-    fileprivate func find(_ filter: (UIView)->Bool) -> UIView? {
-        if filter(self) {
-            return self
-        }
-        for s in subviews {
-            if let found = s.find(filter) {
-                return found
+    public var reselectable: Bool = false
+    
+    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let previousSelectedSegmentIndex = self.selectedSegmentIndex
+
+        super.touchesEnded(touches, with: event)
+
+        if reselectable, previousSelectedSegmentIndex == self.selectedSegmentIndex {
+            let touch = touches.first!
+            let touchLocation = touch.location(in: self)
+            if bounds.contains(touchLocation) {
+                self.sendActions(for: .valueChanged)
             }
         }
-        return nil
     }
-}
 
-extension UISegmentedControl {
-    public func materialTabStyle(color: UIColor) {
-        
+    @IBInspectable
+    public var indicatorColor: UIColor = .black {
+        didSet {
+            indicatorView?.backgroundColor = indicatorColor
+            self.setNeedsDisplay()
+        }
+    }
+
+    private var indicatorView: UIView? = nil
+
+    private func materialTabStyle() {
+
         if #available(iOS 13.0, *) {
             selectedSegmentTintColor = .clear
         }
         tintColor = .clear
         backgroundColor = .clear
-        
+
         let imageBounds = CGRect(x: 0, y: 0, width: 1, height: 1)
         UIGraphicsBeginImageContextWithOptions(imageBounds.size, false, 1)
         UIColor.clear.setFill()
         UIRectFill(imageBounds)
         let clearImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        
+
         setBackgroundImage(clearImage, for: .normal, barMetrics: .default)
         setBackgroundImage(clearImage, for: .selected, barMetrics: .default)
         setBackgroundImage(clearImage, for: .highlighted, barMetrics: .default)
         setBackgroundImage(clearImage, for: [.highlighted, .selected], barMetrics: .default)
         setDividerImage(clearImage, forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
 
-        
-        
+
+
         setBackgroundImage(clearImage, for: .normal, barMetrics: UIBarMetrics.default)
         setBackgroundImage(clearImage, for: .focused, barMetrics: UIBarMetrics.default)
         setBackgroundImage(clearImage, for: .highlighted, barMetrics: UIBarMetrics.default)
         setBackgroundImage(clearImage, for: .selected, barMetrics: UIBarMetrics.default)
-        
+
         delay(milliseconds: 16) {
-            self.addIndicator(color: color)
+            self.addIndicator()
         }
     }
-    func getSegment(index: Int) -> UIView? {
+    private func getSegment(index: Int) -> UIView? {
         let title = self.titleForSegment(at: index)
         for s in subviews {
             if (s.find { ($0 as? UILabel)?.text == title }) != nil {
@@ -66,12 +93,13 @@ extension UISegmentedControl {
         }
         return nil
     }
-    public func addIndicator(color: UIColor, size: CGFloat = 4){
+    private func addIndicator(size: CGFloat = 4){
         let buttonBar = UIView()
         // This needs to be false since we are using auto layout constraints
         buttonBar.translatesAutoresizingMaskIntoConstraints = false
-        buttonBar.backgroundColor = color
+        buttonBar.backgroundColor = indicatorColor
         addSubview(buttonBar)
+        indicatorView = buttonBar
 
         let getNewBounds: ()->CGRect = { [weak self, weak buttonBar] in
             guard let self = self else { return .zero }
@@ -120,5 +148,20 @@ extension UISegmentedControl {
                 })
             }
         })
+    }
+
+}
+
+private extension UIView {
+    func find(_ filter: (UIView)->Bool) -> UIView? {
+        if filter(self) {
+            return self
+        }
+        for s in subviews {
+            if let found = s.find(filter) {
+                return found
+            }
+        }
+        return nil
     }
 }

@@ -10,6 +10,7 @@ import Foundation
 import UIKit
 
 
+@IBDesignable
 public class DatePickerButton : UIControl {
     let pickerView = UIDatePicker(frame: CGRect.zero)
     let toolbar: UIToolbar = {

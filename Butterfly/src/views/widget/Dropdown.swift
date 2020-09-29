@@ -9,6 +9,7 @@
 import UIKit
 
 
+@IBDesignable
 public class Dropdown : UIControl {
     public let pickerView = UIPickerView(frame: CGRect.zero)
     public let toolbar: UIToolbar = {
@@ -91,11 +92,6 @@ public class Dropdown : UIControl {
             }
             setNeedsLayout()
         }
-    }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
     }
     
     override public func sizeThatFits(_ size: CGSize) -> CGSize {

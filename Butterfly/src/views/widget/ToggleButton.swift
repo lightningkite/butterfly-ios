@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-
+@IBDesignable
 public class ToggleButton: UIButtonWithLayer, CompoundButton {
     public var onCheckChanged: (CompoundButton, Bool) -> Void = { (_, _) in }
     public func setOnCheckedChangeListener(_ item: @escaping (CompoundButton, Bool) -> Void) {
