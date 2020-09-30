@@ -132,10 +132,13 @@ public class SimpleStackView: UIView {
         }
     }
 
-    public override func addSubview(_ view: UIView) {
-        super.addSubview(view)
-        addConstraintForSubview(view)
-        handleFillConstraint()
+    public override func didAddSubview(_ subview: UIView) {
+        if subview === subviews.last {
+            addConstraintForSubview(subview)
+            handleFillConstraint()
+        } else {
+            recalculateConstraints()
+        }
     }
 
     public func recalculateConstraints(){

@@ -25,3 +25,16 @@ public func applyColor(_ view: UIView?, _ colorSet: @escaping (_ state: UIContro
     }
     to(colorSet(.normal), .normal)
 }
+public func applyColor(_ view: UIView?, _ colorSet: StateSelector<UIColor>, to: @escaping (UIColor, UIControl.State)->Void) {
+    if let self = view as? CompoundButton {
+            self.addOnCheckedChangeListener({ (_, isChecked) in
+                let state: UIControl.State = isChecked ? .selected : .normal
+                to(colorSet.get(state), state)
+            })
+    } else if let self = view as? UIControl {
+        self.addOnStateChange(retainer: self, id: 0, action: { state in
+            to(colorSet.get(state), state)
+        })
+    }
+    to(colorSet.get(.normal), .normal)
+}
