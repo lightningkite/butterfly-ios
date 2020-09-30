@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 public func applyColor(_ view: UIView?, _ color: UIColor, to: (UIColor, UIControl.State)->Void) {
     to(color, .normal)
 }
