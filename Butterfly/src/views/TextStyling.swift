@@ -93,6 +93,7 @@ public extension UILabel {
                 toSet = toSet.uppercased()
             }
             self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * font.pointSize])
+            self.setNeedsLayout()
         }
     }
 
