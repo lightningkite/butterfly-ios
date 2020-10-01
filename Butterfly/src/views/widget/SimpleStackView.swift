@@ -16,10 +16,11 @@ public class SimpleStackView: UIView {
     @IBInspectable
     public var vertical: Bool = false {
         didSet {
+            updateContentConstraints()
             recalculateConstraints()
         }
     }
-
+    
     @IBInspectable
     public var reverse: Bool = false {
         didSet {
@@ -28,9 +29,13 @@ public class SimpleStackView: UIView {
     }
     
     @IBInspectable
-    public var fills: Bool = false {
+    public var alignmentString: String {
+        get { return alignment.rawValue }
+        set(value) { if let it = Align.init(rawValue: value) { alignment = it } }
+    }
+    public var alignment: Align = .start {
         didSet {
-            recalculateConstraints()
+            updateContentConstraints()
         }
     }
     
@@ -45,35 +50,19 @@ public class SimpleStackView: UIView {
         var start: CGFloat? = nil
         var end: CGFloat? = nil
     }
-
-    private var endAttr: NSLayoutConstraint.Attribute {
+    
+    private var operations: AnchorOperationsProtocol {
         if vertical {
             if reverse {
-                return .top
+                return AnchorOperations(startView: { $0.bottomAnchor }, endView: { $0.topAnchor }, startGuide: { $0.bottomAnchor }, endGuide: { $0.topAnchor })
             } else {
-                return .bottom
+                return AnchorOperations(startView: { $0.topAnchor }, endView: { $0.bottomAnchor }, startGuide: { $0.topAnchor }, endGuide: { $0.bottomAnchor })
             }
         } else {
             if reverse {
-                return .leading
+                return AnchorOperations(startView: { $0.trailingAnchor }, endView: { $0.leadingAnchor }, startGuide: { $0.trailingAnchor }, endGuide: { $0.leadingAnchor })
             } else {
-                return .trailing
-            }
-        }
-    }
-
-    private var startAttr: NSLayoutConstraint.Attribute {
-        if vertical {
-            if reverse {
-                return .bottom
-            } else {
-                return .top
-            }
-        } else {
-            if reverse {
-                return .trailing
-            } else {
-                return .leading
+                return AnchorOperations(startView: { $0.leadingAnchor }, endView: { $0.trailingAnchor }, startGuide: { $0.leadingAnchor }, endGuide: { $0.trailingAnchor })
             }
         }
     }
@@ -87,19 +76,93 @@ public class SimpleStackView: UIView {
         super.init(coder: coder)
         commonInit()
     }
-
+    
+    private var readyToConstrain = false
+    private var internalGuide: UILayoutGuide = UILayoutGuide()
     func commonInit(){
+        addLayoutGuide(internalGuide)
+        let lowConst = [
+            internalGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+            internalGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
+            internalGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+            internalGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
+        ]
+        for c in lowConst {
+            c.priority = .init(rawValue: 10)
+            c.isActive = true
+        }
+        let atLeastSizes = [
+            layoutMarginsGuide.widthAnchor.constraint(greaterThanOrEqualTo: internalGuide.widthAnchor),
+            layoutMarginsGuide.heightAnchor.constraint(greaterThanOrEqualTo: internalGuide.heightAnchor)
+        ]
+        for c in atLeastSizes  {
+            c.priority = .init(rawValue: 750)
+            c.isActive = true
+        }
+        updateContentConstraints()
+        readyToConstrain = true
+        updateConstraints()
+    }
+    private var contentConstraints: Array<NSLayoutConstraint> = []
+    func updateContentConstraints(){
+        for c in contentConstraints {
+            c.isActive = false
+        }
+        if vertical {
+            switch(alignment){
+            case .start:
+                contentConstraints = [
+                    internalGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor)
+                ]
+            case .center:
+                contentConstraints = [
+                    internalGuide.centerYAnchor.constraint(equalTo: layoutMarginsGuide.centerYAnchor)
+                ]
+            case .end:
+                contentConstraints = [
+                    internalGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor)
+                ]
+            case .fill:
+                contentConstraints = [
+                    internalGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+                    internalGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor)
+                ]
+            }
+        } else {
+            switch(alignment){
+            case .start:
+                contentConstraints = [
+                    internalGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor)
+                ]
+            case .center:
+                contentConstraints = [
+                    internalGuide.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor)
+                ]
+            case .end:
+                contentConstraints = [
+                    internalGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
+                ]
+            case .fill:
+                contentConstraints = [
+                    internalGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                    internalGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
+                ]
+            }
+        }
+        for c in contentConstraints {
+            c.isActive = true
+        }
     }
 
     private var lastView: UIView?
-    private var fillConstraint: NSLayoutConstraint?
+    private var lastConstraint: NSLayoutConstraint?
     private var myConstraints: Array<NSLayoutConstraint> = []
     
     private func reverseMargin(_ thing: CGFloat) -> CGFloat {
         if reverse {
-            return thing
-        } else {
             return -thing
+        } else {
+            return thing
         }
     }
 
@@ -107,13 +170,15 @@ public class SimpleStackView: UIView {
         guard view.includeInLayout else { return }
         if let lastView = lastView {
             let margin = (lastView.simpleStackViewParamsOrNil?.end ?? defaultMargin) + (view.simpleStackViewParamsOrNil?.start ?? defaultMargin)
-            let cons = NSLayoutConstraint(item: lastView, attribute: endAttr, relatedBy: .equal, toItem: view, attribute: startAttr, multiplier: 1.0, constant: reverseMargin(margin))
+            let cons = operations.next(prev: lastView, next: view)
+            cons.constant = reverseMargin(margin)
             cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
             cons.isActive = true
             myConstraints.append(cons)
         } else {
             let margin = view.simpleStackViewParamsOrNil?.start ?? defaultMargin
-            let cons = NSLayoutConstraint(item: self, attribute: startAttr.toMargin, relatedBy: .equal, toItem: view, attribute: startAttr, multiplier: 1.0, constant: reverseMargin(margin))
+            let cons = operations.startMatch(guide: internalGuide, view: view)
+            cons.constant = reverseMargin(margin)
             cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
             cons.isActive = true
             myConstraints.append(cons)
@@ -122,17 +187,19 @@ public class SimpleStackView: UIView {
     }
 
     private func handleFillConstraint(){
-        fillConstraint?.isActive = false
-        if fills, let view = subviews.last {
+        lastConstraint?.isActive = false
+        if let view = subviews.last {
             let margin = view.simpleStackViewParamsOrNil?.end ?? defaultMargin
-            let cons = NSLayoutConstraint(item: view, attribute: endAttr, relatedBy: .equal, toItem: self, attribute: endAttr.toMargin, multiplier: 1.0, constant: reverseMargin(margin))
+            let cons = operations.endMatch(guide: internalGuide, view: view)
+            cons.constant = reverseMargin(margin)
             cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
             cons.isActive = true
-            fillConstraint = cons
+            lastConstraint = cons
         }
     }
 
     public override func didAddSubview(_ subview: UIView) {
+        guard readyToConstrain else { return }
         if subview === subviews.last {
             addConstraintForSubview(subview)
             handleFillConstraint()
@@ -186,75 +253,25 @@ private struct WeakBox<T: AnyObject> {
     weak var item: T?
 }
 
-private extension NSLayoutConstraint.Attribute {
-    var name: String {
-        switch self {
-        case .left:
-            return "left"
-        case .right:
-            return "right"
-        case .top:
-            return "top"
-        case .bottom:
-            return "bottom"
-        case .leading:
-            return "leading"
-        case .trailing:
-            return "trailing"
-        case .width:
-            return "width"
-        case .height:
-            return "height"
-        case .centerX:
-            return "centerX"
-        case .centerY:
-            return "centerY"
-        case .lastBaseline:
-            return "lastBaseline"
-        case .firstBaseline:
-            return "firstBaseline"
-        case .leftMargin:
-            return "leftMargin"
-        case .rightMargin:
-            return "rightMargin"
-        case .topMargin:
-            return "topMargin"
-        case .bottomMargin:
-            return "bottomMargin"
-        case .leadingMargin:
-            return "leadingMargin"
-        case .trailingMargin:
-            return "trailingMargin"
-        case .centerXWithinMargins:
-            return "centerXWithinMargins"
-        case .centerYWithinMargins:
-            return "centerYWithinMargins"
-        case .notAnAttribute:
-            return "notAnAttribute"
-        @unknown default:
-            return "unknown"
-        }
+
+private protocol AnchorOperationsProtocol {
+    func startMatch(guide: UILayoutGuide, view: UIView) -> NSLayoutConstraint
+    func endMatch(guide: UILayoutGuide, view: UIView) -> NSLayoutConstraint
+    func next(prev: UIView, next: UIView) -> NSLayoutConstraint
+}
+private struct AnchorOperations<T: AnyObject>: AnchorOperationsProtocol {
+    var startView: (UIView)->NSLayoutAnchor<T>
+    var endView: (UIView)->NSLayoutAnchor<T>
+    var startGuide: (UILayoutGuide)->NSLayoutAnchor<T>
+    var endGuide: (UILayoutGuide)->NSLayoutAnchor<T>
+    
+    func startMatch(guide: UILayoutGuide, view: UIView) -> NSLayoutConstraint {
+        return startView(view).constraint(equalTo: startGuide(guide))
     }
-    var toMargin: NSLayoutConstraint.Attribute {
-        switch self {
-        case .left:
-            return .leftMargin
-        case .right:
-            return .rightMargin
-        case .top:
-            return .topMargin
-        case .bottom:
-            return .bottomMargin
-        case .leading:
-            return .leadingMargin
-        case .trailing:
-            return .trailingMargin
-        case .centerX:
-            return .centerXWithinMargins
-        case .centerY:
-            return .centerYWithinMargins
-        default:
-            return self
-        }
+    func endMatch(guide: UILayoutGuide, view: UIView) -> NSLayoutConstraint {
+        return endGuide(guide).constraint(equalTo: endView(view))
+    }
+    func next(prev: UIView, next: UIView) -> NSLayoutConstraint {
+        return startView(next).constraint(equalTo: endView(prev))
     }
 }

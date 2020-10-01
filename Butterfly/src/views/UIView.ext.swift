@@ -208,9 +208,9 @@ public extension UIView {
         }
     }
 
-    func post(_ action: @escaping () -> Void){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: action)
-    }
+//    func post(_ action: @escaping () -> Void){
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: action)
+//    }
 }
 
 extension UIButton {

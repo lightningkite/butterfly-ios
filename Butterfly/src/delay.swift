@@ -17,7 +17,7 @@ public func delay(milliseconds: Int64, action: @escaping () -> Void) -> Void {
 
 //--- post(()->Unit)
 public func post(action: @escaping () -> Void) -> Void {
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: action)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.0000001, execute: action)
 }
 
 //--- animationFrame

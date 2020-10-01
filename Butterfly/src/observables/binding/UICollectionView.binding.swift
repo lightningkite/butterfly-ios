@@ -5,6 +5,20 @@ import UIKit
 
 //--- RecyclerView.whenScrolledToEnd(()->Unit)
 public extension UICollectionView {
+    func refreshSizes(){
+        post{
+            var pathsToUpdate: Array<IndexPath> = []
+            for cell in self.visibleCells {
+                let fitSize = cell.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+                if fitSize.height != cell.frame.size.height, let path = self.indexPath(for: cell) {
+                    pathsToUpdate.append(path)
+                }
+            }
+            UIView.performWithoutAnimation {
+                self.reloadItems(at: pathsToUpdate)
+            }
+        }
+    }
     func whenScrolledToEnd(action: @escaping () -> Void) -> Void{
         post{
             if let delegate = self.delegate as? HasAtEnd {
@@ -17,14 +31,20 @@ public extension UICollectionView {
 
     //--- RecyclerView.bind(ObservableProperty<List<T>>, T, (ObservableProperty<T>)->UIView)
     private func setupVertical() {
-        self.addOnLayoutSubviews {
-            if let layout = self.collectionViewLayout as? ReversibleFlowLayout {
-                layout.estimatedItemSize = CGSize(width: self.bounds.size.width - self.contentInset.left - self.contentInset.right, height: 50)
-                layout.itemSize = UICollectionViewFlowLayout.automaticSize
-            }
-        }
+        let size = NSCollectionLayoutSize(
+            widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+            heightDimension: NSCollectionLayoutDimension.estimated(44)
+        )
+        let item = NSCollectionLayoutItem(layoutSize: size)
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
+
+        let section = NSCollectionLayoutSection(group: group)
+
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        self.collectionViewLayout = layout
     }
     func bind<T>(data: ObservableProperty<Array<T>>, defaultValue: T, makeView: @escaping (ObservableProperty<T>) -> UIView) -> Void {
+        setupVertical()
         post {
             let dg = GeneralCollectionDelegate(
                 itemCount: data.value.count,
@@ -34,11 +54,11 @@ public extension UICollectionView {
             self.retain(as: "delegate", item: dg, until: self.removed)
             self.delegate = dg
             self.dataSource = dg
-            data.subscribeBy { it in
+            data.subscribeBy(onNext:  { it in
                 dg.itemCount = it.count
                 self.reloadData()
-            }.until(self.removed)
-            self.setupVertical()
+            }).until(self.removed)
+//            self.setupVertical()
         }
     }
 
@@ -244,12 +264,25 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         let item = getItem(indexPath.row)
         let type = getType(item)
         if registered.insert(type).inserted {
-            collectionView.register(SizedUICollectionViewCell.self, forCellWithReuseIdentifier: String(type))
+            collectionView.register(ObsUICollectionViewCell.self, forCellWithReuseIdentifier: String(type))
         }
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(type), for: indexPath) as! SizedUICollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(type), for: indexPath) as! ObsUICollectionViewCell
+        if collectionView.reverseDirection {
+            cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
+        } else {
+            cell.contentView.transform = .identity
+        }
+        cell.setNeedsDisplay()
+        
         if cell.obs == nil {
             let obs = StandardObservableProperty<T>(underlyingValue: item)
-            cell.contentView.addSubview(makeView(obs, type))
+            let newView = makeView(obs, type)
+            cell.contentView.addSubview(newView)
+            cell.contentView.translatesAutoresizingMaskIntoConstraints = false
+            newView.topAnchor.constraint(equalTo: cell.contentView.topAnchor).isActive = true
+            newView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor).isActive = true
+            newView.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor).isActive = true
+            newView.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor).isActive = true
             cell.obs = obs
         }
         if let obs = cell.obs as? MutableObservableProperty<T> {
@@ -260,28 +293,23 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         post {
             cell.refreshLifecycle()
         }
-        cell.layoutIfNeeded()
-        cell.bounds.size = cell.systemLayoutSizeFitting(collectionView.bounds.size, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return itemCount
     }
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if let obs = (cell as? SizedUICollectionViewCell)?.obs as? MutableObservableProperty<T> {
-            obs.value = getItem(indexPath.row)
-        }
         if(indexPath.row >= itemCount - 1 && itemCount > 1){
             print("Triggered end with \(indexPath.row) size \(itemCount)")
             atEnd()
         }
-        if let cell = cell as? SizedUICollectionViewCell {
+        if let cell = cell as? ObsUICollectionViewCell {
             cell.resizeEnabled = true
         }
     }
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         
-        if let cell = cell as? SizedUICollectionViewCell {
+        if let cell = cell as? ObsUICollectionViewCell {
             cell.resizeEnabled = false
         }
     }
@@ -293,8 +321,44 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
     }
 }
 
-class SizedUICollectionViewCell: UICollectionViewCell {
+class ObsUICollectionViewCell: UICollectionViewCell {
     var obs: Any?
+    var resizeEnabled = false
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        commonInit()
+    }
+    
+    private func commonInit(){
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.clipsToBounds = true
+        NSLayoutConstraint.activate([
+            contentView.leftAnchor.constraint(equalTo: leftAnchor),
+            contentView.rightAnchor.constraint(equalTo: rightAnchor),
+            contentView.topAnchor.constraint(equalTo: topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+    
+    override var transform: CGAffineTransform {
+        get {
+            return super.transform
+        }
+        set(value){
+            super.transform = value
+        }
+    }
+
+}
+
+class SizedUICollectionViewCell: ObsUICollectionViewCell {
     var isVertical = true
 
     override init(frame: CGRect) {
@@ -311,6 +375,7 @@ class SizedUICollectionViewCell: UICollectionViewCell {
         super.layoutSubviews()
         contentView.frame = self.bounds
         for child in contentView.subviews {
+            child.translatesAutoresizingMaskIntoConstraints = true
             child.frame = contentView.bounds
             child.layoutSubviews()
         }
@@ -332,7 +397,6 @@ class SizedUICollectionViewCell: UICollectionViewCell {
         }
         return outSize
     }
-    var resizeEnabled = false
     public func refreshSize() {
         guard resizeEnabled else { return }
         var current = self.superview
@@ -351,299 +415,26 @@ class SizedUICollectionViewCell: UICollectionViewCell {
             }
         }
     }
-//    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
-//        var outSize = isVertical ? super.systemLayoutSizeFitting(CGSize(width: targetSize.width, height: .greatestFiniteMagnitude), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel) : super.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: horizontalFittingPriority, verticalFittingPriority: verticalFittingPriority)
-//        for child in contentView.subviews {
-//            let childSize = child.sizeThatFits(targetSize)
-//            outSize.width = max(outSize.width, childSize.width)
-//            outSize.height = max(outSize.height, childSize.height)
-//        }
-//        outSize.width = max(outSize.width, 20)
-//        outSize.height = max(outSize.height, 20)
-//        return outSize
-//    }
 }
+
 public extension UICollectionView {
     
     //--- RecyclerView.reverseDirection
-    class ReversibleFlowLayout: UICollectionViewFlowLayout {
-        
-        var reversed: Bool = false
-
-        override public func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-            let attrs = super.layoutAttributesForItem(at: indexPath)
-            if reversed {
-                attrs?.transform = CGAffineTransform(scaleX: 1, y: -1)
-            }
-            return attrs
-        }
-
-        override public func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-            let attrsList = super.layoutAttributesForElements(in: rect)
-            if reversed, let list = attrsList {
-                for i in 0..<list.count {
-                    list[i].transform = CGAffineTransform(scaleX: 1, y: -1)
-                }
-            }
-            return attrsList
-        }
-    }
+    static let extensionReverse = ExtensionProperty<UICollectionView, Bool>()
+    
+    @objc
     var reverseDirection: Bool {
         get {
-            return (collectionViewLayout as? ReversibleFlowLayout)?.reversed ?? false
+            return UICollectionView.extensionReverse.get(self) ?? false
         }
         set(value) {
-            if value {
-                self.transform = CGAffineTransform(scaleX: 1, y: -1)
-            } else {
-                self.transform = CGAffineTransform(scaleX: 1, y: 1)
-            }
-            if let l = collectionViewLayout as? ReversibleFlowLayout {
-                l.reversed = value
+            UICollectionView.extensionReverse.set(self, value)
+            let transform = value ? CGAffineTransform(scaleX: 1, y: -1) : .identity
+            self.transform = transform
+            for cell in self.visibleCells {
+                cell.contentView.transform = transform
+                cell.setNeedsDisplay()
             }
         }
     }
 }
-// //--- Adapters
-// class CustomUITableViewCell: UITableViewCell {
-//     var obs: Any?
-//     var spacing: CGFloat = 0
-//
-//     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-//         super.init(style: style, reuseIdentifier: reuseIdentifier)
-//         self.backgroundColor = UIColor.clear
-//     }
-//
-//     required init?(coder aDecoder: NSCoder) {
-//         fatalError("init(coder:) has not been implemented")
-//     }
-//
-//     override func sizeThatFits(_ size: CGSize) -> CGSize {
-//         layoutIfNeeded()
-//         var outSize = CGSize.zero
-//         for child in contentView.subviews {
-//             let childSize = child.sizeThatFits(size)
-//             outSize.width = max(outSize.width, childSize.width)
-//             outSize.height = max(outSize.height, childSize.height)
-//         }
-//         outSize.width += spacing * 2
-//         outSize.height += spacing * 2
-//         return outSize
-//     }
-//
-//     override public func layoutSubviews() {
-//         super.layoutSubviews()
-//         contentView.frame = self.bounds.insetBy(dx: spacing, dy: spacing)
-//         for child in contentView.subviews {
-//             child.frame = contentView.bounds
-//             child.layoutSubviews()
-//         }
-//     }
-//     public func refreshSize() {
-//         var current = self.superview
-//         while current != nil && !(current is UITableView) {
-//             current = current?.superview
-//         }
-//         if let current = current as? UITableView {
-//             if let dataSource = current.dataSource,
-//                 dataSource.tableView(current, numberOfRowsInSection: 0) == current.numberOfRows(inSection: 0)
-//             {
-//                 current.beginUpdates()
-//                 current.endUpdates()
-//             } else {
-//                 current.reloadData()
-//             }
-//         }
-//     }
-// }
-//
-//
-// class BoundDataSource<T, VIEW: UIView>: NSObject, UITableViewDataSource, UITableViewDelegate, HasAtEnd {
-//
-//     var source: ObservableProperty<[T]>
-//     let makeView: (ObservableProperty<T>) -> UIView
-//     let defaultValue: T
-//     var atEnd: () -> Void = {}
-//     let spacing: CGFloat
-//
-//     var reversedDirection: Bool = false
-//
-//     init(source: ObservableProperty<[T]>, defaultValue: T, makeView: @escaping (ObservableProperty<T>) -> UIView) {
-//         self.source = source
-//         self.spacing = 0
-//         self.makeView = makeView
-//         self.defaultValue = defaultValue
-//         super.init()
-//     }
-//
-//     func setAtEnd(action: @escaping () -> Void) {
-//         self.atEnd = action
-//     }
-//
-//     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//         let value = self.source.value
-//         let count = value.count
-//         return count
-//     }
-//
-//     private var showingLast = false
-//     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//         let nowShowingLast = indexPath.row >= (source.value.count) - 1
-//         if nowShowingLast && !showingLast {
-//             atEnd()
-//         }
-//         showingLast = nowShowingLast
-//     }
-//
-//     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//         let s = source.value
-//         let cell: CustomUITableViewCell = tableView.dequeueReusableCell(withIdentifier: "main-cell") as! CustomUITableViewCell
-//         cell.spacing = self.spacing
-//         if reversedDirection {
-//             cell.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
-//         } else {
-//             cell.transform = CGAffineTransform(rotationAngle: 0)
-//         }
-//         cell.selectionStyle = .none
-//         if cell.obs == nil {
-//             let obs = StandardObservableProperty(underlyingValue: defaultValue)
-//             cell.obs = obs
-//             let new = makeView(obs)
-//             cell.contentView.addSubview(new)
-//         }
-//         if let obs = cell.obs as? StandardObservableProperty<T> {
-//             obs.value = s[indexPath.row]
-//         }
-//         post {
-//             cell.refreshLifecycle()
-//         }
-//         return cell
-//     }
-//
-// }
-//
-// class BoundMultiDataSourceSameType<T>: NSObject, UITableViewDataSource, UITableViewDelegate, HasAtEnd {
-//
-//     var source: ObservableProperty<[T]>
-//     let getType: (T) -> Int
-//     let makeView: (Int, ObservableProperty<T>) -> UIView
-//     let defaultValue: T
-//     var atEnd: () -> Void = {}
-//     let spacing: CGFloat
-//     var registered: Set<Int> = []
-//
-//     var reversedDirection: Bool = false
-//
-//     init(source: ObservableProperty<[T]>, defaultValue: T, getType: @escaping (T)->Int, makeView: @escaping (Int, ObservableProperty<T>) -> UIView) {
-//         self.source = source
-//         self.spacing = 0
-//         self.makeView = makeView
-//         self.defaultValue = defaultValue
-//         self.getType = getType
-//         super.init()
-//     }
-//
-//     func setAtEnd(action: @escaping () -> Void) {
-//         self.atEnd = action
-//     }
-//
-//     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//         let value = self.source.value
-//         let count = value.count
-//         return count
-//     }
-//
-//     private var showingLast = false
-//     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//         let nowShowingLast = indexPath.row >= (source.value.count) - 1
-//         if nowShowingLast && !showingLast {
-//             atEnd()
-//         }
-//         showingLast = nowShowingLast
-//     }
-//
-//     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//         let s = source.value
-//         let typeIndex = getType(s[indexPath.row])
-//         if registered.insert(typeIndex).inserted {
-//             tableView.register(CustomUITableViewCell.self, forCellReuseIdentifier: String(typeIndex))
-//         }
-//         let cell: CustomUITableViewCell = tableView.dequeueReusableCell(withIdentifier: String(typeIndex)) as! CustomUITableViewCell
-//         cell.spacing = self.spacing
-//         if reversedDirection {
-//             cell.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
-//         } else {
-//             cell.transform = CGAffineTransform(rotationAngle: 0)
-//         }
-//         cell.selectionStyle = .none
-//         if cell.obs == nil {
-//             let obs = StandardObservableProperty(underlyingValue: defaultValue)
-//             cell.obs = obs
-//             let new = makeView(typeIndex, obs)
-//             cell.contentView.addSubview(new)
-//         }
-//         if let obs = cell.obs as? StandardObservableProperty<T> {
-//             obs.value = s[indexPath.row]
-//         }
-//         return cell
-//     }
-// }
-//
-// class BoundMultiDataSource: NSObject, UITableViewDataSource, UITableViewDelegate, HasAtEnd {
-//
-//     var source: ObservableProperty<[Any]>
-//     let handler: RVTypeHandler
-//     var atEnd: () -> Void = {}
-//     let spacing: CGFloat
-//
-//     var reversedDirection: Bool = false
-//
-//     init(source: ObservableProperty<[Any]>, handler: RVTypeHandler) {
-//         self.source = source
-//         self.spacing = 0
-//         self.handler = handler
-//         super.init()
-//     }
-//
-//     func setAtEnd(action: @escaping () -> Void) {
-//         self.atEnd = action
-//     }
-//
-//     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//         let value = self.source.value
-//         let count = value.count
-//         return count
-//     }
-//
-//     private var showingLast = false
-//     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//         let nowShowingLast = indexPath.row >= (source.value.count) - 1
-//         if nowShowingLast && !showingLast {
-//             atEnd()
-//         }
-//         showingLast = nowShowingLast
-//     }
-//
-//     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//         let s = source.value
-//         let typeIndex = self.handler.type(s[indexPath.row])
-//         let cell: CustomUITableViewCell = tableView.dequeueReusableCell(withIdentifier: String(typeIndex)) as! CustomUITableViewCell
-//         cell.spacing = self.spacing
-//         if reversedDirection {
-//             cell.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
-//         } else {
-//             cell.transform = CGAffineTransform(rotationAngle: 0)
-//         }
-//         cell.selectionStyle = .none
-//         if cell.obs == nil {
-//             let (view, obs) = handler.make(type: typeIndex)
-//             cell.obs = obs
-//             cell.contentView.addSubview(view)
-//         }
-//         if let obs = cell.obs as? StandardObservableProperty<Any> {
-//             obs.value = s[indexPath.row]
-//         }
-//         return cell
-//     }
-//
-// }

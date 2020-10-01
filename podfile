@@ -13,6 +13,7 @@ target 'Butterfly' do
     pod 'DKImagePickerController/Core'
     pod 'DKImagePickerController/ImageDataManager'
     pod 'DKImagePickerController/Resource'
+    pod 'IBPCollectionViewCompositionalLayout'
 end
 
 target 'ButterflyTests' do
