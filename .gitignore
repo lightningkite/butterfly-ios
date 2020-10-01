@@ -11,3 +11,5 @@ local.properties
 *.apk
 *.class
 **/node_modules
+
+**/.DS_Store
