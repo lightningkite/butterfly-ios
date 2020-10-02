@@ -1,6 +1,8 @@
 
 import UIKit
 
+public typealias UISegmentedControlSquare = MaterialSegmentedControl
+
 @IBDesignable
 public class MaterialSegmentedControl: UISegmentedControl {
     override public init(frame: CGRect) {
@@ -76,6 +78,9 @@ public class MaterialSegmentedControl: UISegmentedControl {
 
     private var indicatorView: UIView? = nil
 
+    public func materialTabStyle(color: UIColor) {
+        /*No longer needed*/
+    }
     private func materialTabStyle() {
 
         #if !TARGET_INTERFACE_BUILDER

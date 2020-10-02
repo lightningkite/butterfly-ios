@@ -2,7 +2,6 @@
 import Foundation
 import UIKit
 
-
 //--- RecyclerView.whenScrolledToEnd(()->Unit)
 public extension UICollectionView {
     func refreshSizes(){
@@ -430,6 +429,8 @@ class SizedUICollectionViewCell: ObsUICollectionViewCell {
 }
 
 public extension UICollectionView {
+    
+    class ReversibleFlowLayout: UICollectionViewFlowLayout {}
     
     //--- RecyclerView.reverseDirection
     static let extensionReverse = ExtensionProperty<UICollectionView, Bool>()

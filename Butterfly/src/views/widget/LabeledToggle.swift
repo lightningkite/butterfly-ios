@@ -14,6 +14,33 @@ public class LabeledToggle: UIButton {
     public var checkSize: CGSize { fatalError() }
     public var checkPadding: CGFloat = 8
     
+    public var labelView: UILabel { return titleLabel! }
+    
+    public var verticalAlign: Align {
+        get {
+            switch(contentVerticalAlignment){
+            case .center, .fill:
+                return .center
+            case .top:
+                return .start
+            case .bottom:
+                return .end
+            @unknown default:
+                return .center
+            }
+        }
+        set(value){
+            switch(value){
+            case .center, .fill:
+                contentVerticalAlignment = .center
+            case .start:
+                contentVerticalAlignment = .top
+            case .end:
+                contentVerticalAlignment = .bottom
+            }
+        }
+    }
+    
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         var value = super.sizeThatFits(size)
         value.width += checkSize.width + checkPadding
