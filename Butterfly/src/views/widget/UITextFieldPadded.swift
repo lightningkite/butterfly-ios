@@ -3,12 +3,16 @@ import UIKit
 @IBDesignable
 public class UITextFieldPadded: UITextField {
 
-    public var padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) {
-        didSet {
+    public var padding: UIEdgeInsets {
+        get { return layoutMargins }
+        set(value) {
+            layoutMargins = value
             self.setNeedsDisplay()
             self.setNeedsLayout()
         }
     }
+    
+    @IBInspectable
     public var compoundPadding: CGFloat = 8 {
         didSet {
             self.setNeedsDisplay()
@@ -57,14 +61,19 @@ public class UITextFieldPadded: UITextField {
         rightView?.frame = rightViewRect(forBounds: self.bounds)
     }
 }
+
+@IBDesignable
 public class UIAutoCompleteTextFieldPadded: UIAutoCompleteTextField {
     
-    public var padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0) {
-        didSet {
+    public var padding: UIEdgeInsets {
+        get { return layoutMargins }
+        set(value) {
+            layoutMargins = value
             self.setNeedsDisplay()
             self.setNeedsLayout()
         }
     }
+    @IBInspectable
     public var compoundPadding: CGFloat = 8 {
         didSet {
             self.setNeedsDisplay()

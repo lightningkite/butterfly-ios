@@ -85,6 +85,7 @@ public class ToggleButton: UIButtonWithLayer, CompoundButton {
 }
 
 public extension ToggleButton{
+    @objc
     override var textResource: String {
         get {
             return title(for: .normal) ?? ""
@@ -95,6 +96,7 @@ public extension ToggleButton{
         }
     }
     
+    @objc
     override var textString: String {
         get{
             return title(for: .normal) ?? ""

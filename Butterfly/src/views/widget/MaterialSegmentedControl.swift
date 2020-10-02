@@ -21,6 +21,14 @@ public class MaterialSegmentedControl: UISegmentedControl {
         super.layoutSubviews()
         layer.cornerRadius = 0
     }
+    
+    public override var intrinsicContentSize: CGSize {
+        get {
+            var base = super.intrinsicContentSize
+            base.height = max(base.height, 32)
+            return base
+        }
+    }
 
     public var reselectable: Bool = false
     

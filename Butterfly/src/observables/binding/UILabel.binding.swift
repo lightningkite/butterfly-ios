@@ -70,17 +70,3 @@ public extension UILabel {
         return bindText(observable, transform)
     }
 }
-
-public extension HasLabelView where Self: UIView {
-    func bindString(_ observable: ObservableProperty<String>) -> Void {
-        observable.subscribeBy { ( value) in
-            if self.textString != value {
-                self.textString = value
-            }
-
-        }.until(self.removed)
-    }
-    func bindString(observable: ObservableProperty<String>) -> Void {
-        return bindString(observable)
-    }
-}
