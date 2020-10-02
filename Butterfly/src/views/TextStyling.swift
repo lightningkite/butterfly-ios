@@ -43,7 +43,7 @@ public extension UILabel {
         }
     }
 
-    public var maxLines: Int32{
+    var maxLines: Int32{
         get{
             return Int32(self.numberOfLines)
         }
@@ -54,6 +54,7 @@ public extension UILabel {
         }
     }
 
+    @objc
     var letterSpacing: CGFloat {
         get{
             return viewLetterSpacing.get(self) ?? defaultLetterSpacing
@@ -64,6 +65,7 @@ public extension UILabel {
             textString = current
         }
     }
+    @objc
     var textAllCaps: Bool {
         get{
             return viewAllCaps.get(self) ?? false
@@ -107,6 +109,7 @@ public extension UILabel {
 }
 
 public extension UITextView {
+    @objc
     var letterSpacing: CGFloat {
         get{
             return viewLetterSpacing.get(self) ?? defaultLetterSpacing
@@ -117,6 +120,7 @@ public extension UITextView {
             textString = current
         }
     }
+    @objc
     var textAllCaps: Bool {
         get{
             return viewAllCaps.get(self) ?? false
@@ -150,6 +154,7 @@ public extension UITextView {
 }
 
 public extension UITextField {
+    @objc
     var letterSpacing: CGFloat {
         get{
             return viewLetterSpacing.get(self) ?? defaultLetterSpacing
@@ -160,6 +165,7 @@ public extension UITextField {
             textString = current
         }
     }
+    @objc
     var textAllCaps: Bool {
         get{
             return viewAllCaps.get(self) ?? false
@@ -193,6 +199,7 @@ public extension UITextField {
 }
 
 public extension UIButton {
+    @objc
     var letterSpacing: CGFloat {
         get{
             return viewLetterSpacing.get(self) ?? defaultLetterSpacing
@@ -203,6 +210,7 @@ public extension UIButton {
             textString = current
         }
     }
+    @objc
     var textAllCaps: Bool {
         get{
             return viewAllCaps.get(self) ?? false
@@ -213,7 +221,8 @@ public extension UIButton {
             textString = current
         }
     }
-    @objc var text: String {
+    @objc
+    var textResource: String {
         get {
             return title(for: .normal) ?? ""
         }
@@ -221,15 +230,8 @@ public extension UIButton {
             textString = value
         }
     }
-    @objc var textResource: String {
-        get {
-            return title(for: .normal) ?? ""
-        }
-        set(value) {
-            textString = value
-        }
-    }
-    @objc var textString: String {
+    @objc
+    var textString: String {
         get {
             return title(for: .normal) ?? ""
         }
@@ -238,57 +240,8 @@ public extension UIButton {
             if textAllCaps {
                 toSet = toSet.uppercased()
             }
-            setAttributedTitle(
-                NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (titleLabel?.font.pointSize ?? 12)]),
-                for: .normal
-            )
-        }
-    }
-}
-
-public extension HasLabelView where Self: UIView {
-    var letterSpacing: CGFloat {
-        get{
-            return viewLetterSpacing.get(self) ?? defaultLetterSpacing
-        }
-        set(value){
-            viewLetterSpacing.set(self, value)
-            let current = textString
-            textString = current
-        }
-    }
-    var textAllCaps: Bool {
-        get{
-            return viewAllCaps.get(self) ?? false
-        }
-        set(value){
-            viewAllCaps.set(self, value)
-            let current = textString
-            textString = current
-        }
-    }
-    var text: String {
-        get {
-            return self.labelView.textResource
-        }
-        set(value) {
-            self.labelView.textString = value
-        }
-    }
-    var textResource: String {
-        get {
-            return self.labelView.textResource
-        }
-        set(value) {
-            self.labelView.textString = value
-        }
-    }
-    var textString: String {
-        get {
-            return self.labelView.textString
-        }
-        set(value) {
-            self.labelView.textString = value
+            let font = titleLabel?.font
+            self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)]), for: .normal)
         }
     }
 }
