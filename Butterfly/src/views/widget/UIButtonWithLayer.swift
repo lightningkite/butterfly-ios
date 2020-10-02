@@ -118,6 +118,7 @@ open class UIButtonWithLayer: UIButton {
 
     func setImageResource(_ image: DrawableResource ) {
         self.compoundDrawable = image
+        self.notifyParentSizeChanged()
     }
     
     override open var intrinsicContentSize: CGSize {

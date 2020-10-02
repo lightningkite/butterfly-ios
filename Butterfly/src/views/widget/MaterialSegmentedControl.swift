@@ -31,6 +31,12 @@ public class MaterialSegmentedControl: UISegmentedControl {
             return base
         }
     }
+    
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        var base = super.sizeThatFits(size)
+        base.height = max(base.height, 32)
+        return base
+    }
 
     public var reselectable: Bool = false
     
@@ -80,6 +86,7 @@ public class MaterialSegmentedControl: UISegmentedControl {
 
     public func materialTabStyle(color: UIColor) {
         /*No longer needed*/
+        self.indicatorColor = color
     }
     private func materialTabStyle() {
 

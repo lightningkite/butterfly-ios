@@ -8,8 +8,6 @@
 
 import UIKit
 
-
-@available(*, deprecated, message: "Just use a plain UIView with constraints.")
 open class FrameLayout: UIView {
     public var padding: UIEdgeInsets = .zero {
         didSet {
@@ -125,7 +123,15 @@ open class FrameLayout: UIView {
         }
         return output
     }
+    override open var intrinsicContentSize: CGSize {
+        return sizeThatFits(UIView.layoutFittingCompressedSize)
+    }
     
+    override open func setNeedsLayout() {
+        super.setNeedsLayout()
+        self.notifyParentSizeChanged()
+    }
+
     override public func layoutSubviews() {
         super.layoutSubviews()
         

@@ -3,13 +3,5 @@
   template: ~this~.backgroundDrawable = ~0~
 
 - id: android.view.View
-  type: type
-  template: UIView
-
-- id: android.view.View
   type: get
   template: UIView
-
-- id: android.widget.ImageView
-  type: type
-  template: UIImageView

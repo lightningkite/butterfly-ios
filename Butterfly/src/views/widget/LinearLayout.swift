@@ -8,7 +8,6 @@
 
 import UIKit
 
-@available(*, deprecated, message: "Use SimplerStackView instead, which has a different API.")
 open class LinearLayout: UIView {
     
     public var padding: UIEdgeInsets = .zero {
@@ -139,6 +138,12 @@ open class LinearLayout: UIView {
         subview.refreshLifecycle()
     }
     
+    override open func setNeedsLayout() {
+        super.setNeedsLayout()
+        self.notifyParentSizeChanged()
+    }
+
+
     internal var measurements: Dictionary<UIView, CGSize> = Dictionary()
     internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()
     
@@ -262,6 +267,10 @@ open class LinearLayout: UIView {
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         return measure(size, includingWeighted: true)
     }
+    override open var intrinsicContentSize: CGSize {
+        return measure(UIView.layoutFittingCompressedSize, includingWeighted: true)
+    }
+    
     override public func layoutSubviews() {
         super.layoutSubviews()
         

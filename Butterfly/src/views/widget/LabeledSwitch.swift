@@ -43,6 +43,7 @@ public class LabeledSwitch : LabeledToggle, CompoundButton {
     }
     
     private func commonInit(){
+        self.rightSide = true
         
         titleLabel!.numberOfLines = 0
         

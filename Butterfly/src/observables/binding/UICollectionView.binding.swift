@@ -78,8 +78,8 @@ public extension UICollectionView {
     func bindMulti(viewDependency: ViewControllerAccess, data: ObservableProperty<Array<Any>>, typeHandlerSetup: (RVTypeHandler) -> Void) -> Void {
         let handler = RVTypeHandler(viewDependency)
         typeHandlerSetup(handler)
+        self.setupVertical()
         post {
-            self.setupVertical()
             
             let dg = GeneralCollectionDelegate(
                 itemCount: data.value.count,
@@ -90,10 +90,10 @@ public extension UICollectionView {
             self.retain(as: "delegate", item: dg, until: self.removed)
             self.delegate = dg
             self.dataSource = dg
-            data.subscribeBy { it in
+            data.subscribeBy(onNext:  { it in
                 dg.itemCount = it.count
                 self.refreshData()
-            }.until(self.removed)
+            }).until(self.removed)
         }
     }
 
@@ -110,10 +110,10 @@ public extension UICollectionView {
             self.retain(as: "delegate", item: dg, until: self.removed)
             self.delegate = dg
             self.dataSource = dg
-            data.subscribeBy { it in
+            data.subscribeBy(onNext:  { it in
                 dg.itemCount = it.count
                 self.refreshData()
-            }.until(self.removed)
+            }).until(self.removed)
         }
     }
 
@@ -126,13 +126,13 @@ public extension UICollectionView {
         } else {
             addSubview(control)
         }
-        loading.subscribeBy { (value) in
+        loading.subscribeBy(onNext:  { (value) in
             if value {
                 control.beginRefreshing()
             } else {
                 control.endRefreshing()
             }
-        }.until(control.removed)
+        }).until(control.removed)
     }
 }
 
@@ -245,17 +245,17 @@ protocol HasAtEnd {
 
 class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollectionViewDataSource, HasAtEnd {
     var atEnd: () -> Void = {}
-    
+
     func setAtEnd(action: @escaping () -> Void) {
         self.atEnd = action
     }
-    
+
     var itemCount: Int
     let getItem: (Int) -> T
     let makeView: (ObservableProperty<T>, Int) -> UIView
     let getType: (T) -> Int
     var atPosition: (Int) -> Void = { _ in }
-    
+
     init(
         itemCount: Int = 0,
         getItem: @escaping (Int) -> T,
@@ -269,7 +269,7 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         self.getType = getType
         self.atPosition = atPosition
     }
-    
+
     private var registered: Set<Int> = []
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = getItem(indexPath.row)
@@ -284,12 +284,12 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
             cell.contentView.transform = .identity
         }
         cell.setNeedsDisplay()
-        
+
         if cell.obs == nil {
             let obs = StandardObservableProperty<T>(underlyingValue: item)
             let newView = makeView(obs, type)
             cell.contentView.addSubview(newView)
-            cell.contentView.translatesAutoresizingMaskIntoConstraints = false
+            newView.translatesAutoresizingMaskIntoConstraints = false
             newView.topAnchor.constraint(equalTo: cell.contentView.topAnchor).isActive = true
             newView.bottomAnchor.constraint(equalTo: cell.contentView.bottomAnchor).isActive = true
             newView.leftAnchor.constraint(equalTo: cell.contentView.leftAnchor).isActive = true
@@ -301,9 +301,13 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         } else {
             fatalError("Could not find cell property")
         }
+        cell.setNeedsLayout()
+        cell.layoutIfNeeded()
+//        cell.bounds.size = cell.systemLayoutSizeFitting(collectionView.bounds.size, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
         post {
             cell.refreshLifecycle()
         }
+        print("Size is \(cell.bounds.size.height) for index \(indexPath.row)")
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -319,7 +323,7 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         }
     }
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
+
         if let cell = cell as? ObsUICollectionViewCell {
             cell.resizeEnabled = false
         }
@@ -356,6 +360,22 @@ class ObsUICollectionViewCell: UICollectionViewCell {
             contentView.topAnchor.constraint(equalTo: topAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+        
+    }
+    
+    override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+        if let view = self.contentView.subviews.first {
+            view.setNeedsLayout()
+            view.layoutSubviews()
+            let size = view.sizeThatFits(CGSize(width: targetSize.width, height: 10000))
+            return size
+        }
+        return CGSize(width: 50, height: 50)
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        contentView.subviews.first?.layoutSubviews()
     }
     
     override var transform: CGAffineTransform {

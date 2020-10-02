@@ -43,13 +43,14 @@ public extension UILabel {
         }
     }
 
-    var maxLines: Int32{
+    public var maxLines: Int32{
         get{
             return Int32(self.numberOfLines)
         }
         set(newLineCount){
             if self.numberOfLines != Int(newLineCount) {
                 self.numberOfLines = Int(newLineCount)
+                self.notifyParentSizeChanged()
             }
         }
     }
@@ -83,6 +84,7 @@ public extension UILabel {
         }
         set(value) {
             textString = value
+            notifyParentSizeChanged()
         }
     }
     var textString: String {
@@ -95,7 +97,7 @@ public extension UILabel {
                 toSet = toSet.uppercased()
             }
             self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * font.pointSize])
-            self.setNeedsLayout()
+            notifyParentSizeChanged()
         }
     }
 

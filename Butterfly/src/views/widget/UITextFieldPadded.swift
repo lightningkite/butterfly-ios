@@ -69,15 +69,13 @@ public class UIAutoCompleteTextFieldPadded: UIAutoCompleteTextField {
         get { return layoutMargins }
         set(value) {
             layoutMargins = value
-            self.setNeedsDisplay()
-            self.setNeedsLayout()
+            self.notifyParentSizeChanged()
         }
     }
     @IBInspectable
     public var compoundPadding: CGFloat = 8 {
         didSet {
-            self.setNeedsDisplay()
-            self.setNeedsLayout()
+            self.notifyParentSizeChanged()
         }
     }
     

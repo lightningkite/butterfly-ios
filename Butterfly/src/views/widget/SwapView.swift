@@ -31,6 +31,10 @@ open class SwapView: UIView {
         return current?.sizeThatFits(size) ?? .zero
     }
 
+    override open func setNeedsLayout() {
+        super.setNeedsLayout()
+        self.notifyParentSizeChanged()
+    }
     
     override public func layoutSubviews() {
         updateAnimations()

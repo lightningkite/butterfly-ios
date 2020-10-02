@@ -230,6 +230,9 @@
       android:text:
         path: attribute/text
         as: string
+      tools:text:
+        path: attribute/text
+        as: string
       android:textSize:
         path: property/fontDescription/attribute/pointSize
         as: dimension
@@ -304,6 +307,9 @@
     name: button
     deferTo: android.view.View
     attributes:
+      tools:text:
+        path: property/normal:state/attribute/title
+        as: string
       android:text:
         path: property/normal:state/attribute/title
         as: string
@@ -327,7 +333,7 @@
         path: userDefined/textAllCaps
         as: boolean
       android:textColor:
-        path: property/normal:state/attribute/titleColor
+        path: property/normal:state/property/titleColor
         as: color
       android:gravity:
         mapValues:
@@ -677,6 +683,9 @@
       android:textColor:
         path: property/textColor:color
         as: color
+      tools:text:
+        path: attribute/text
+        as: string
       android:text:
         path: attribute/text
         as: string
