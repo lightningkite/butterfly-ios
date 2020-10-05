@@ -776,13 +776,13 @@
 - id: android.widget.LinearLayout
   type: type
   template:
-    pattern: SimpleStackView
+    pattern: LinearLayout
     imports: [Butterfly]
   xib:
     name: view
     deferTo: nonandroid.UseMarginInsets
     defaults:
-      attribute/customClass: SimpleStackView
+      attribute/customClass: LinearLayout
       attribute/customModule: Butterfly
     attributes:
       android:orientation:

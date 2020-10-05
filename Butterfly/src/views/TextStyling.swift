@@ -246,4 +246,17 @@ public extension UIButton {
             self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)]), for: .normal)
         }
     }
+    var text: String {
+        get {
+            return title(for: .normal) ?? ""
+        }
+        set(value) {
+            var toSet = value
+            if textAllCaps {
+                toSet = toSet.uppercased()
+            }
+            let font = titleLabel?.font
+            self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)]), for: .normal)
+        }
+    }
 }

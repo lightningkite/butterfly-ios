@@ -9,8 +9,25 @@ import UIKit
 import AlamofireImage
 import Alamofire
 
+public protocol ViewWithImage: UIView {
+    var image: UIImage? { get set }
+    var imageView: UIImageView? { get }
+}
+extension UIImageView: ViewWithImage {
+    public var imageView: UIImageView? { return self }
+}
+extension UIButton: ViewWithImage {
+    public var image: UIImage? {
+        get {
+            return image(for: .normal)
+        }
+        set(value){
+            setImage(value, for: .normal)
+        }
+    }
+}
 
-public extension UIImageView {
+public extension ViewWithImage {
     func setImageResource(_ drawableMaker: Drawable) {
         self.image = drawableMaker.makeLayer(self).toImage()
         self.notifyParentSizeChanged()
@@ -27,11 +44,14 @@ public extension UIImageView {
 public extension UIImageView {
     static var loadingProgressTintColor: UIColor?
     static var loadingTrackTintColor: UIColor?
+}
+
+public extension ViewWithImage {
 
     func af_setImageProgress(
         withURL url: URL,
         placeholderImage: UIImage? = nil,
-        imageTransition: ImageTransition = .noTransition,
+        imageTransition: UIImageView.ImageTransition = .noTransition,
         runImageTransitionIfCached: Bool = false,
         completion: (() -> Void)? = nil
         ) {
@@ -60,7 +80,7 @@ public extension UIImageView {
                 }
             }
 
-            self.af_setImage(
+            self.imageView?.af.setImage(
                 withURL: url,
                 placeholderImage: placeholderImage,
                 filter: filter,
@@ -85,7 +105,7 @@ public extension UIImageView {
         switch(image){
         case let image as ImageReference:
             if let url = URL(string: image.uri.absoluteString) {
-                af_setImageProgress(withURL: url, placeholderImage: nil, imageTransition: ImageTransition.noTransition, runImageTransitionIfCached: false, completion: nil)
+                af_setImageProgress(withURL: url, placeholderImage: nil, imageTransition: UIImageView.ImageTransition.noTransition, runImageTransitionIfCached: false, completion: nil)
             }
         case let image as ImageResource:
             setImageResource(image.resource)
@@ -95,7 +115,7 @@ public extension UIImageView {
             break
         case let image as ImageRemoteUrl:
             if let url = URL(string: image.url) {
-                af_setImageProgress(withURL: url, placeholderImage: nil, imageTransition: ImageTransition.noTransition, runImageTransitionIfCached: false, completion: nil)
+                af_setImageProgress(withURL: url, placeholderImage: nil, imageTransition: UIImageView.ImageTransition.noTransition, runImageTransitionIfCached: false, completion: nil)
             }
         default:
             break

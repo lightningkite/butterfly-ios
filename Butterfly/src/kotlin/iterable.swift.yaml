@@ -7,6 +7,11 @@
 
 # Extensions
 
+
+- id: kotlin.collections.contains
+  receiver: kotlin.collections.Iterable
+  type: call
+  template: ~this~.contains(~0~)
 - id: kotlin.collections.drop
   type: call
   template: ~this~.dropFirst(~0~)

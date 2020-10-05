@@ -50,10 +50,10 @@ open class FrameLayout: UIView {
     internal var measurements: Dictionary<UIView, CGSize> = Dictionary()
     internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()
     
-    public func params(for view: UIView) -> LayoutParams? {
+    public func getParams(for view: UIView) -> LayoutParams? {
         return subviewsWithParams[view]
     }
-    public func params(for view: UIView, setTo: LayoutParams) {
+    public func setParams(for view: UIView, setTo: LayoutParams) {
         subviewsWithParams[view] = setTo
         self.setNeedsLayout()
     }

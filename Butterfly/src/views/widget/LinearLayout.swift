@@ -54,7 +54,7 @@ open class LinearLayout: UIView {
             )
         }
     }
-    func params(
+    public func params(
         sizeX: Int32 = 0,
         sizeY: Int32 = 0,
         marginStart: Int32 = 0,
@@ -80,10 +80,10 @@ open class LinearLayout: UIView {
     
     internal var subviewsWithParams: Array<(UIView, LayoutParams)> = Array()
     
-    public func params(for view: UIView) -> LayoutParams? {
+    public func getParams(for view: UIView) -> LayoutParams? {
         return subviewsWithParams.find { entry in entry.0 === view }?.1
     }
-    public func params(for view: UIView, setTo: LayoutParams) {
+    public func setParams(for view: UIView, setTo: LayoutParams) {
         if let index = (subviewsWithParams.firstIndex { entry in entry.0 === view }) {
             subviewsWithParams[index] = (view, setTo)
             self.setNeedsLayout()

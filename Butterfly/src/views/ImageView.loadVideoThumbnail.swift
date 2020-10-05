@@ -4,7 +4,7 @@
 import UIKit
 import Foundation
 
-public extension UIImageView {
+public extension ViewWithImage {
     func loadVideoThumbnail(video: Video?) -> Void {
         if video == nil { return }
         self.loadImage(image: nil)

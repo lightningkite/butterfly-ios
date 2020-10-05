@@ -86,20 +86,20 @@ public extension UIView {
                 self.padding = myDefault! + addedInsets
             default:
                 if let superview = self.superview as? LinearLayout {
-                    if var current = superview.params(for: self) {
+                    if var current = superview.getParams(for: self) {
                         if myDefault == nil {
                             myDefault = current.padding
                         }
                         current.padding = myDefault! + addedInsets
-                        superview.params(for: self, setTo: current)
+                        superview.setParams(for: self, setTo: current)
                     }
                 } else if let superview = self.superview as? FrameLayout {
-                    if var current = superview.params(for: self) {
+                    if var current = superview.getParams(for: self) {
                         if myDefault == nil {
                             myDefault = current.padding
                         }
                         current.padding = myDefault! + addedInsets
-                        superview.params(for: self, setTo: current)
+                        superview.setParams(for: self, setTo: current)
                     }
                 }
             }
@@ -146,20 +146,20 @@ public extension UIView {
                 height: (useTop ? insets.top : 0) + (useBottom ? insets.bottom : 0)
             )
             if let superview = self.superview as? LinearLayout {
-                if var current = superview.params(for: self) {
+                if var current = superview.getParams(for: self) {
                     if myDefault == nil {
                         myDefault = current.size
                     }
                     current.size = addIfNotZero(myDefault!, addedSize)
-                    superview.params(for: self, setTo: current)
+                    superview.setParams(for: self, setTo: current)
                 }
             } else if let superview = self.superview as? FrameLayout {
-                if var current = superview.params(for: self) {
+                if var current = superview.getParams(for: self) {
                     if myDefault == nil {
                         myDefault = current.size
                     }
                     current.size = addIfNotZero(myDefault!, addedSize)
-                    superview.params(for: self, setTo: current)
+                    superview.setParams(for: self, setTo: current)
                 }
             }
             return UIEdgeInsets(
