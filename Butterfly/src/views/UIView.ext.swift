@@ -130,6 +130,9 @@ public extension UIView {
     func setBackgroundColor(_ color: UIColor) {
         backgroundColor = color
     }
+    func setBackgroundColor(_ color: Int64) {
+        backgroundColor = color.asColor()
+    }
 
 
     func postInvalidate() {

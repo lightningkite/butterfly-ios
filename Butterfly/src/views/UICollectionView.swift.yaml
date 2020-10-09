@@ -16,7 +16,7 @@
   type: call
   arguments: [android.content.Context]
   template:
-    pattern: "UICollectionViewCompositionalLayout.list()"
+    pattern: "QuickCompositionalLayout.list()"
     imports: [Butterfly]
 
 - id: androidx.recyclerview.widget.GridLayoutManager
@@ -29,7 +29,7 @@
   type: call
   arguments: [android.content.Context, kotlin.Int]
   template:
-    pattern: "UICollectionViewCompositionalLayout.grid(orthogonalCount: ~1~)"
+    pattern: "QuickCompositionalLayout.grid(orthogonalCount: ~1~)"
     imports: [Butterfly]
 
 # TODO

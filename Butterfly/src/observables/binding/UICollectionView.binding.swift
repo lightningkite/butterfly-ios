@@ -2,8 +2,8 @@
 import Foundation
 import UIKit
 
-public extension UICollectionViewCompositionalLayout {
-    static func list(vertical: Bool = true, reverse: Bool = false) {
+public enum QuickCompositionalLayout {
+    public static func list(vertical: Bool = true, reverse: Bool = false) -> UICollectionViewLayout {
         if vertical {
             let size = NSCollectionLayoutSize(
                 widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
@@ -24,10 +24,10 @@ public extension UICollectionViewCompositionalLayout {
             return UICollectionViewCompositionalLayout(section: section)
         }
     }
-    static func grid(orthogonalCount: Int, vertical: Bool = true) {
+    public static func grid(orthogonalCount: Int, vertical: Bool = true) -> UICollectionViewLayout {
         if vertical {
             let size = NSCollectionLayoutSize(
-                widthDimension: NSCollectionLayoutDimension.fractionalWidth(1.0/orthogonalCount),
+                widthDimension: NSCollectionLayoutDimension.fractionalWidth(1.0/CGFloat(orthogonalCount)),
                 heightDimension: NSCollectionLayoutDimension.estimated(100)
             )
             let item = NSCollectionLayoutItem(layoutSize: size)
@@ -37,7 +37,7 @@ public extension UICollectionViewCompositionalLayout {
         } else {
             let size = NSCollectionLayoutSize(
                 widthDimension: NSCollectionLayoutDimension.estimated(100),
-                heightDimension: NSCollectionLayoutDimension.fractionalHeight(1.0/orthogonalCount)
+                heightDimension: NSCollectionLayoutDimension.fractionalHeight(1.0/CGFloat(orthogonalCount))
             )
             let item = NSCollectionLayoutItem(layoutSize: size)
             let group = NSCollectionLayoutGroup.vertical(layoutSize: size, subitem: item, count: orthogonalCount)
