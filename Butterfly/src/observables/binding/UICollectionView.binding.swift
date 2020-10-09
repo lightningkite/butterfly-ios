@@ -2,6 +2,51 @@
 import Foundation
 import UIKit
 
+public extension UICollectionViewCompositionalLayout {
+    static func list(vertical: Bool = true, reverse: Bool = false) {
+        if vertical {
+            let size = NSCollectionLayoutSize(
+                widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
+                heightDimension: NSCollectionLayoutDimension.estimated(100)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: size)
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
+            let section = NSCollectionLayoutSection(group: group)
+            return UICollectionViewCompositionalLayout(section: section)
+        } else {
+            let size = NSCollectionLayoutSize(
+                widthDimension: NSCollectionLayoutDimension.estimated(100),
+                heightDimension: NSCollectionLayoutDimension.fractionalHeight(1)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: size)
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: size, subitem: item, count: 1)
+            let section = NSCollectionLayoutSection(group: group)
+            return UICollectionViewCompositionalLayout(section: section)
+        }
+    }
+    static func grid(orthogonalCount: Int, vertical: Bool = true) {
+        if vertical {
+            let size = NSCollectionLayoutSize(
+                widthDimension: NSCollectionLayoutDimension.fractionalWidth(1.0/orthogonalCount),
+                heightDimension: NSCollectionLayoutDimension.estimated(100)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: size)
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: orthogonalCount)
+            let section = NSCollectionLayoutSection(group: group)
+            return UICollectionViewCompositionalLayout(section: section)
+        } else {
+            let size = NSCollectionLayoutSize(
+                widthDimension: NSCollectionLayoutDimension.estimated(100),
+                heightDimension: NSCollectionLayoutDimension.fractionalHeight(1.0/orthogonalCount)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: size)
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: size, subitem: item, count: orthogonalCount)
+            let section = NSCollectionLayoutSection(group: group)
+            return UICollectionViewCompositionalLayout(section: section)
+        }
+    }
+}
+
 //--- RecyclerView.whenScrolledToEnd(()->Unit)
 public extension UICollectionView {
     func refreshSizes(){
@@ -41,7 +86,8 @@ public extension UICollectionView {
     }
 
     //--- RecyclerView.bind(ObservableProperty<List<T>>, T, (ObservableProperty<T>)->UIView)
-    private func setupVertical() {
+    private func setupDefault() {
+        if self.collectionViewLayout is UICollectionViewCompositionalLayout { return }
         let size = NSCollectionLayoutSize(
             widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
             heightDimension: NSCollectionLayoutDimension.estimated(44)
@@ -55,7 +101,7 @@ public extension UICollectionView {
         self.collectionViewLayout = layout
     }
     func bind<T>(data: ObservableProperty<Array<T>>, defaultValue: T, makeView: @escaping (ObservableProperty<T>) -> UIView) -> Void {
-        setupVertical()
+        setupDefault()
         post {
             let dg = GeneralCollectionDelegate(
                 itemCount: data.value.count,
@@ -69,7 +115,6 @@ public extension UICollectionView {
                 dg.itemCount = it.count
                 self.refreshData()
             }).until(self.removed)
-//            self.setupVertical()
         }
     }
 
@@ -78,7 +123,7 @@ public extension UICollectionView {
     func bindMulti(viewDependency: ViewControllerAccess, data: ObservableProperty<Array<Any>>, typeHandlerSetup: (RVTypeHandler) -> Void) -> Void {
         let handler = RVTypeHandler(viewDependency)
         typeHandlerSetup(handler)
-        self.setupVertical()
+        self.setupDefault()
         post {
             
             let dg = GeneralCollectionDelegate(
@@ -99,7 +144,7 @@ public extension UICollectionView {
 
     //--- RecyclerView.bindMulti(ObservableProperty<List<T>>, T, (T)->Int, (Int,ObservableProperty<T>)->UIView)
     func bindMulti<T>(data: ObservableProperty<Array<T>>, defaultValue: T, determineType: @escaping (T) -> Int, makeView: @escaping (Int, ObservableProperty<T>) -> UIView) -> Void {
-        self.setupVertical()
+        self.setupDefault()
         post {
             let dg = GeneralCollectionDelegate(
                 itemCount: data.value.count,
