@@ -28,8 +28,8 @@ public extension ViewControllerAccess {
             }
         }
     }
-    public func openEvent(title: String, description: String, location: String, start: Date, end: Date) -> Void {
-        return openEvent(title, description, location, start, end)
+    public func openEvent(title: String, myDescription: String, location: String, start: Date, end: Date) -> Void {
+        return openEvent(title, myDescription, location, start, end)
     }
 }
 extension ViewControllerAccess: EKEventEditViewDelegate {

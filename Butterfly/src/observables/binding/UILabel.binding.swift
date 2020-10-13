@@ -39,9 +39,9 @@ public extension UILabel {
 }
 public extension UIButton {
     func bindStringRes(_ observableReference: ObservableProperty<StringResource?>) {
-        return bindStringRes(observableReference: observableReference)
+        return bindStringRes(observable: observableReference)
     }
-    func bindStringRes(observableReference: ObservableProperty<StringResource?>) {
+    func bindStringRes(observable observableReference: ObservableProperty<StringResource?>) {
         observableReference.subscribeBy { ( value) in
             if let value = value {
                 if self.title(for: .normal) != value {

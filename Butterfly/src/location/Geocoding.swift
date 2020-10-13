@@ -7,9 +7,9 @@ public extension ViewControllerAccess {
 
     //--- ViewControllerAccess.geocode(GeoCoordinate, (List<GeoAddress>)->Unit)
     func geocode(_ latLng: GeoCoordinate, _ onResult: @escaping (Array<GeoAddress>)->Void) {
-        geocode(latLng: latLng, onResult: onResult)
+        geocode(coordinate: latLng, onResult: onResult)
     }
-    func geocode(latLng: GeoCoordinate, onResult: @escaping (Array<GeoAddress>)->Void) {
+    func geocode(coordinate latLng: GeoCoordinate, onResult: @escaping (Array<GeoAddress>)->Void) {
         CLGeocoder().reverseGeocodeLocation(CLLocation(latitude: latLng.latitude, longitude: latLng.longitude)){ marks, error in
             onResult(marks?.map { translate(mark: $0) } ?? [])
         }

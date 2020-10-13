@@ -20,7 +20,7 @@ public extension Array {
         item: Element,
         selector: (Element)->K?
     ) {
-        let index = binarySearchBy(selector(item), selector)
+        let index = binarySearchBy(key: selector(item), selector: selector)
         if index < 0 {
             insert(
                 item,
@@ -33,33 +33,24 @@ public extension Array {
             )
         }
     }
-    mutating func binaryInsertBy<K: Comparable>(
-        _ item: Element,
-        _ selector: (Element)->K?
-    ) {
-        binaryInsertBy(item: item, selector: selector)
-    }
 
     //--- MutableList<T>.binaryInsertByDistinct(T, (T)->K?)
-    mutating func binaryInsertByDistinct<K: Comparable>(_ item: Element, _ selector: (Element) -> K?) -> Bool {
-        let index = binarySearchBy(selector(item), selector)
-        if index < 0 {
-            insert(
-                item,
-                at: -index - 1
-            )
-            return true
-        } else {
-            return false
-        }
-    }
     mutating func binaryInsertByDistinct<K: Comparable>(item: Element, selector: (Element) -> K?) -> Bool {
-        return binaryInsertByDistinct(item, selector)
+        let index = binarySearchBy(key: selector(item), selector: selector)
+            if index < 0 {
+                insert(
+                    item,
+                    at: -index - 1
+                )
+                return true
+            } else {
+                return false
+            }
     }
 
     //--- List<T>.binaryFind(K, (T)->K?)
-    func binaryFind<K: Comparable>(_ key: K, _ selector: (Element) -> K?) -> Element?  {
-        let index = binarySearchBy(key, selector)
+    func binaryFind<K: Comparable>(key: K, selector: (Element) -> K?) -> Element?  {
+        let index = binarySearchBy(key: key, selector: selector)
         if index >= 0 {
             return self[index]
         } else {
@@ -68,8 +59,8 @@ public extension Array {
     }
 
     //--- List<T>.binaryForEach(K, K, (T)->K?, (T)->Unit)
-    func binaryForEach<K: Comparable>(_ lower: K, _ upper: K, _ selector: (Element) -> K?, _ action: (Element) -> Void) -> Void {
-        var index = binarySearchBy(lower, selector)
+    func binaryForEach<K: Comparable>(lower: K, upper: K, selector: (Element) -> K?, action: (Element) -> Void) -> Void {
+        var index = binarySearchBy(key: lower, selector: selector)
         if index < 0 {
             index = -index - 1
         }
@@ -81,17 +72,8 @@ public extension Array {
             index += 1
         }
     }
-    func binaryForEach<K: Comparable>(lower: K, upper: K, selector: (Element) -> K?, action: (Element) -> Void) -> Void {
-        return binaryForEach(lower, upper, selector, action)
-    }
     
     //--- List<T>.binarySearchBy(K?, (T)->K?)
-    func binarySearchBy<K: Comparable>(
-        _ key: K?,
-        _ selector: (Element)->K?
-    ) -> Int {
-        binarySearchBy(key: key, selector: selector)
-    }
     func binarySearchBy<K: Comparable>(
         key: K?,
         selector: (Element)->K?
