@@ -22,8 +22,14 @@
   type: call
   hasExplicitTypeArguments: true
   template: Set<~T0~>()
-
 - id: kotlin.collections.HashSet
+  type: call
+  template: Set()
+- id: java.util.HashSet
+  type: call
+  hasExplicitTypeArguments: true
+  template: Set<~T0~>()
+- id: java.util.HashSet
   type: call
   template: Set()
 

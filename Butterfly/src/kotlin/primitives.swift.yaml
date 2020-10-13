@@ -32,7 +32,7 @@
   template: Equatable
 - id: com.lightningkite.butterfly.SomeEnum
   type: type
-  template: SomeEnum
+  template: StringEnum
 
 - id: kotlin.Unit
   type: get

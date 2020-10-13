@@ -24,6 +24,13 @@ public extension Array {
         copy.remove(at: index)
         return copy
     }
+    func sumBy(selector: (Element) -> Int)-> Int{
+        var sum:Int = 0
+        for item in self{
+            sum += selector(item)
+        }
+        return sum
+    }
     func sumByDouble(selector: (Element) -> Double)-> Double{
         var sum:Double = 0.0
         for item in self{

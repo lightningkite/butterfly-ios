@@ -43,13 +43,13 @@ public extension UILabel {
         }
     }
 
-    public var maxLines: Int32{
+    var maxLines: Int {
         get{
-            return Int32(self.numberOfLines)
+            return self.numberOfLines
         }
         set(newLineCount){
-            if self.numberOfLines != Int(newLineCount) {
-                self.numberOfLines = Int(newLineCount)
+            if self.numberOfLines != newLineCount {
+                self.numberOfLines = newLineCount
                 self.notifyParentSizeChanged()
             }
         }

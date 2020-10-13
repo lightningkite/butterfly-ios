@@ -183,12 +183,12 @@
 - id: kotlin.collections.joinToString
   type: call
   suppliedArguments: [transform]
-  template: '~this~.map(~transform~).joined(separator: ", ")'
+  template: '~this~.joined(separator: ", ", transform: ~transform~)'
 
 - id: kotlin.collections.joinToString
   type: call
   suppliedArguments: [separator, transform]
-  template: '~this~.map(~transform~).joined(separator: ~separator~)'
+  template: '~this~.joined(separator: ~separator~, transform: ~transform~)'
 
 - id: kotlin.collections.joinToString
   type: call

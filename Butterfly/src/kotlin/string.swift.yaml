@@ -26,6 +26,10 @@
   type: call
   arguments: []
   template: "~this~.trimmingCharacters(in: .whitespacesAndNewlines)"
+- id: kotlin.text.trim
+  type: call
+  arguments: [kotlin.CharArray]
+  template: "~this~.trimmingCharacters(in: CharacterSet(charactersIn: ~0~))"
 - id: kotlin.text.trimIndent
   type: call
   arguments: []
@@ -182,6 +186,27 @@
   type: call
   actualReceiver: kotlin.text.StringBuilder
   template: ~this~.value
+
+# String Builder
+- id: java.lang.StringBuilder
+  type: type
+  template: Box<String>
+- id: java.lang.StringBuilder
+  type: call
+  template: 'Box("")'
+- id: java.lang.StringBuilder.append
+  type: call
+  template: ~this~.value.append(~0~)
+- id: java.lang.StringBuilder.append
+  type: call
+  template: ~this~.value.append(~0~)
+- id: kotlin.text.appendln
+  type: call
+  template: ~this~.value.append(~0~ + "\n")
+- id: kotlin.text.appendln
+  type: call
+  arguments: []
+  template: ~this~.value.append("\n")
 - id: java.lang.StringBuilder.toString
   type: call
   template: ~this~.value
