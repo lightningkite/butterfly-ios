@@ -2,8 +2,13 @@
 
 
 - id: kotlin.collections.Iterable
-  type: call
-  template: Sequence<~T0~> #!!
+  type: type
+  template: Sequence
+  protocol: true
+- id: java.lang.Iterable
+  type: type
+  template: Sequence
+  protocol: true
 
 # Extensions
 
