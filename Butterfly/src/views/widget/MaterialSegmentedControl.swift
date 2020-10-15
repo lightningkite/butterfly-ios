@@ -1,6 +1,8 @@
 
 import UIKit
 
+public typealias UISegmentedControlSquare = MaterialSegmentedControl
+
 @IBDesignable
 public class MaterialSegmentedControl: UISegmentedControl {
     override public init(frame: CGRect) {
@@ -28,6 +30,12 @@ public class MaterialSegmentedControl: UISegmentedControl {
             base.height = max(base.height, 32)
             return base
         }
+    }
+    
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        var base = super.sizeThatFits(size)
+        base.height = max(base.height, 32)
+        return base
     }
 
     public var reselectable: Bool = false
@@ -76,6 +84,10 @@ public class MaterialSegmentedControl: UISegmentedControl {
 
     private var indicatorView: UIView? = nil
 
+    public func materialTabStyle(color: UIColor) {
+        /*No longer needed*/
+        self.indicatorColor = color
+    }
     private func materialTabStyle() {
 
         #if !TARGET_INTERFACE_BUILDER

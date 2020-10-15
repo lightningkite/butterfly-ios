@@ -99,7 +99,7 @@ open class UIButtonWithLayer: UIButton {
         }
     }
 
-    var compoundDrawable: Drawable? {
+    public var compoundDrawable: Drawable? {
         get {
             if let iconLayer = iconLayer {
                 return Drawable { _ in iconLayer }
@@ -116,8 +116,9 @@ open class UIButtonWithLayer: UIButton {
         }
     }
 
-    func setImageResource(_ image: DrawableResource ) {
+    public func setImageResource(_ image: DrawableResource ) {
         self.compoundDrawable = image
+        self.notifyParentSizeChanged()
     }
     
     override open var intrinsicContentSize: CGSize {

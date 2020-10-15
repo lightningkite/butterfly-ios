@@ -1,9 +1,9 @@
 import Foundation
 
 open class Exception: Error {
-    public let message: String
+    public let message: String?
     public let cause: Exception?
-    public init(_ message: String = "?", _ cause: Exception? = nil) {
+    public init(_ message: String? = nil, _ cause: Exception? = nil) {
         self.message = message
         self.cause = cause
     }

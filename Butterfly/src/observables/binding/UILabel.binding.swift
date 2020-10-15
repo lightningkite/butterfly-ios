@@ -10,7 +10,7 @@ public extension UILabel {
             if self.textString != value {
                 self.textString = value
             }
-
+            self.notifyParentSizeChanged()
         }.until(self.removed)
     }
     func bindString(observable: ObservableProperty<String>) -> Void {
@@ -30,7 +30,7 @@ public extension UILabel {
             } else {
                 self.text = nil
             }
-
+            self.notifyParentSizeChanged()
         }.until(self.removed)
     }
     func bindStringRes(observable: ObservableProperty<StringResource?>) -> Void {
@@ -39,9 +39,9 @@ public extension UILabel {
 }
 public extension UIButton {
     func bindStringRes(_ observableReference: ObservableProperty<StringResource?>) {
-        return bindStringRes(observableReference: observableReference)
+        return bindStringRes(observable: observableReference)
     }
-    func bindStringRes(observableReference: ObservableProperty<StringResource?>) {
+    func bindStringRes(observable observableReference: ObservableProperty<StringResource?>) {
         observableReference.subscribeBy { ( value) in
             if let value = value {
                 if self.title(for: .normal) != value {
@@ -50,7 +50,7 @@ public extension UIButton {
             } else {
                 self.textString = ""
             }
-
+            self.notifyParentSizeChanged()
         }.until(self.removed)
     }
 }
@@ -63,7 +63,7 @@ public extension UILabel {
             if self.textString != textValue {
                 self.textString = textValue
             }
-
+            self.notifyParentSizeChanged()
         }.until(self.removed)
     }
     func bindText<T>(observable: ObservableProperty<T>, transform: @escaping (T) -> String) -> Void {

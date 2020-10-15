@@ -1,4 +1,4 @@
-//Stub file made with Butterfly 2 (by Lightning Kite)
+//Stub file made with Khrysalis 2 (by Lightning Kite)
 import Foundation
 import Alamofire
 import AlamofireImage
@@ -7,18 +7,28 @@ import AVKit
 import MapKit
 import EventKitUI
 import DKImagePickerController
-
+import MobileCoreServices
 
 //--- ViewControllerAccess
 public extension ViewControllerAccess {
     //--- ViewControllerAccess image helpers
-    private static let delegateExtension = ExtensionProperty<ViewControllerAccess, ImageDelegate>()
+    private static let imageDelegateExtension = ExtensionProperty<ViewControllerAccess, ImageDelegate>()
+    private static let documentDelegateExtension = ExtensionProperty<ViewControllerAccess, DocumentDelgate>()
     private var imageDelegate: ImageDelegate {
-        if let existing = ViewControllerAccess.delegateExtension.get(self) {
+        if let existing = ViewControllerAccess.imageDelegateExtension.get(self) {
             return existing
         }
         let new = ImageDelegate()
-        ViewControllerAccess.delegateExtension.set(self, new)
+        ViewControllerAccess.imageDelegateExtension.set(self, new)
+        return new
+    }
+
+    private var documentDelegate: DocumentDelgate {
+        if let existing = ViewControllerAccess.documentDelegateExtension.get(self) {
+            return existing
+        }
+        let new = DocumentDelgate()
+        ViewControllerAccess.documentDelegateExtension.set(self, new)
         return new
     }
 
@@ -44,7 +54,8 @@ public extension ViewControllerAccess {
             }
         }
     }
-    
+
+
     //--- ViewControllerAccess.requestVideoGallery((URL)->Unit)
     func requestVideoGallery(callback: @escaping (URL) -> Void) -> Void {
         withLibraryPermission {if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
@@ -101,12 +112,11 @@ public extension ViewControllerAccess {
             }
         }
     }
-    
+
     //--- ViewControllerAccess.requestMediaGallery((URL)->Unit)
     func requestMediaGallery(callback: @escaping (URL) -> Void) -> Void {
-        
-    }
 
+    }
 
     //--- ViewControllerAccess.requestImagesGallery((List<URL>)->Unit)
     public func requestImagesGallery(callback: @escaping (Array<URL>) -> Void) -> Void {
@@ -165,6 +175,64 @@ public extension ViewControllerAccess {
             }
         }
     }
+
+
+    public func getMimeType(uri:URL) -> String? {
+        let pathExtension = uri.pathExtension
+        if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as NSString, nil)?.takeRetainedValue() {
+            if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+                return mimetype as String
+            }
+        }
+        return nil
+    }
+
+    func requestFiles(callback: @escaping (Array<URL>) -> Void){
+        let docDelegate = self.documentDelegate
+        docDelegate.onDocumentsPicked = callback
+        docDelegate.prepareMenu()
+        self.parentViewController.present(docDelegate.documentPicker, animated: true, completion: nil)
+    }
+
+    func requestFile(callback: @escaping (URL) -> Void){
+        let docDelegate = self.documentDelegate
+        docDelegate.onDocumentPicked = callback
+        docDelegate.prepareMenu()
+        self.parentViewController.present(docDelegate.documentPicker, animated: true, completion: nil)
+    }
+
+    func getFileName(uri:URL) -> String? {
+        return uri.lastPathComponent
+    }
+
+    func downloadFile(url:String){
+        let url = URL(string: url)!
+
+        let documentsUrl:URL? =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let destinationFileUrl = documentsUrl?.appendingPathComponent(getFileName(uri: url)!)
+
+        let task = URLSession.shared.downloadTask(with: url) { localURL, urlResponse, error in
+            if let localTemp = localURL, let destination = destinationFileUrl{
+                do {
+                    try FileManager.default.copyItem(at: localTemp, to: destination)
+
+                    let alertDisapperTimeInSeconds = 2.0
+                    let alert = UIAlertController(title: nil, message: "Download Finished", preferredStyle: .actionSheet)
+                    DispatchQueue.main.sync {
+                        self.parentViewController.present(alert, animated: true)
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + alertDisapperTimeInSeconds) {
+                        alert.dismiss(animated: true)
+                    }
+                } catch (let writeError) {
+                    print("Error creating a file \(destination) : \(writeError)")
+                }
+            }
+        }
+
+        task.resume()
+    }
+
     private func withCameraPermission(action: @escaping ()->Void) {
         DispatchQueue.main.async {
             if AVCaptureDevice.authorizationStatus(for: .video) == .authorized {
@@ -198,8 +266,30 @@ public extension ViewControllerAccess {
             }
         }
     }
-    
 }
+
+
+private class DocumentDelgate : NSObject, UIDocumentPickerDelegate, UINavigationControllerDelegate {
+    var documentPicker = UIDocumentPickerViewController(documentTypes: ["public.item"], in: .import)
+    var onDocumentsPicked: ((Array<URL>) -> Void)? = nil
+    var onDocumentPicked: ((URL) -> Void)? = nil
+
+    func prepareMenu(){
+        documentPicker.delegate = self
+    }
+
+    public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        self.onDocumentsPicked?(urls)
+        if let first = urls.first{
+            self.onDocumentPicked?(first)
+        }
+    }
+
+    public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        controller.dismiss(animated: true, completion: nil)
+    }
+}
+
 
 //--- Image helpers
 
@@ -207,7 +297,7 @@ private class ImageDelegate : NSObject, UIImagePickerControllerDelegate, UINavig
 
     var imagePicker = UIImagePickerController()
     var onImagePicked: ((URL)->Void)? = nil
-    
+
     func forVideo(){
         imagePicker.mediaTypes = ["public.movie"]
     }
@@ -315,7 +405,7 @@ fileprivate extension PHAsset {
 
 // save
 extension UIImage {
-    
+
     func saveTemp() -> URL? {
         let id = UUID().uuidString
         let tempDirectoryUrl = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("temp-butterfly-photos-\(id)")

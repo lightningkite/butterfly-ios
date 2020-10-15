@@ -43,13 +43,14 @@ public extension UILabel {
         }
     }
 
-    var maxLines: Int32{
+    var maxLines: Int {
         get{
-            return Int32(self.numberOfLines)
+            return self.numberOfLines
         }
         set(newLineCount){
-            if self.numberOfLines != Int(newLineCount) {
-                self.numberOfLines = Int(newLineCount)
+            if self.numberOfLines != newLineCount {
+                self.numberOfLines = newLineCount
+                self.notifyParentSizeChanged()
             }
         }
     }
@@ -83,6 +84,7 @@ public extension UILabel {
         }
         set(value) {
             textString = value
+            notifyParentSizeChanged()
         }
     }
     var textString: String {
@@ -95,7 +97,7 @@ public extension UILabel {
                 toSet = toSet.uppercased()
             }
             self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * font.pointSize])
-            self.setNeedsLayout()
+            notifyParentSizeChanged()
         }
     }
 
@@ -232,6 +234,19 @@ public extension UIButton {
     }
     @objc
     var textString: String {
+        get {
+            return title(for: .normal) ?? ""
+        }
+        set(value) {
+            var toSet = value
+            if textAllCaps {
+                toSet = toSet.uppercased()
+            }
+            let font = titleLabel?.font
+            self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)]), for: .normal)
+        }
+    }
+    var text: String {
         get {
             return title(for: .normal) ?? ""
         }

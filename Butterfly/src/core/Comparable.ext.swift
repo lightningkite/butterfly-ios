@@ -37,6 +37,9 @@ public func deferComparisonDescending<T, C: Comparable>(_ get: @escaping (T) -> 
 }
 
 public extension Comparable {
+    func compareTo(other: Self) -> Int {
+        return compareTo(other)
+    }
     func compareTo(_ other: Self) -> Int {
         if self > other {
             return ComparisonResult.orderedDescending.rawValue

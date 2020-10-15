@@ -2,8 +2,9 @@
 
 
 - id: kotlin.sequences.Sequence
-  type: call
-  template: LazySequence<~T0~>
+  type: type
+  template: LazySequence
+  protocol: true
 - id: kotlin.sequences.sequenceOf
   type: call
   template: "[~*~]"

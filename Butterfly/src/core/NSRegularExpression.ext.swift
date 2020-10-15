@@ -14,7 +14,7 @@ public extension NSRegularExpression {
         public let groupValues: Array<String>
     }
     
-    public func find(_ string: String) -> Match? {
+    public func find(input string: String) -> Match? {
         guard let match = self.firstMatch(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string)) else { return nil }
  
         var groupValues = Array<String>()
@@ -26,8 +26,8 @@ public extension NSRegularExpression {
         return Match(value: groupValues[0], groupValues: groupValues)
     }
 
-    public func matchEntire(_ input: String) -> Match?{
-        let x = find(input)
+    public func matchEntire(input: String) -> Match?{
+        let x = find(input: input)
         if let x = x {
             if x.value.count == input.count {
                 return x
@@ -45,7 +45,7 @@ public extension NSRegularExpression {
 
 public extension String {
     func matches(regex:NSRegularExpression)->Bool{
-        let result = regex.matchEntire(self)
+        let result = regex.matchEntire(input: self)
         return result != nil
     }
 }

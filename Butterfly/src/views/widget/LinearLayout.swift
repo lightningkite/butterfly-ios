@@ -8,7 +8,6 @@
 
 import UIKit
 
-@available(*, deprecated, message: "Use SimplerStackView instead, which has a different API.")
 open class LinearLayout: UIView {
     
     public var padding: UIEdgeInsets = .zero {
@@ -55,7 +54,7 @@ open class LinearLayout: UIView {
             )
         }
     }
-    func params(
+    public func params(
         sizeX: Int32 = 0,
         sizeY: Int32 = 0,
         marginStart: Int32 = 0,
@@ -81,10 +80,10 @@ open class LinearLayout: UIView {
     
     internal var subviewsWithParams: Array<(UIView, LayoutParams)> = Array()
     
-    public func params(for view: UIView) -> LayoutParams? {
+    public func getParams(for view: UIView) -> LayoutParams? {
         return subviewsWithParams.find { entry in entry.0 === view }?.1
     }
-    public func params(for view: UIView, setTo: LayoutParams) {
+    public func setParams(for view: UIView, setTo: LayoutParams) {
         if let index = (subviewsWithParams.firstIndex { entry in entry.0 === view }) {
             subviewsWithParams[index] = (view, setTo)
             self.setNeedsLayout()
@@ -139,6 +138,12 @@ open class LinearLayout: UIView {
         subview.refreshLifecycle()
     }
     
+    override open func setNeedsLayout() {
+        super.setNeedsLayout()
+        self.notifyParentSizeChanged()
+    }
+
+
     internal var measurements: Dictionary<UIView, CGSize> = Dictionary()
     internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()
     
@@ -262,6 +267,10 @@ open class LinearLayout: UIView {
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         return measure(size, includingWeighted: true)
     }
+    override open var intrinsicContentSize: CGSize {
+        return measure(UIView.layoutFittingCompressedSize, includingWeighted: true)
+    }
+    
     override public func layoutSubviews() {
         super.layoutSubviews()
         

@@ -4,9 +4,9 @@
 
 import Foundation
 
-public func TODO(_ message: String = "") -> Never {
+public func TODO(reason: String = "") -> Never {
     //Throw execption
-    fatalError(message)
+    fatalError("TODO: \(reason)")
 }
 
 public func run<T>(_ action: ()->T)->T {

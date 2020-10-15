@@ -8,7 +8,7 @@ public extension Array {
         return self[index]
     }
 
-    func forEachIndexed(_ action: (_ index:Int, Element) -> Void){
+    func forEachIndexed(action: (_ index:Int, Element) -> Void){
         for index in 0..<self.count{
             action(Int(index), self[index])
         }
@@ -19,10 +19,17 @@ public extension Array {
         copy.append(element)
         return copy
     }
-    func withoutIndex(_ index: Int) -> Array<Element> {
+    func withoutIndex(index: Int) -> Array<Element> {
         var copy = self
         copy.remove(at: index)
         return copy
+    }
+    func sumBy(selector: (Element) -> Int)-> Int{
+        var sum:Int = 0
+        for item in self{
+            sum += selector(item)
+        }
+        return sum
     }
     func sumByDouble(selector: (Element) -> Double)-> Double{
         var sum:Double = 0.0

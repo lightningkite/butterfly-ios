@@ -127,6 +127,12 @@ public extension UIView {
     func setBackgroundColorResource(color: ColorResource) {
         backgroundColor = color
     }
+    func setBackgroundColor(_ color: UIColor) {
+        backgroundColor = color
+    }
+    func setBackgroundColor(_ color: Int64) {
+        backgroundColor = color.asColor()
+    }
 
 
     func postInvalidate() {
@@ -205,12 +211,35 @@ public extension UIView {
         }
         set(value) {
             UIView.isIncludedExt.set(self, value)
+            self.notifyParentSizeChanged()
         }
     }
 
-//    func post(_ action: @escaping () -> Void){
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: action)
-//    }
+    func notifyParentSizeChanged() {
+        if let p = self.superview {
+            p.setNeedsLayout()
+             var current = p
+             while
+                 !(current is LinearLayout) &&
+                     !(current is FrameLayout) &&
+                     !(current is UIScrollView)
+             {
+                 if let su = current.superview {
+                     current = su
+                     if let cell = current as? SizedUICollectionViewCell {
+                         cell.refreshSize()
+                         break
+                     }
+                 } else {
+                     break
+                 }
+             }
+        }
+    }
+
+    func post(_ action: @escaping () -> Void){
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: action)
+    }
 }
 
 extension UIButton {

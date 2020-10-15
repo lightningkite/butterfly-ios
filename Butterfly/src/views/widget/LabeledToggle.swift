@@ -14,6 +14,39 @@ public class LabeledToggle: UIButton {
     public var checkSize: CGSize { fatalError() }
     public var checkPadding: CGFloat = 8
     
+    public var rightSide: Bool = false {
+        didSet {
+            self.setNeedsLayout()
+        }
+    }
+    
+    public var labelView: UILabel { return titleLabel! }
+    
+    public var verticalAlign: Align {
+        get {
+            switch(contentVerticalAlignment){
+            case .center, .fill:
+                return .center
+            case .top:
+                return .start
+            case .bottom:
+                return .end
+            @unknown default:
+                return .center
+            }
+        }
+        set(value){
+            switch(value){
+            case .center, .fill:
+                contentVerticalAlignment = .center
+            case .start:
+                contentVerticalAlignment = .top
+            case .end:
+                contentVerticalAlignment = .bottom
+            }
+        }
+    }
+    
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         var value = super.sizeThatFits(size)
         value.width += checkSize.width + checkPadding
@@ -30,17 +63,32 @@ public class LabeledToggle: UIButton {
     
     public override func layoutSubviews() {
         let inMargins = self.bounds.inset(by: self.contentEdgeInsets)
-        self.titleLabel?.frame = CGRect(inMargins.left + checkPadding + checkSize.width, inMargins.top, inMargins.right, inMargins.bottom)
-        switch(contentVerticalAlignment) {
-        case .center, .fill:
-            self.toggleDisplayView.frame = CGRect(x: inMargins.left, y: inMargins.midY - checkSize.height / 2, width: checkSize.width, height: checkSize.height)
-        case .top:
-            self.toggleDisplayView.frame = CGRect(x: inMargins.left, y: inMargins.top, width: checkSize.width, height: checkSize.height)
-        case .bottom:
-            self.toggleDisplayView.frame = CGRect(x: inMargins.left, y: inMargins.bottom - checkSize.height, width: checkSize.width, height: checkSize.height)
-        @unknown default:
-            break
-            // do nothing
+        if rightSide {
+            self.titleLabel?.frame = CGRect(inMargins.left, inMargins.top, inMargins.right - (checkPadding + checkSize.width), inMargins.bottom)
+            switch(contentVerticalAlignment) {
+            case .center, .fill:
+                self.toggleDisplayView.frame = CGRect(x: inMargins.right - checkSize.width, y: inMargins.midY - checkSize.height / 2, width: checkSize.width, height: checkSize.height)
+            case .top:
+                self.toggleDisplayView.frame = CGRect(x: inMargins.right - checkSize.width, y: inMargins.top, width: checkSize.width, height: checkSize.height)
+            case .bottom:
+                self.toggleDisplayView.frame = CGRect(x: inMargins.right - checkSize.width, y: inMargins.bottom - checkSize.height, width: checkSize.width, height: checkSize.height)
+            @unknown default:
+                break
+                // do nothing
+            }
+        } else {
+            self.titleLabel?.frame = CGRect(inMargins.left + checkPadding + checkSize.width, inMargins.top, inMargins.right, inMargins.bottom)
+            switch(contentVerticalAlignment) {
+            case .center, .fill:
+                self.toggleDisplayView.frame = CGRect(x: inMargins.left, y: inMargins.midY - checkSize.height / 2, width: checkSize.width, height: checkSize.height)
+            case .top:
+                self.toggleDisplayView.frame = CGRect(x: inMargins.left, y: inMargins.top, width: checkSize.width, height: checkSize.height)
+            case .bottom:
+                self.toggleDisplayView.frame = CGRect(x: inMargins.left, y: inMargins.bottom - checkSize.height, width: checkSize.width, height: checkSize.height)
+            @unknown default:
+                break
+                // do nothing
+            }
         }
     }
     

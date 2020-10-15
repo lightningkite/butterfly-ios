@@ -232,9 +232,9 @@ public extension DateAlone {
         return copy().setAddYearAd(value: value)
     }
 
-    func formatYearless(partSize: ClockPartSize) -> String {
+    func formatYearless(clockPartSize: ClockPartSize) -> String {
         var template = "EEEEdMMM"
-        switch partSize {
+        switch clockPartSize {
         case .Full:
             template = "EEEEdMMMM"
         case .Long:

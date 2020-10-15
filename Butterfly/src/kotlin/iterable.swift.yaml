@@ -2,11 +2,21 @@
 
 
 - id: kotlin.collections.Iterable
-  type: call
-  template: Sequence<~T0~> #!!
+  type: type
+  template: Sequence
+  protocol: true
+- id: java.lang.Iterable
+  type: type
+  template: Sequence
+  protocol: true
 
 # Extensions
 
+
+- id: kotlin.collections.contains
+  receiver: kotlin.collections.Iterable
+  type: call
+  template: ~this~.contains(~0~)
 - id: kotlin.collections.drop
   type: call
   template: ~this~.dropFirst(~0~)
@@ -178,12 +188,12 @@
 - id: kotlin.collections.joinToString
   type: call
   suppliedArguments: [transform]
-  template: '~this~.map(~transform~).joined(separator: ", ")'
+  template: '~this~.joined(separator: ", ", transform: ~transform~)'
 
 - id: kotlin.collections.joinToString
   type: call
   suppliedArguments: [separator, transform]
-  template: '~this~.map(~transform~).joined(separator: ~separator~)'
+  template: '~this~.joined(separator: ~separator~, transform: ~transform~)'
 
 - id: kotlin.collections.joinToString
   type: call

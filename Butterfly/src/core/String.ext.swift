@@ -96,6 +96,9 @@ public extension String {
     func remove(sequence:String) -> String{
         return remove(sequence)
     }
+    func remove(char: String) -> String{
+        return remove(char)
+    }
 
     func drop(n:Int) -> String{
         if n >= self.count{

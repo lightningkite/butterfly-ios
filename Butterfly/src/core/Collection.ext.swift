@@ -9,11 +9,11 @@ public extension Collection {
     static func +(first: Self, second: Element) -> Array<Element> {
         return first + [second]
     }
-    func joinToString(_ separator: String, _ conversion: (Element)->String) -> String {
-        return self.map(conversion).joined(separator: separator)
+    func joinToString(_ separator: String, _ transform: (Element)->String) -> String {
+        return self.map(transform).joined(separator: separator)
     }
-    func joinToString(separator: String = ", ", _ conversion: (Element)->String) -> String {
-        return self.map(conversion).joined(separator: separator)
+    func joinToString(separator: String = ", ", transform: (Element)->String) -> String {
+        return self.map(transform).joined(separator: separator)
     }
     func count(predicate: (Element)->Bool) -> Int {
         var current: Int = 0

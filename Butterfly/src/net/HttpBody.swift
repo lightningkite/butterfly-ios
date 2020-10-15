@@ -194,6 +194,14 @@ public func multipartFormBody(parts: HttpBodyPart...) -> HttpBody {
     return multipartFormBody(parts: parts)
 }
 
+//--- multipartFormValuePart(String, String)
+public func multipartFormValuePart(_ name: String, _ value: String) -> HttpBodyPart {
+    return .value(name: name, value: value)
+}
+public func multipartFormValuePart(name: String, value: String) -> HttpBodyPart {
+    return multipartFormValuePart(name, value)
+}
+
 //--- multipartFormFilePart(String, String)
 public func multipartFormFilePart(_ name: String, _ value: String) -> HttpBodyPart {
     return .value(name: name, value: value)

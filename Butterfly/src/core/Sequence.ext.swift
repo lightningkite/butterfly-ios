@@ -50,6 +50,10 @@ public extension Sequence {
         }
         return output
     }
+    
+    func joined(separator: String = ", ", transform: (Element)->String) -> String {
+        return self.map(transform).joined(separator: separator)
+    }
 }
 
 public extension Sequence where Iterator.Element: Hashable {

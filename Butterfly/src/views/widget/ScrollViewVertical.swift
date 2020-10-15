@@ -7,7 +7,6 @@
 
 import UIKit
 
-@available(*, deprecated, message: "Just use a normal scroll view.")
 public class ScrollViewVertical: UIScrollView {
     public var fillViewport = false
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
