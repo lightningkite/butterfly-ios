@@ -209,5 +209,13 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
             )
         }
     }
+
+    override open func viewWillLayoutSubviews(){
+        if self.view.safeAreaInsets != UIView.fullScreenSafeInsetsObs.value {
+            UIView.fullScreenSafeInsetsObs.value = self.view.safeAreaInsets
+            innerView.updateSafeInsets(self.view.safeAreaInsets)
+        }
+        super.viewWillLayoutSubviews()
+    }
 }
 
