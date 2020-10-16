@@ -3,7 +3,7 @@
 
 - id: kotlin.sequences.Sequence
   type: type
-  template: LazySequence
+  template: Sequence
   protocol: true
 - id: kotlin.sequences.sequenceOf
   type: call
