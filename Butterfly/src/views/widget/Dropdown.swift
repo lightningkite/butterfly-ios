@@ -10,7 +10,7 @@ import UIKit
 
 
 @IBDesignable
-public class Dropdown : UIControl {
+public class Dropdown : UIButton {
     public let pickerView = UIPickerView(frame: CGRect.zero)
     public let toolbar: UIToolbar = {
         let toolBar = UIToolbar()
@@ -22,11 +22,6 @@ public class Dropdown : UIControl {
         return toolBar
     }()
     private weak var currentView: UIView?
-    public var contentEdgeInsets: UIEdgeInsets = .zero {
-        didSet {
-            setNeedsLayout()
-        }
-    }
 
     override public init(frame: CGRect) {
         super.init(frame: frame)

@@ -51,6 +51,11 @@ public class LabeledToggle: UIButton {
         var value = super.sizeThatFits(size)
         value.width += checkSize.width + checkPadding
         value.height = max(value.height, checkSize.height)
+        if let titleLabel = titleLabel {
+            var smallerSize = size
+            smallerSize.width -= checkSize.width + checkPadding
+            value.height = max(value.height, titleLabel.sizeThatFits(smallerSize).height + contentEdgeInsets.top + contentEdgeInsets.bottom)
+        }
         return value
     }
     
@@ -58,6 +63,9 @@ public class LabeledToggle: UIButton {
         var value = super.intrinsicContentSize
         value.width += checkSize.width + checkPadding
         value.height = max(value.height, checkSize.height)
+        if let titleLabel = titleLabel {
+            value.height = max(value.height, titleLabel.intrinsicContentSize.height + contentEdgeInsets.top + contentEdgeInsets.bottom)
+        }
         return value
     }
     
