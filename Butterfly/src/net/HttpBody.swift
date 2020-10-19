@@ -115,14 +115,33 @@ fileprivate extension UIImage {
     }
 }
 public extension Image {
-    func toHttpBody(maxDimension: Int = 2048) -> Single<HttpBody> {
+    func toHttpBody(maxDimension: Int = 2048, maxBytes:Int = 10_000_000) -> Single<HttpBody> {
         return self.load().flatMap { bmp in
             return Single.create { (em: SingleEmitter<HttpBody>) in
-                let small = bmp.size.width * bmp.scale <= CGFloat(maxDimension) && bmp.size.height * bmp.scale <= CGFloat(maxDimension) ? bmp : bmp.resize(maxDimension: maxDimension)
-                if let rep = small?.pngData() {
-                    em.onSuccess(HttpBody(mediaType: "image/png", data: rep))
+                
+                let scaledBmp = bmp.size.width * bmp.scale <= CGFloat(maxDimension) && bmp.size.height * bmp.scale <= CGFloat(maxDimension) ? bmp : bmp.resize(maxDimension: maxDimension)
+                var quality:CGFloat = 1.0
+                var finalJpg:Data? = nil
+                var failed = false
+                while (finalJpg == nil && !failed){
+                    if let jpg = scaledBmp?.jpegData(compressionQuality: quality){
+                        if jpg.count > maxBytes {
+                            quality -= 0.05
+                            if quality <= 0.0{
+                                failed = true
+                            }
+                        }else{
+                            finalJpg = jpg
+                        }
+                    } else {
+                        failed = true
+                    }
+                }
+                
+                if let rep = finalJpg {
+                    em.onSuccess(HttpBody(mediaType: "image/jpeg", data: rep))
                 } else {
-                    em.onError(IllegalArgumentException("Could not turn image into a PNG."))
+                    em.onError(IllegalArgumentException("Could not turn image into a JPEG."))
                 }
             }
         }
