@@ -6,6 +6,10 @@
   type: type
   template: URL
 
+- id: android.net.Uri.lastPathSegment
+  type: get
+  template: '~this~.absoluteString.substringAfterLast(delimiter: "/")'
+
 - id: android.graphics.BitmapFactory.decodeByteArray
   type: call
   template:
