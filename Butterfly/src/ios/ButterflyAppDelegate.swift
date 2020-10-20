@@ -43,9 +43,7 @@ open class ButterflyAppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
-        UIView.useLayoutSubviewsLambda()
-        
+                
         // Override point for customization after application launch.
         if let keychainAccessGroup = keychainAccessGroup {
             SecurePreferences.setKeychainAccessGroup(keychainAccessGroup)

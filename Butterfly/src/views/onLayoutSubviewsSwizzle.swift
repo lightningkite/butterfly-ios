@@ -13,83 +13,21 @@ import RxRelay
 
 extension UIView {
 
-    private static var extOngoing = ExtensionProperty<UIView, Bool>()
-    private static var ext = ExtensionProperty<UIView, PublishSubject<UIView>>()
-    var onLayoutSubviewsOngoing: Bool {
-        get {
-            return UIView.extOngoing.get(self) ?? false
-        }
-        set(value) {
-            UIView.extOngoing.set(self, value)
-        }
-    }
-    var onLayoutSubviews: PublishSubject<UIView> {
-        get {
-            if let current = UIView.ext.get(self) {
-                return current
-            }
-            let new = PublishSubject<UIView>()
-            new.add { view in
-                return false
-            }
-            UIView.ext.set(self, new)
-            return new
-        }
-        set(value) {
-            UIView.ext.set(self, value)
-        }
-    }
-
     public func addOnLayoutSubviews(action:@escaping ()->Void) {
         action()
-        let _ = onLayoutSubviews.subscribeBy(onNext: { [weak self] view in
+        let observer = self.layer.observe(\.bounds) { object, _ in
             action()
-        })
+        }
+        self.removed.call(DisposableLambda { observer.invalidate() })
     }
-
-
-
-    private static let theSwizzler: Void = {
-        let instance = UIView(frame: .zero)
-        let aClass: AnyClass! = object_getClass(instance)
-        let originalMethod = class_getInstanceMethod(aClass, #selector(layoutSubviews))
-        let swizzledMethod = class_getInstanceMethod(aClass, #selector(swizzled_layoutSubviews))
-        if let originalMethod = originalMethod, let swizzledMethod = swizzledMethod {
-            // switch implementation..
-            method_exchangeImplementations(originalMethod, swizzledMethod)
+    public var onLayoutSubviews: Observable<UIView> {
+        let subj = PublishSubject<UIView>()
+        let observer = self.layer.observe(\.bounds) { [weak self] object, _ in
+            if let self = self {
+                subj.onNext(self)
+            }
         }
-    }()
-    public static func useLayoutSubviewsLambda() {
-        _ = theSwizzler
-        _ = UIButton.theSwizzler
-    }
-    @objc func swizzled_layoutSubviews(){
-        self.swizzled_layoutSubviews()
-        if !onLayoutSubviewsOngoing {
-            onLayoutSubviewsOngoing = true
-            self.onLayoutSubviews.invokeAll(self)
-            onLayoutSubviewsOngoing = false
-        }
-    }
-}
-
-extension UIButton {
-    fileprivate static let theSwizzler: Void = {
-        let instance = UIButton(frame: .zero)
-        let aClass: AnyClass! = object_getClass(instance)
-        let originalMethod = class_getInstanceMethod(aClass, #selector(layoutSubviews))
-        let swizzledMethod = class_getInstanceMethod(aClass, #selector(swizzled_layoutSubviewsButton))
-        if let originalMethod = originalMethod, let swizzledMethod = swizzledMethod {
-            // switch implementation..
-            method_exchangeImplementations(originalMethod, swizzledMethod)
-        }
-    }()
-    @objc func swizzled_layoutSubviewsButton(){
-        self.swizzled_layoutSubviewsButton()
-        if !onLayoutSubviewsOngoing {
-            onLayoutSubviewsOngoing = true
-            self.onLayoutSubviews.invokeAll(self)
-            onLayoutSubviewsOngoing = false
-        }
+        self.removed.call(DisposableLambda { observer.invalidate() })
+        return subj
     }
 }
