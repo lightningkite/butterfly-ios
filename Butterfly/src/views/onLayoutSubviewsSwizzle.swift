@@ -22,12 +22,11 @@ extension UIView {
     }
     public var onLayoutSubviews: Observable<UIView> {
         let subj = PublishSubject<UIView>()
-        let observer = self.layer.observe(\.bounds) { [weak self] object, _ in
+        addOnLayoutSubviews { [weak self] in
             if let self = self {
                 subj.onNext(self)
             }
         }
-        self.removed.call(DisposableLambda { observer.invalidate() })
         return subj
     }
 }

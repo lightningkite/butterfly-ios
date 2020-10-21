@@ -226,7 +226,7 @@ public extension UIView {
              {
                  if let su = current.superview {
                      current = su
-                     if let cell = current as? SizedUICollectionViewCell {
+                     if let cell = current as? ObsUICollectionViewCell {
                          cell.refreshSize()
                          break
                      }

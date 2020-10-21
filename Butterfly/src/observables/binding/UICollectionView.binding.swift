@@ -49,11 +49,20 @@ public enum QuickCompositionalLayout {
 
 //--- RecyclerView.whenScrolledToEnd(()->Unit)
 public extension UICollectionView {
+    func scrollToItemSafe(at: IndexPath, position: ScrollPosition = .centeredVertically, animated: Bool = false) {
+        if at.section < self.numberOfSections, at.item < self.numberOfItems(inSection: at.section) {
+            scrollToItem(at: at, at: position, animated: animated)
+        }
+    }
+    private static let refreshingExt = ExtensionProperty<UICollectionView, Bool>()
     func refreshSizes(){
+        if UICollectionView.refreshingExt.get(self) == true { return }
+        UICollectionView.refreshingExt.set(self, true)
         post {
             self.retainPositionTargetIndex {
                 self.collectionViewLayout.invalidateLayout()
             }
+            UICollectionView.refreshingExt.set(self, false)
         }
     }
     func refreshData(){
@@ -323,6 +332,7 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
             collectionView.register(ObsUICollectionViewCell.self, forCellWithReuseIdentifier: String(type))
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(type), for: indexPath) as! ObsUICollectionViewCell
+        cell.sizeCap.width = collectionView.frame.size.width
         if collectionView.reverseDirection {
             cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         } else {
@@ -385,6 +395,9 @@ class ObsUICollectionViewCell: UICollectionViewCell {
     var obs: Any?
     var resizeEnabled = false
     
+    var sizeCap = CGSize(width: 0, height: 0)
+    var vertical = true
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -409,11 +422,24 @@ class ObsUICollectionViewCell: UICollectionViewCell {
     }
     
     override func systemLayoutSizeFitting(_ targetSize: CGSize, withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority, verticalFittingPriority: UILayoutPriority) -> CGSize {
+        let fixedTargetSize = CGSize(
+            width: targetSize.width == 0 ? sizeCap.width : targetSize.width,
+            height: targetSize.height == 0 ? sizeCap.height : targetSize.height
+        )
         if let view = self.contentView.subviews.first {
-            view.setNeedsLayout()
-            view.layoutSubviews()
-            let size = view.sizeThatFits(CGSize(width: targetSize.width, height: 10000))
-            return size
+            if resizeEnabled {
+                resizeEnabled = false
+                view.setNeedsLayout()
+                view.layoutSubviews()
+                resizeEnabled = true
+            }
+            if vertical {
+                let size = view.sizeThatFits(CGSize(width: fixedTargetSize.width, height: 10000))
+                return size
+            } else {
+                let size = view.sizeThatFits(CGSize(width: 10000, height: fixedTargetSize.height))
+                return size
+            }
         }
         return CGSize(width: 50, height: 50)
     }
@@ -431,65 +457,19 @@ class ObsUICollectionViewCell: UICollectionViewCell {
             super.transform = value
         }
     }
-
-}
-
-class SizedUICollectionViewCell: ObsUICollectionViewCell {
-    var isVertical = true
-
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.contentView.clipsToBounds = true
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        self.contentView.clipsToBounds = true
-    }
-
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        contentView.frame = self.bounds
-        for child in contentView.subviews {
-            child.translatesAutoresizingMaskIntoConstraints = true
-            child.frame = contentView.bounds
-            child.layoutSubviews()
-        }
-    }
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        var outSize = CGSize.zero
-        layoutIfNeeded()
-        for child in contentView.subviews {
-            let childSize = child.sizeThatFits(size)
-            outSize.width = max(outSize.width, childSize.width)
-            outSize.height = max(outSize.height, childSize.height)
-        }
-        outSize.width = max(outSize.width, 20)
-        outSize.height = max(outSize.height, 20)
-        if isVertical {
-            outSize.width = size.width
-        } else {
-            outSize.height = size.height
-        }
-        return outSize
-    }
     public func refreshSize() {
         guard resizeEnabled else { return }
+        resizeEnabled = false
+        let measured = systemLayoutSizeFitting(sizeCap, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        guard abs(measured.height - self.frame.size.height) < 2 else { return }
         var current = self.superview
         while current != nil && !(current is UICollectionView) {
             current = current?.superview
         }
         if let current = current as? UICollectionView {
-            if let dataSource = current.dataSource,
-                dataSource.collectionView(current, numberOfItemsInSection: 0) == current.numberOfItems(inSection: 0)
-            {
-//                UIView.performWithoutAnimation {
-                    current.performBatchUpdates({}, completion: nil)
-//                }
-            } else {
-                current.reloadData()
-            }
+            current.refreshSizes()
         }
+        resizeEnabled = true
     }
 }
 
