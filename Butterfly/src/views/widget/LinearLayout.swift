@@ -9,15 +9,27 @@
 import UIKit
 
 open class LinearLayout: UIView {
+    private var readyToConstrain = false
     
-    public var padding: UIEdgeInsets = .zero {
+    @IBInspectable
+    public var automaticConstraintPriority: Int = 900
+    
+    public var orientation: Dimension = .x {
         didSet {
-            self.setNeedsLayout()
+            calculateOrthogonalConstraints()
+            recalculateConstraints()
+            updateContentConstraints()
+        }
+    }
+    public var padding: UIEdgeInsets {
+        get { return layoutMargins }
+        set(value){
+            layoutMargins = value
         }
     }
     public var gravity: AlignPair = .topLeft {
         didSet {
-            self.setNeedsLayout()
+            updateContentConstraints()
         }
     }
     
@@ -85,15 +97,16 @@ open class LinearLayout: UIView {
     }
     public func setParams(for view: UIView, setTo: LayoutParams) {
         if let index = (subviewsWithParams.firstIndex { entry in entry.0 === view }) {
-            subviewsWithParams[index] = (view, setTo)
-            self.setNeedsLayout()
+            let pair = (view, setTo)
+            subviewsWithParams[index] = pair
+            recalculateConstraints()
+            calculateOrthogonalConstraints()
         }
     }
     
     public func addView(_ view: UIView, _ params: LayoutParams) {
-        addSubview(view)
         subviewsWithParams.append((view, params))
-        setNeedsLayout()
+        addSubview(view)
     }
     
     public func removeView(_ view: UIView) {
@@ -105,9 +118,8 @@ open class LinearLayout: UIView {
     }
     
     public func addSubview(_ view: UIView, _ params: LayoutParams) {
-        addSubview(view)
         subviewsWithParams.append((view, params))
-        setNeedsLayout()
+        addSubview(view)
     }
     public func addSubview(
         _ view: UIView,
@@ -118,17 +130,13 @@ open class LinearLayout: UIView {
         gravity: AlignPair = .center,
         weight: CGFloat = 0
     ) {
-        addSubview(view)
         let params = LayoutParams(minimumSize: minimumSize, size: size, margin: margin, padding:padding, gravity: gravity, weight: weight)
         subviewsWithParams.append((view, params))
-        setNeedsLayout()
+        addSubview(view)
     }
     
     public override func willRemoveSubview(_ subview: UIView) {
         subviewsWithParams.removeAll { it in it.0 == subview }
-        measurements.removeValue(forKey: subview)
-        childBounds.removeValue(forKey: subview)
-        setNeedsLayout()
         post {
             subview.refreshLifecycle()
         }
@@ -136,253 +144,306 @@ open class LinearLayout: UIView {
     
     public override func didAddSubview(_ subview: UIView) {
         subview.refreshLifecycle()
-    }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
-    }
-
-
-    internal var measurements: Dictionary<UIView, CGSize> = Dictionary()
-    internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()
-    
-    public var orientation: Dimension = .x
-    private func makePoint(primary: CGFloat, secondary: CGFloat) -> CGPoint {
-        switch orientation {
-        case .x:
-            return CGPoint(x: primary, y: secondary)
-        case .y:
-            return CGPoint(x: secondary, y: primary)
-        }
-    }
-    private func makeSize(primary: CGFloat, secondary: CGFloat) -> CGSize {
-        switch orientation {
-        case .x:
-            return CGSize(width: primary, height: secondary)
-        case .y:
-            return CGSize(width: secondary, height: primary)
-        }
-    }
-    
-    private func measure(_ size: CGSize, includingWeighted: Bool = false) -> CGSize {
-        var result = CGSize.zero
-        
-        result[orientation] += padding.start(orientation)
-        var weightTotal: CGFloat = 0
-        
-        for (subview, params) in subviewsWithParams {
-            guard subview.includeInLayout else { continue }
-            weightTotal += params.weight
-            let combined = params.combined
-            if params.weight != 0 {
-                result[orientation] += combined.start(orientation)
-                result[orientation] += combined.end(orientation)
-                continue
-            }
-            let subMaximumsA = makeSize(
-                primary: size[orientation] - result[orientation] - combined.total(orientation),
-                secondary: size[orientation.other] - combined.total(orientation.other) - padding.total(orientation.other)
-            )
-            let subMaximums = CGSize(
-                width: max(
-                    params.minimumSize.width,
-                    params.size.width == 0 ? subMaximumsA.width : params.size.width
-                ),
-                height: max(
-                    params.minimumSize.height,
-                    params.size.height == 0 ? subMaximumsA.height : params.size.height
-                )
-            )
-            let viewMeasured = subview.sizeThatFits(subMaximums)
-            let viewSize = CGSize(
-                width: max(
-                    params.minimumSize.width,
-                    params.size.width == 0 ? viewMeasured.width : params.size.width
-                ),
-                height: max(
-                    params.minimumSize.height,
-                    params.size.height == 0 ? viewMeasured.height : params.size.height
-                )
-            )
-            measurements[subview] = viewSize
-            result[orientation] += combined.start(orientation)
-            result[orientation] += viewSize[orientation]
-            result[orientation] += combined.end(orientation)
+        if let pair = subviewsWithParams.find({ (pair) -> Bool in pair.0 === subview }) {
+            pair.0.translatesAutoresizingMaskIntoConstraints = false
             
-            result[orientation.other] = max(
-                result[orientation.other],
-                viewSize[orientation.other] +
-                    combined.total(orientation.other) +
-                    padding.total(orientation.other)
-            )
-        }
-        
-        result[orientation] += padding.end(orientation)
-        
-        let remainingArea = size[orientation] - result[orientation]
-        
-        for (subview, params) in subviewsWithParams {
-            if params.weight == 0 { continue }
-            let combined = params.combined
-            let subMaximumsA = makeSize(
-                primary: remainingArea * params.weight / weightTotal,
-                secondary: size[orientation.other] - combined.total(orientation.other) - padding.total(orientation.other)
-            )
-            let subMaximums = CGSize(
-                width: max(
-                    params.minimumSize.width,
-                    params.size.width == 0 ? subMaximumsA.width : params.size.width
-                ),
-                height: max(
-                    params.minimumSize.height,
-                    params.size.height == 0 ? subMaximumsA.height : params.size.height
-                )
-            )
-            let viewMeasured = subview.sizeThatFits(subMaximums)
-            let viewSize = CGSize(
-                width: max(
-                    params.minimumSize.width,
-                    params.size.width == 0 ? viewMeasured.width : params.size.width
-                ),
-                height: max(
-                    params.minimumSize.height,
-                    params.size.height == 0 ? viewMeasured.height : params.size.height
-                )
-            )
-            measurements[subview] = viewSize
-            result[orientation.other] = max(
-                result[orientation.other],
-                viewSize[orientation.other] +
-                    combined.total(orientation.other) +
-                    padding.total(orientation.other)
-            )
-            if includingWeighted {
-                result[orientation] += viewSize[orientation]
-            }
-        }
-        
-        return result
-    }
-    override public func sizeThatFits(_ size: CGSize) -> CGSize {
-        return measure(size, includingWeighted: true)
-    }
-    override open var intrinsicContentSize: CGSize {
-        return measure(UIView.layoutFittingCompressedSize, includingWeighted: true)
-    }
-    
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        
-        var position: CGFloat = 0
-        let size = self.bounds.size
-        let requiredSize = measure(size, includingWeighted: false)
-        let weightSum = subviewsWithParams.filter { $0.0.includeInLayout }.reduce(0) { (acc, pair) in acc + pair.1.weight }
-        let remainingPrimarySize = size[orientation] - requiredSize[orientation]
-        if weightSum == 0 {
-            switch gravity[orientation] {
-            case .start:
-                position = 0
-            case .center:
-                position = remainingPrimarySize / 2
-            case .end:
-                position = remainingPrimarySize
-            case .fill:
-                position = remainingPrimarySize / 2
-            }
-        }
-        
-        position += padding.start(orientation)
-        for (subview, params) in subviewsWithParams {
-            guard subview.includeInLayout else { continue }
-            let combined = params.combined
-            position += combined.start(orientation)
-            let viewSize = measurements[subview]!
-            
-            let primarySize: CGFloat
-            if params.weight == 0 {
-                primarySize = viewSize[orientation]
-            } else {
-                primarySize = (params.weight / weightSum) * remainingPrimarySize
-            }
-            
-            let shift: CGFloat
-            let secondarySize: CGFloat
-            let gravityComponent: Align = params.gravity[orientation.other]
-            let secondaryCap = size[orientation.other] - combined.total(orientation.other) - padding.total(orientation.other)
-            switch gravityComponent {
-            case .start:
-                shift = combined.start(orientation.other) + padding.start(orientation.other)
-                secondarySize = min(viewSize[orientation.other], secondaryCap)
-            case .center:
-                shift = (size[orientation.other] - viewSize[orientation.other] - padding.total(orientation.other)) / 2 - combined.start(orientation.other) + combined.end(orientation.other) + padding.start(orientation.other)
-                secondarySize = min(viewSize[orientation.other], secondaryCap)
-            case .end:
-                shift = size[orientation.other] - viewSize[orientation.other] - combined.end(orientation.other) - padding.end(orientation.other)
-                secondarySize = min(viewSize[orientation.other], secondaryCap)
-            case .fill:
-                shift = combined.start(orientation.other) + padding.start(orientation.other)
-                secondarySize = secondaryCap
-            }
-            
-            subview.frame = CGRect(
-                origin: makePoint(primary: position, secondary: shift),
-                size: makeSize(primary: primarySize, secondary: secondarySize)
-            )
-            childBounds[subview] = CGRect(
-                origin: makePoint(primary: position - params.padding.start(orientation), secondary: params.padding.start(orientation.other)),
-                size: makeSize(primary: primarySize + params.padding.total(orientation), secondary: size[orientation.other] - params.padding.total(orientation.other))
-            )
-            subview.layoutSubviews()
-            
-            position += primarySize
-            position += combined.end(orientation)
-        }
-        position += padding.end(orientation)
-    }
-    weak var lastHit: UIView?
-    var lastPoint: CGPoint?
-    override open func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        lastPoint = point
-        for key in subviews.reversed() {
-            guard !key.isHidden, key.alpha > 0.1, key.includeInLayout else { continue }
-            guard let value = childBounds[key] else { continue }
-            if value.contains(point) {
-                lastHit = key
-                setNeedsDisplay()
-                if let sub = key.hitTest(key.convert(point, from: self), with: event) {
-                    return sub
+            if readyToConstrain {
+                addOrthogonalConstraintForSubview(pair)
+                if subview === subviews.last {
+                    addConstraintForSubview(pair)
+                    handleFillConstraint()
                 } else {
-                    return key
+                    recalculateConstraints()
                 }
             }
         }
-        return nil
     }
-    var debugDraw = LayoutSettings.debugDraw
-//    override open func draw(_ rect: CGRect) {
-//        super.draw(rect)
-//        if debugDraw {
-//            let ctx = UIGraphicsGetCurrentContext()
-//            ctx?.saveGState()
-//            ctx?.clear(rect)
-//            for (key, value) in childBounds {
-//                ctx?.setLineWidth(2)
-//                ctx?.setFillColor(UIColor.clear.cgColor)
-//                if key === lastHit {
-//                    ctx?.setStrokeColor(UIColor.green.cgColor)
-//                } else {
-//                    ctx?.setStrokeColor(UIColor.blue.cgColor)
-//                }
-//                UIBezierPath(rect: value.insetBy(dx: 1, dy: 1)).stroke()
-//            }
-//            if let lastPoint = lastPoint {
-//                ctx?.setLineWidth(2)
-//                ctx?.setFillColor(UIColor.clear.cgColor)
-//                ctx?.setStrokeColor(UIColor.red.cgColor)
-//                UIBezierPath(ovalIn: CGRect(x: lastPoint.x, y: lastPoint.y, width: 1, height: 1)).stroke()
-//            }
-//            ctx?.restoreGState()
-//        }
-//    }
+    
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        padding = .zero
+        commonInit()
+    }
+
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        padding = .zero
+        commonInit()
+    }
+    
+    private var huggingXConstraints: Array<NSLayoutConstraint> = []
+    private var compressionXConstraints: Array<NSLayoutConstraint> = []
+    private var huggingYConstraints: Array<NSLayoutConstraint> = []
+    private var compressionYConstraints: Array<NSLayoutConstraint> = []
+    open override func setContentCompressionResistancePriority(_ priority: UILayoutPriority, for axis: NSLayoutConstraint.Axis) {
+        super.setContentCompressionResistancePriority(priority, for: axis)
+        for c in (axis == .horizontal ? compressionXConstraints : compressionYConstraints) {
+            c.priority = priority
+        }
+        if axis == orientation.other.axis {
+            calculateOrthogonalConstraints()
+        }
+    }
+    open override func setContentHuggingPriority(_ priority: UILayoutPriority, for axis: NSLayoutConstraint.Axis) {
+        super.setContentHuggingPriority(priority, for: axis)
+        for c in (axis == .horizontal ? huggingXConstraints : huggingYConstraints) {
+            c.priority = priority
+        }
+        if axis == orientation.other.axis {
+            calculateOrthogonalConstraints()
+        }
+    }
+    
+    private var internalGuide: UILayoutGuide = UILayoutGuide()
+    func commonInit(){
+        let justShort = UILayoutPriority(rawValue: 249)
+        setContentHuggingPriority(justShort, for: .vertical)
+        setContentHuggingPriority(justShort, for: .horizontal)
+        addLayoutGuide(internalGuide)
+        for c in [
+            layoutMarginsGuide.widthAnchor.constraint(equalTo: internalGuide.widthAnchor)
+        ] {
+            c.priority = contentHuggingPriority(for: .horizontal)
+            c.isActive = true
+            huggingXConstraints.append(c)
+        }
+        for c in [
+            layoutMarginsGuide.heightAnchor.constraint(equalTo: internalGuide.heightAnchor)
+        ] {
+            c.priority = contentHuggingPriority(for: .vertical)
+            c.isActive = true
+            huggingYConstraints.append(c)
+        }
+        for c in [
+            layoutMarginsGuide.widthAnchor.constraint(greaterThanOrEqualTo: internalGuide.widthAnchor)
+        ] {
+            c.priority = contentCompressionResistancePriority(for: .horizontal)
+            c.isActive = true
+            compressionXConstraints.append(c)
+        }
+        for c in [
+            layoutMarginsGuide.heightAnchor.constraint(greaterThanOrEqualTo: internalGuide.heightAnchor)
+        ] {
+            c.priority = contentCompressionResistancePriority(for: .vertical)
+            c.isActive = true
+            compressionYConstraints.append(c)
+        }
+        readyToConstrain = true
+        recalculateConstraints()
+        updateContentConstraints()
+    }
+    private var contentConstraints: Array<NSLayoutConstraint> = []
+    func updateContentConstraints(){
+        for c in contentConstraints {
+            c.isActive = false
+        }
+        contentConstraints = []
+        if orientation == .y {
+            switch(gravity.vertical){
+            case .start:
+                contentConstraints = [
+                    internalGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor)
+                ]
+            case .center:
+                contentConstraints = [
+                    internalGuide.centerYAnchor.constraint(equalTo: layoutMarginsGuide.centerYAnchor)
+                ]
+            case .end:
+                contentConstraints = [
+                    internalGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor)
+                ]
+            case .fill:
+                contentConstraints = [
+                    internalGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
+                    internalGuide.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor)
+                ]
+            }
+            contentConstraints.append(
+                internalGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor)
+            )
+        } else {
+            switch(gravity.horizontal){
+            case .start:
+                contentConstraints = [
+                    internalGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor)
+                ]
+            case .center:
+                contentConstraints = [
+                    internalGuide.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor)
+                ]
+            case .end:
+                contentConstraints = [
+                    internalGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
+                ]
+            case .fill:
+                contentConstraints = [
+                    internalGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
+                    internalGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
+                ]
+            }
+            contentConstraints.append(
+                internalGuide.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor)
+            )
+        }
+        for c in contentConstraints {
+            c.isActive = true
+        }
+    }
+    
+    private var orthogonalConstraints: Array<NSLayoutConstraint> = []
+    private func calculateOrthogonalConstraints(){
+        for c in orthogonalConstraints {
+            c.isActive = false
+        }
+        orthogonalConstraints = []
+        lastView = nil
+        for s in subviewsWithParams {
+            addOrthogonalConstraintForSubview(s)
+        }
+    }
+    private func addOrthogonalConstraintForSubview(_ pair: (UIView, LayoutParams)) {
+        
+        //orthogonal constraints
+        var constraints: Array<NSLayoutConstraint> = []
+        let startMargin = pair.1.margin.start(orientation.other) + pair.1.padding.start(orientation.other)
+        let endMargin = pair.1.margin.end(orientation.other) + pair.1.padding.end(orientation.other)
+        switch pair.1.gravity[orientation.other] {
+        case .start:
+            constraints.append(pair.0.startAnchor(orientation.other).constraintD(equalTo: layoutMarginsGuide.startAnchor(orientation.other), constant: startMargin))
+        case .center:
+            constraints.append(pair.0.centerAnchor(orientation.other).constraintD(equalTo: layoutMarginsGuide.centerAnchor(orientation.other), constant: 0))
+        case .end:
+            constraints.append(layoutMarginsGuide.endAnchor(orientation.other).constraintD(equalTo: pair.0.endAnchor(orientation.other), constant: endMargin))
+        case .fill:
+            constraints.append(pair.0.startAnchor(orientation.other).constraintD(equalTo: layoutMarginsGuide.startAnchor(orientation.other), constant: startMargin))
+            constraints.append(layoutMarginsGuide.endAnchor(orientation.other).constraintD(equalTo: pair.0.endAnchor(orientation.other), constant: endMargin))
+        }
+        for cons in constraints {
+            cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
+            cons.isActive = true
+            orthogonalConstraints.append(cons)
+        }
+        ({() in
+            let cons = layoutMarginsGuide.sizeAnchor(orientation.other).constraint(greaterThanOrEqualTo: pair.0.sizeAnchor(orientation.other), constant: startMargin + endMargin)
+            cons.priority = contentCompressionResistancePriority(for: orientation.other.axis)
+            cons.isActive = true
+            orthogonalConstraints.append(cons)
+        })()
+        ({() in
+            let cons = layoutMarginsGuide.sizeAnchor(orientation.other).constraint(lessThanOrEqualTo: pair.0.sizeAnchor(orientation.other), constant: startMargin + endMargin)
+            cons.priority = contentHuggingPriority(for: orientation.other.axis)
+            cons.isActive = true
+            orthogonalConstraints.append(cons)
+        })()
+        
+        if pair.1.size.width >= 0 && (orientation != .x || pair.1.weight == 0) {
+            let cons = pair.0.widthAnchor.constraint(equalToConstant: pair.1.size.width)
+            cons.isActive = true
+            orthogonalConstraints.append(cons)
+        }
+        if pair.1.size.height >= 0 && (orientation != .y || pair.1.weight == 0) {
+            let cons = pair.0.heightAnchor.constraint(equalToConstant: pair.1.size.height)
+            cons.isActive = true
+            orthogonalConstraints.append(cons)
+        }
+        if pair.1.minimumSize.width >= 0 {
+            let cons = pair.0.widthAnchor.constraint(greaterThanOrEqualToConstant: pair.1.minimumSize.width)
+            cons.priority = contentCompressionResistancePriority(for: .horizontal)
+            cons.isActive = true
+            orthogonalConstraints.append(cons)
+        }
+        if pair.1.minimumSize.height >= 0 {
+            let cons = pair.0.heightAnchor.constraint(greaterThanOrEqualToConstant: pair.1.minimumSize.width)
+            cons.priority = contentCompressionResistancePriority(for: .vertical)
+            cons.isActive = true
+            orthogonalConstraints.append(cons)
+        }
+    }
+
+    private var lastView: (UIView, LayoutParams)?
+    private var lastConstraint: NSLayoutConstraint?
+    private var myConstraints: Array<NSLayoutConstraint> = []
+    private var lastWeightedView: (UIView, LayoutParams)?
+
+    private func addConstraintForSubview(_ viewWithParams: (UIView, LayoutParams)) {
+        let view = viewWithParams.0
+        let params = viewWithParams.1
+        
+        //weight
+        if params.weight > 0 {
+            let none = UILayoutPriority(rawValue: Float(10))
+            if orientation == .y {
+                view.setContentHuggingPriority(none, for: .vertical)
+                view.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            } else {
+                view.setContentHuggingPriority(none, for: .horizontal)
+                view.setContentHuggingPriority(.defaultLow, for: .vertical)
+            }
+        } else {
+            view.setContentHuggingPriority(.defaultLow, for: .horizontal)
+            view.setContentHuggingPriority(.defaultLow, for: .vertical)
+        }
+    
+        guard view.includeInLayout else { return }
+        if let lastView = lastView {
+            let margin = params.margin.start(orientation) + params.padding.start(orientation) + lastView.1.margin.end(orientation) + lastView.1.padding.end(orientation)
+            let cons = view.startAnchor(orientation).constraintD(equalTo: lastView.0.endAnchor(orientation), constant: margin)
+            cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
+            cons.isActive = true
+            myConstraints.append(cons)
+        } else {
+            let margin = params.margin.start(orientation) + params.padding.start(orientation)
+            let cons = view.startAnchor(orientation).constraintD(equalTo: internalGuide.startAnchor(orientation), constant: margin)
+            cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
+            cons.isActive = true
+            myConstraints.append(cons)
+        }
+        if params.weight > 0 {
+            if let lastWeightedView = lastWeightedView {
+                let cons = view.sizeAnchor(orientation).constraint(equalTo: lastWeightedView.0.sizeAnchor(orientation), multiplier: params.weight / lastWeightedView.1.weight)
+                cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
+                cons.isActive = true
+                myConstraints.append(cons)
+            }
+            self.lastWeightedView = viewWithParams
+        }
+        self.lastView = viewWithParams
+    }
+
+    private func handleFillConstraint(){
+        lastConstraint?.isActive = false
+        if let viewPair = subviewsWithParams.last(where: { $0.0.includeInLayout }) {
+            let view = viewPair.0
+            let params = viewPair.1
+            let margin = params.margin.end(orientation)
+//            let cons = operations.endMatch(guide: internalGuide, view: view)
+            let cons = internalGuide.endAnchor(orientation).constraintD(equalTo: view.endAnchor(orientation), constant: margin)
+            cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
+            cons.isActive = true
+            lastConstraint = cons
+        } else {
+            var cons: NSLayoutConstraint
+            if orientation == .y {
+                cons = internalGuide.heightAnchor.constraint(equalToConstant: 0)
+            } else {
+                cons = internalGuide.widthAnchor.constraint(equalToConstant: 0)
+            }
+            cons.priority = UILayoutPriority(rawValue: UILayoutPriority.RawValue(automaticConstraintPriority))
+            cons.isActive = true
+            lastConstraint = cons
+        }
+    }
+
+    public func recalculateConstraints(){
+        for c in myConstraints {
+            c.isActive = false
+        }
+        myConstraints = []
+        lastView = nil
+        for s in subviewsWithParams {
+            addConstraintForSubview(s)
+        }
+        handleFillConstraint()
+    }
+    
 }

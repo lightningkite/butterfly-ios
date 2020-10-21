@@ -13,6 +13,14 @@ public enum Dimension {
 }
 
 public extension Dimension {
+    var axis: NSLayoutConstraint.Axis {
+        switch self {
+        case .x:
+            return .horizontal
+        case .y:
+            return .vertical
+        }
+    }
     var other: Dimension {
         switch self {
         case .x:
@@ -106,5 +114,119 @@ public extension UIEdgeInsets {
         case .y:
             return self.top + self.bottom
         }
+    }
+}
+
+public protocol HasAnchors {
+    var leadingAnchor: NSLayoutXAxisAnchor { get }
+    var trailingAnchor: NSLayoutXAxisAnchor { get }
+    var leftAnchor: NSLayoutXAxisAnchor { get }
+    var rightAnchor: NSLayoutXAxisAnchor { get }
+    var topAnchor: NSLayoutYAxisAnchor { get }
+    var bottomAnchor: NSLayoutYAxisAnchor { get }
+    var widthAnchor: NSLayoutDimension { get }
+    var heightAnchor: NSLayoutDimension { get }
+    var centerXAnchor: NSLayoutXAxisAnchor { get }
+    var centerYAnchor: NSLayoutYAxisAnchor { get }
+}
+extension UIView: HasAnchors {}
+extension UILayoutGuide: HasAnchors {}
+public extension HasAnchors {
+    func startAnchor(_ orientation: Dimension) -> NSLayoutAnchorGeneric {
+        switch orientation {
+        case .x:
+            return leadingAnchor
+        case .y:
+            return topAnchor
+        }
+    }
+    func endAnchor(_ orientation: Dimension) -> NSLayoutAnchorGeneric {
+        switch orientation {
+        case .x:
+            return trailingAnchor
+        case .y:
+            return bottomAnchor
+        }
+    }
+    func centerAnchor(_ orientation: Dimension) -> NSLayoutAnchorGeneric {
+        switch orientation {
+        case .x:
+            return centerXAnchor
+        case .y:
+            return centerYAnchor
+        }
+    }
+    func sizeAnchor(_ orientation: Dimension) -> NSLayoutDimension {
+        switch orientation {
+        case .x:
+            return widthAnchor
+        case .y:
+            return heightAnchor
+        }
+    }
+}
+
+public protocol NSLayoutAnchorGeneric {
+    // These methods return an inactive constraint of the form thisAnchor = otherAnchor.
+    func constraintD(equalTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint
+    func constraintD(greaterThanOrEqualTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint
+    func constraintD(lessThanOrEqualTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint
+
+    
+    // These methods return an inactive constraint of the form thisAnchor = otherAnchor + constant.
+    func constraintD(equalTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint
+    func constraintD(greaterThanOrEqualTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint
+    func constraintD(lessThanOrEqualTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint
+}
+
+extension NSLayoutXAxisAnchor: NSLayoutAnchorGeneric {
+    public func constraintD(equalTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint {
+        return self.constraint(equalTo: anchor as! Self)
+    }
+    
+    public func constraintD(greaterThanOrEqualTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint {
+        return self.constraint(greaterThanOrEqualTo: anchor as! Self)
+    }
+    
+    public func constraintD(lessThanOrEqualTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint {
+        return self.constraint(lessThanOrEqualTo: anchor as! Self)
+    }
+    
+    public func constraintD(equalTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint {
+        return self.constraint(equalTo: anchor as! Self, constant: c)
+    }
+    
+    public func constraintD(greaterThanOrEqualTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint {
+        return self.constraint(greaterThanOrEqualTo: anchor as! Self, constant: c)
+    }
+    
+    public func constraintD(lessThanOrEqualTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint {
+        return self.constraint(lessThanOrEqualTo: anchor as! Self, constant: c)
+    }
+}
+
+extension NSLayoutYAxisAnchor: NSLayoutAnchorGeneric {
+    public func constraintD(equalTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint {
+        return self.constraint(equalTo: anchor as! Self)
+    }
+    
+    public func constraintD(greaterThanOrEqualTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint {
+        return self.constraint(greaterThanOrEqualTo: anchor as! Self)
+    }
+    
+    public func constraintD(lessThanOrEqualTo anchor: NSLayoutAnchorGeneric) -> NSLayoutConstraint {
+        return self.constraint(lessThanOrEqualTo: anchor as! Self)
+    }
+    
+    public func constraintD(equalTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint {
+        return self.constraint(equalTo: anchor as! Self, constant: c)
+    }
+    
+    public func constraintD(greaterThanOrEqualTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint {
+        return self.constraint(greaterThanOrEqualTo: anchor as! Self, constant: c)
+    }
+    
+    public func constraintD(lessThanOrEqualTo anchor: NSLayoutAnchorGeneric, constant c: CGFloat) -> NSLayoutConstraint {
+        return self.constraint(lessThanOrEqualTo: anchor as! Self, constant: c)
     }
 }

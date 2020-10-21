@@ -56,7 +56,7 @@ public extension LinearLayout {
     func addSubview<T: UIView>(
         _ view: T,
         minimumSize: CGSize = .zero,
-        size: CGSize = .zero,
+        size: CGSize = CGSize(width: -1, height: -1),
         margin: UIEdgeInsets = .zero,
         padding: UIEdgeInsets = .zero,
         gravity: AlignPair = .center,
@@ -73,7 +73,7 @@ public extension FrameLayout {
     func addSubview<T: UIView>(
         _ view: T,
         minimumSize: CGSize = .zero,
-        size: CGSize = .zero,
+        size: CGSize = CGSize(width: -1, height: -1),
         margin: UIEdgeInsets = .zero,
         padding: UIEdgeInsets = .zero,
         gravity: AlignPair = .center,

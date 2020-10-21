@@ -212,28 +212,31 @@ public extension UIView {
         set(value) {
             UIView.isIncludedExt.set(self, value)
             self.notifyParentSizeChanged()
+            if let p = superview as? LinearLayout {
+                p.recalculateConstraints()
+            }
         }
     }
 
     func notifyParentSizeChanged() {
         if let p = self.superview {
             p.setNeedsLayout()
-             var current = p
-             while
-                 !(current is LinearLayout) &&
-                     !(current is FrameLayout) &&
-                     !(current is UIScrollView)
-             {
-                 if let su = current.superview {
-                     current = su
-                     if let cell = current as? SizedUICollectionViewCell {
-                         cell.refreshSize()
-                         break
-                     }
-                 } else {
-                     break
-                 }
-             }
+//             var current = p
+//             while
+//                 !(current is LinearLayout) &&
+//                     !(current is FrameLayout) &&
+//                     !(current is UIScrollView)
+//             {
+//                 if let su = current.superview {
+//                     current = su
+//                     if let cell = current as? ObsUICollectionViewCell {
+//                         cell.refreshSize()
+//                         break
+//                     }
+//                 } else {
+//                     break
+//                 }
+//             }
         }
     }
 
