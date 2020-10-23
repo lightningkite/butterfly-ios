@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class FrameLayout: UIView {
+open class FrameLayout: UIView, ListensToChildSize {
     public var padding: UIEdgeInsets = .zero {
         didSet {
             self.setNeedsLayout()
@@ -49,6 +49,10 @@ open class FrameLayout: UIView {
     internal var subviewsWithParams: Dictionary<UIView, LayoutParams> = Dictionary()
     internal var measurements: Dictionary<UIView, CGSize> = Dictionary()
     internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()
+    
+    public func childSizeUpdated(_ child: UIView){
+        self.notifyParentSizeChanged()
+    }
     
     public func getParams(for view: UIView) -> LayoutParams? {
         return subviewsWithParams[view]
@@ -110,11 +114,11 @@ open class FrameLayout: UIView {
             let viewSize = CGSize(
                 width: max(
                     params.minimumSize.width,
-                    params.size.width == 0 ? viewMeasured.width : params.size.width
+                    params.size.width <= 0 ? viewMeasured.width : params.size.width
                 ),
                 height: max(
                     params.minimumSize.height,
-                    params.size.height == 0 ? viewMeasured.height : params.size.height
+                    params.size.height <= 0 ? viewMeasured.height : params.size.height
                 )
             )
             measurements[subview] = viewSize
@@ -123,13 +127,15 @@ open class FrameLayout: UIView {
         }
         return output
     }
-    override open var intrinsicContentSize: CGSize {
-        return sizeThatFits(UIView.layoutFittingCompressedSize)
+    override public func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
+        return sizeThatFits(targetSize)
     }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
+    override public func systemLayoutSizeFitting(
+        _ targetSize: CGSize,
+        withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
+        verticalFittingPriority: UILayoutPriority
+    ) -> CGSize {
+        return sizeThatFits(targetSize)
     }
 
     override public func layoutSubviews() {
@@ -147,11 +153,11 @@ open class FrameLayout: UIView {
             let viewSize = CGSize(
                 width: max(
                     params.minimumSize.width,
-                    params.size.width == 0 ? viewMeasured.width : params.size.width
+                    params.size.width <= 0 ? viewMeasured.width : params.size.width
                 ),
                 height: max(
                     params.minimumSize.height,
-                    params.size.height == 0 ? viewMeasured.height : params.size.height
+                    params.size.height <= 0 ? viewMeasured.height : params.size.height
                 )
             )
             var clickBounds = CGRect.zero
@@ -183,6 +189,7 @@ open class FrameLayout: UIView {
             handleDimension(dimen: .y)
             childBounds[subview] = clickBounds
         }
+        //Complete
     }
     weak var lastHit: UIView?
     var lastPoint: CGPoint?

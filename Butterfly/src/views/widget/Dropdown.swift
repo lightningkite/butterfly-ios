@@ -88,11 +88,6 @@ public class Dropdown : UIButton {
             setNeedsLayout()
         }
     }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
-    }
 
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         return currentView?.sizeThatFits(size) ?? CGSize.zero

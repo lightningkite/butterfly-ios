@@ -7,7 +7,7 @@
 
 import UIKit
 
-public class ScrollViewVertical: UIScrollView {
+public class ScrollViewVertical: UIScrollView, ListensToChildSize {
     public var fillViewport = false
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         let childSize = subviews.first?.sizeThatFits(size)
@@ -23,5 +23,8 @@ public class ScrollViewVertical: UIScrollView {
             height: fillViewport ? max(measuredSize.height, self.bounds.size.height) : measuredSize.height
         )
         self.contentSize = CGSize(width: 0, height: measuredSize.height)
+    }
+    public func childSizeUpdated(_ child: UIView) {
+        self.setNeedsLayout()
     }
 }

@@ -12,7 +12,7 @@ open class CustomViewDelegate {
         self.toDispose = []
         self._removed = nil
         //Necessary properties should be initialized now
-        self._removed = DisposeCondition(call: { (it) -> Void in self.toDispose.append(it) })
+        self._removed = DisposeCondition(call: { [weak self] (it) -> Void in self?.toDispose.append(it) })
     }
     
     public var customView: CustomView?

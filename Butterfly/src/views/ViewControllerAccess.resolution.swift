@@ -14,8 +14,8 @@ public extension ViewControllerAccess {
     }
     var displayMetrics: DisplayMetrics {
         return DisplayMetrics(
-            density: 1,
-            scaledDensity: 1,
+            density: UIScreen.main.scale,
+            scaledDensity: UIScreen.main.scale,
             widthPixels: Int(UIScreen.main.bounds.width * UIScreen.main.scale),
             heightPixels: Int(UIScreen.main.bounds.height * UIScreen.main.scale)
         )

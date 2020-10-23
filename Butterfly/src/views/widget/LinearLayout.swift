@@ -8,7 +8,7 @@
 
 import UIKit
 
-open class LinearLayout: UIView {
+open class LinearLayout: UIView, ListensToChildSize {
     
     public var padding: UIEdgeInsets = .zero {
         didSet {
@@ -80,6 +80,10 @@ open class LinearLayout: UIView {
     
     internal var subviewsWithParams: Array<(UIView, LayoutParams)> = Array()
     
+    public func childSizeUpdated(_ child: UIView){
+        self.notifyParentSizeChanged()
+    }
+    
     public func getParams(for view: UIView) -> LayoutParams? {
         return subviewsWithParams.find { entry in entry.0 === view }?.1
     }
@@ -137,12 +141,6 @@ open class LinearLayout: UIView {
     public override func didAddSubview(_ subview: UIView) {
         subview.refreshLifecycle()
     }
-    
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
-    }
-
 
     internal var measurements: Dictionary<UIView, CGSize> = Dictionary()
     internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()
@@ -187,22 +185,22 @@ open class LinearLayout: UIView {
             let subMaximums = CGSize(
                 width: max(
                     params.minimumSize.width,
-                    params.size.width == 0 ? subMaximumsA.width : params.size.width
+                    params.size.width <= 0 ? subMaximumsA.width : params.size.width
                 ),
                 height: max(
                     params.minimumSize.height,
-                    params.size.height == 0 ? subMaximumsA.height : params.size.height
+                    params.size.height <= 0 ? subMaximumsA.height : params.size.height
                 )
             )
             let viewMeasured = subview.sizeThatFits(subMaximums)
             let viewSize = CGSize(
                 width: max(
                     params.minimumSize.width,
-                    params.size.width == 0 ? viewMeasured.width : params.size.width
+                    params.size.width <= 0 ? viewMeasured.width : params.size.width
                 ),
                 height: max(
                     params.minimumSize.height,
-                    params.size.height == 0 ? viewMeasured.height : params.size.height
+                    params.size.height <= 0 ? viewMeasured.height : params.size.height
                 )
             )
             measurements[subview] = viewSize
@@ -232,22 +230,22 @@ open class LinearLayout: UIView {
             let subMaximums = CGSize(
                 width: max(
                     params.minimumSize.width,
-                    params.size.width == 0 ? subMaximumsA.width : params.size.width
+                    params.size.width <= 0 ? subMaximumsA.width : params.size.width
                 ),
                 height: max(
                     params.minimumSize.height,
-                    params.size.height == 0 ? subMaximumsA.height : params.size.height
+                    params.size.height <= 0 ? subMaximumsA.height : params.size.height
                 )
             )
             let viewMeasured = subview.sizeThatFits(subMaximums)
             let viewSize = CGSize(
                 width: max(
                     params.minimumSize.width,
-                    params.size.width == 0 ? viewMeasured.width : params.size.width
+                    params.size.width <= 0 ? viewMeasured.width : params.size.width
                 ),
                 height: max(
                     params.minimumSize.height,
-                    params.size.height == 0 ? viewMeasured.height : params.size.height
+                    params.size.height <= 0 ? viewMeasured.height : params.size.height
                 )
             )
             measurements[subview] = viewSize
@@ -267,11 +265,18 @@ open class LinearLayout: UIView {
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         return measure(size, includingWeighted: true)
     }
-    override open var intrinsicContentSize: CGSize {
-        return measure(UIView.layoutFittingCompressedSize, includingWeighted: true)
+    override public func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
+        return sizeThatFits(targetSize)
+    }
+    override public func systemLayoutSizeFitting(
+        _ targetSize: CGSize,
+        withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
+        verticalFittingPriority: UILayoutPriority
+    ) -> CGSize {
+        return sizeThatFits(targetSize)
     }
     
-    override public func layoutSubviews() {
+    override open func layoutSubviews() {
         super.layoutSubviews()
         
         var position: CGFloat = 0

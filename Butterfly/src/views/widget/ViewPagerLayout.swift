@@ -20,17 +20,17 @@ public class ViewPagerLayout: UICollectionViewFlowLayout {
         }
         
         guard let collectionView = collectionView else { return }
-        collectionView.addOnLayoutSubviews { [weak self] in
-            guard let self = self, let collectionView = self.collectionView else { return }
+        let observer = collectionView.layer.observe(\.bounds) { [weak self] collectionView, _ in
+            guard let self = self else { return }
             let newSize = CGSize(
                 width: collectionView.bounds.width,
                 height: collectionView.bounds.height
             )
             if newSize != self.itemSize {
                 self.itemSize = newSize
-                print("Item Size: \(self.itemSize) VS Self Size: \(collectionView.bounds.size) VS Insets \(self.sectionInset) / \(collectionView.contentInset)")
             }
         }
+        collectionView.removed.call(DisposableLambda { observer.invalidate() })
     }
     
     override public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint, withScrollingVelocity velocity: CGPoint) -> CGPoint {

@@ -24,23 +24,4 @@ public extension UIScrollView {
         let bottomOffset = CGPoint(x: 0, y: self.contentSize.height - self.bounds.size.height)
         self.setContentOffset(bottomOffset, animated: true)
     }
-    public func flexFix(_ sub: UIView){
-        let dg = ScrollSavingDelegate()
-        delegate = dg
-        self.addOnLayoutSubviews { [weak self, weak sub] in
-            guard let self = self, let sub = sub else { return }
-            self.contentSize = sub.frame.size
-            self.contentOffset = dg.lastNonzeroOffset
-        }
-    }
-}
-
-public class ScrollSavingDelegate : NSObject, UIScrollViewDelegate {
-    public var lastNonzeroOffset: CGPoint = CGPoint.zero
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset != CGPoint.zero {
-            print("Set offset to \(scrollView.contentOffset)")
-            lastNonzeroOffset = scrollView.contentOffset
-        }
-    }
 }

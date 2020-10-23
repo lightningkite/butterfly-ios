@@ -48,7 +48,9 @@ open class ButterflyAppDelegate: UIResponder, UIApplicationDelegate {
         if let keychainAccessGroup = keychainAccessGroup {
             SecurePreferences.setKeychainAccessGroup(keychainAccessGroup)
         }
-        
+
+        UIView.useLayoutSubviewsLambda()
+
         window = UIWindow(frame: UIScreen.main.bounds)
         let nav = SpecialNavController()
         let vc = makeViewController()

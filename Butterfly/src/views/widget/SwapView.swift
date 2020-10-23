@@ -30,13 +30,9 @@ open class SwapView: UIView {
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         return current?.sizeThatFits(size) ?? .zero
     }
-
-    override open func setNeedsLayout() {
-        super.setNeedsLayout()
-        self.notifyParentSizeChanged()
-    }
     
     override public func layoutSubviews() {
+        super.layoutSubviews()
         updateAnimations()
     }
     
@@ -78,7 +74,12 @@ open class SwapView: UIView {
             )
         }
     }
+    var swapping = false
     open func swap(dependency: ViewControllerAccess, to: UIView?, animation: Animation){
+        if swapping {
+            fatalError()
+        }
+        swapping = true
         let previousView = current
         if let old = current {
             let goal: AnimationGoal
@@ -127,48 +128,53 @@ open class SwapView: UIView {
                 visibility = UIView.VISIBLE
                 self.hiding = false
                 alpha = 1
-                print("Am I in layout? \(includeInLayout)")
                 setNeedsLayout()
                 UIView.animate(withDuration: 0.25, animations: {
                     self.alpha = 1
                 }, completion: { _ in
-                    print("My bounds are now \(self.frame)")
                 })
-                new.frame = CGRect(
-                    x: 0,
-                    y: 0,
-                    width: self.bounds.width,
-                    height: self.bounds.height
-                )
-            } else {
-                switch animation {
-                case .fade:
+                UIView.performWithoutAnimation {
                     new.frame = CGRect(
                         x: 0,
                         y: 0,
                         width: self.bounds.width,
                         height: self.bounds.height
                     )
-                    new.alpha = 0.0
-                case .pop:
-                    new.frame = CGRect(
-                        x: -self.bounds.width,
-                        y: 0,
-                        width: self.bounds.width,
-                        height: self.bounds.height
-                    )
-                case .push:
-                    new.frame = CGRect(
-                        x: self.bounds.width,
-                        y: 0,
-                        width: self.bounds.width,
-                        height: self.bounds.height
-                    )
+                    new.setNeedsLayout()
+                    new.layoutIfNeeded()
+                    self.addSubview(new)
                 }
+            } else {
+                UIView.performWithoutAnimation {
+                    switch animation {
+                    case .fade:
+                        new.frame = CGRect(
+                            x: 0,
+                            y: 0,
+                            width: self.bounds.width,
+                            height: self.bounds.height
+                        )
+                        new.alpha = 0.0
+                    case .pop:
+                        new.frame = CGRect(
+                            x: -self.bounds.width,
+                            y: 0,
+                            width: self.bounds.width,
+                            height: self.bounds.height
+                        )
+                    case .push:
+                        new.frame = CGRect(
+                            x: self.bounds.width,
+                            y: 0,
+                            width: self.bounds.width,
+                            height: self.bounds.height
+                        )
+                    }
+                }
+                new.setNeedsLayout()
+                new.layoutIfNeeded()
+                self.addSubview(new)
             }
-            new.setNeedsLayout()
-            new.layoutIfNeeded()
-            self.addSubview(new)
             animateDestinationExtension.set(new, AnimationGoal(
                 startedAt: Date(),
                 alpha: 1.0,
@@ -180,10 +186,7 @@ open class SwapView: UIView {
             current = new
         } else {
             current = nil
-            print("Am I in layout? \(includeInLayout)")
             hiding = true
-            //This has gotta stick
-            print("My bounds are now \(self.frame)")
             if self.hiding {
                 self.visibility = UIView.INVISIBLE
             } else {
@@ -192,6 +195,7 @@ open class SwapView: UIView {
             }
         }
         dependency.runKeyboardUpdate(root: to, discardingRoot: previousView)
+        swapping = false
     }
     
     weak var lastHit: UIView?

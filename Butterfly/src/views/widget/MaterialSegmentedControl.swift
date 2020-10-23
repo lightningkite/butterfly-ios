@@ -19,9 +19,23 @@ public class MaterialSegmentedControl: UISegmentedControl {
         materialTabStyle()
     }
     
+    public var indicatorSize: CGFloat = 4
+    
     public override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = 0
+        animateIndicator()
+    }
+    
+    public func animateIndicator(){
+        guard let buttonBar = indicatorView else { return }
+        let newBounds = getIndicatorBounds()
+        if newBounds != buttonBar.frame {
+            UIView.animate(withDuration: 0.3, animations: {
+                buttonBar.frame = newBounds
+            }, completion: { _ in
+            })
+        }
     }
     
     public override var intrinsicContentSize: CGSize {
@@ -134,6 +148,23 @@ public class MaterialSegmentedControl: UISegmentedControl {
         }
         return nil
     }
+    
+    private func getIndicatorBounds() -> CGRect {
+        let selectedSegmentIndex = min(max(self.selectedSegmentIndex, 0), self.numberOfSegments - 1)
+        guard
+            let segment = self.getSegment(index: selectedSegmentIndex)
+            else {
+            return CGRect.zero
+        }
+        let newBounds = CGRect(
+            x: segment.frame.origin.x,
+            y: self.bounds.size.height - indicatorSize,
+            width: segment.frame.size.width,
+            height: indicatorSize
+        )
+        return newBounds
+    }
+    
     private func addIndicator(size: CGFloat = 4){
         let buttonBar = UIView()
         // This needs to be false since we are using auto layout constraints
@@ -142,54 +173,15 @@ public class MaterialSegmentedControl: UISegmentedControl {
         addSubview(buttonBar)
         indicatorView = buttonBar
 
-        let getNewBounds: ()->CGRect = { [weak self, weak buttonBar] in
-            guard let self = self else { return .zero }
-            let selectedSegmentIndex = min(max(self.selectedSegmentIndex, 0), self.numberOfSegments - 1)
-            guard
-                let segment = self.getSegment(index: selectedSegmentIndex)
-                else {
-                return CGRect.zero
-            }
-            let newBounds = CGRect(
-                x: segment.frame.origin.x,
-                y: self.bounds.size.height - size,
-                width: segment.frame.size.width,
-                height: size
-            )
-            return newBounds
-        }
-
-        let newBounds = getNewBounds()
+        let newBounds = getIndicatorBounds()
         buttonBar.frame = newBounds
 
-        var midAnimation = false
-
-        self.addOnLayoutSubviews { [weak self, weak buttonBar] in
-            guard let buttonBar = buttonBar else { return }
-            let newBounds = getNewBounds()
-            if newBounds != buttonBar.frame {
-                midAnimation = true
-                UIView.animate(withDuration: 0.3, animations: {
-                    buttonBar.frame = newBounds
-                }, completion: { _ in
-                    midAnimation = false
-                })
-            }
-        }
-
-        self.addAction(for: .allEvents, action: { [weak self, weak buttonBar] in
-            guard let buttonBar = buttonBar else { return }
-            let newBounds = getNewBounds()
-            if newBounds != buttonBar.frame {
-                midAnimation = true
-                UIView.animate(withDuration: 0.3, animations: {
-                    buttonBar.frame = newBounds
-                }, completion: { _ in
-                    midAnimation = false
-                })
-            }
+        self.addAction(for: .allEvents, action: { [weak self] in
+            guard let self = self else { return }
+            self.animateIndicator()
         })
     }
+    
 
 }
 

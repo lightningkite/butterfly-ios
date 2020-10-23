@@ -216,24 +216,26 @@ public extension UIView {
     }
 
     func notifyParentSizeChanged() {
-        if let p = self.superview {
-            p.setNeedsLayout()
-             var current = p
-             while
-                 !(current is LinearLayout) &&
-                     !(current is FrameLayout) &&
-                     !(current is UIScrollView)
-             {
-                 if let su = current.superview {
-                     current = su
-                     if let cell = current as? SizedUICollectionViewCell {
-                         cell.refreshSize()
-                         break
-                     }
-                 } else {
-                     break
-                 }
-             }
+        self.setNeedsLayout()
+        if let p = self.superview as? ListensToChildSize {
+//            p.child
+            p.childSizeUpdated(self)
+//             var current = p
+//             while
+//                 !(current is LinearLayout) &&
+//                     !(current is FrameLayout) &&
+//                     !(current is UIScrollView)
+//             {
+//                 if let su = current.superview {
+//                     current = su
+//                     if let cell = current as? SizedUICollectionViewCell {
+//                         cell.refreshSize()
+//                         break
+//                     }
+//                 } else {
+//                     break
+//                 }
+//             }
         }
     }
 
@@ -248,7 +250,7 @@ extension UIButton {
     }
     @objc override public func onClick(disabledMilliseconds: Int64, action: @escaping ()->Void) {
         var lastActivated = Date()
-        self.addAction {
+        self.addAction(id: "onClick") {
             if Date().timeIntervalSince(lastActivated) > Double(disabledMilliseconds)/1000.0 {
                 action()
                 lastActivated = Date()

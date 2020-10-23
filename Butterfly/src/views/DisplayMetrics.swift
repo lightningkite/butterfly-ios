@@ -13,4 +13,16 @@ public struct DisplayMetrics {
     public let scaledDensity: CGFloat
     public let widthPixels: Int
     public let heightPixels: Int
+    
+    public init(
+        density: CGFloat,
+        scaledDensity: CGFloat,
+        widthPixels: Int,
+        heightPixels: Int
+    ) {
+        self.density = density
+        self.scaledDensity = scaledDensity
+        self.widthPixels = widthPixels
+        self.heightPixels = heightPixels
+    }
 }

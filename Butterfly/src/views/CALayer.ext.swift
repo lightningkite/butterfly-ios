@@ -63,12 +63,21 @@ extension CALayer : CALayerToImage {
         }
 
         if scaleOverResize {
+            self.setAffineTransform(.identity)
             self.frame = bounds
-            //TODO: Center this properly
-            self.setAffineTransform(CGAffineTransform(
-                scaleX: bounds.size.width / baseSize.width,
-                y: bounds.size.height / baseSize.height
-            ))
+            let xScale = bounds.size.width / baseSize.width
+            let yScale = bounds.size.height / baseSize.height
+            self.setAffineTransform(
+                CGAffineTransform.identity
+                    .translatedBy(
+                        x: -(1 - xScale) * bounds.size.width / 2,
+                        y: -(1 - yScale) * bounds.size.height / 2
+                    )
+                    .scaledBy(
+                        x: xScale,
+                        y: yScale
+                    )
+            )
         } else {
             self.frame = bounds
         }
@@ -81,8 +90,9 @@ extension CALayer : CALayerToImage {
             previous.dispose()
         }
         if let view = view {
-            let close = view.onLayoutSubviews.startWith(view).addWeak(referenceA: self) { this, view in
-                this.resize(view.bounds)
+            let close = view.onLayoutSubviews.startWith(view).subscribe { [weak self] view in
+                guard let self = self else { return }
+                self.resize(view.bounds)
             }
             CALayer.matchingExtension.set(self, close)
         } else {

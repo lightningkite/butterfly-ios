@@ -22,7 +22,7 @@ class ClosureSleeve {
 public extension UIControl {
     func addAction(for controlEvents: UIControl.Event = .primaryActionTriggered, id: String = "[\(arc4random())]", action: @escaping () -> ()) {
         let sleeve = ClosureSleeve(closure: action)
-        self.retain(item: sleeve, until: removed)
+        self.retain(as: id, item: sleeve, until: removed)
         addTarget(sleeve, action: #selector(ClosureSleeve.invoke), for: controlEvents)
     }
 
