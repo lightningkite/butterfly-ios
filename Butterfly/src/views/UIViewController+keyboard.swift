@@ -24,7 +24,11 @@ public extension ViewControllerAccess {
             }
         }
         if let root = root, let keyboardView = root.findFirstFocus(startup: true) {
-            keyboardView.requestFocus()
+            post {
+                if keyboardView.window != nil {
+                    keyboardView.requestFocus()
+                }
+            }
             dismissOld = false
         }
         if dismissOld {

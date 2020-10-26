@@ -131,16 +131,21 @@ public extension UICollectionView {
         setupDefault()
         post {
             let dg = GeneralCollectionDelegate(
-                itemCount: data.value.count,
-                getItem: { data.value[$0] },
                 makeView: { (obs, _) in makeView(obs) }
             )
             self.retain(as: "delegate", item: dg, until: self.removed)
             self.delegate = dg
             self.dataSource = dg
+            
+            var updateQueued = false
             data.subscribeBy(onNext:  { it in
-                dg.itemCount = it.count
-                self.refreshData()
+                guard !updateQueued else { return }
+                updateQueued = true
+                Butterfly.post {
+                    updateQueued = false
+                    dg.items = data.value
+                    self.refreshData()
+                }
             }).until(self.removed)
         }
     }
@@ -154,17 +159,21 @@ public extension UICollectionView {
         post {
             
             let dg = GeneralCollectionDelegate(
-                itemCount: data.value.count,
-                getItem: { data.value[$0] },
                 makeView: { (obs, type) in handler.make(type: type, property: obs) },
                 getType: { handler.type(item: $0) }
             )
             self.retain(as: "delegate", item: dg, until: self.removed)
             self.delegate = dg
             self.dataSource = dg
+            var updateQueued = false
             data.subscribeBy(onNext:  { it in
-                dg.itemCount = it.count
-                self.refreshData()
+                guard !updateQueued else { return }
+                updateQueued = true
+                Butterfly.post {
+                    updateQueued = false
+                    dg.items = data.value
+                    self.refreshData()
+                }
             }).until(self.removed)
         }
     }
@@ -174,17 +183,21 @@ public extension UICollectionView {
         self.setupDefault()
         post {
             let dg = GeneralCollectionDelegate(
-                itemCount: data.value.count,
-                getItem: { data.value[$0] },
                 makeView: { (obs, type) in makeView(type, obs) },
                 getType: determineType
             )
             self.retain(as: "delegate", item: dg, until: self.removed)
             self.delegate = dg
             self.dataSource = dg
+            var updateQueued = false
             data.subscribeBy(onNext:  { it in
-                dg.itemCount = it.count
-                self.refreshData()
+                guard !updateQueued else { return }
+                updateQueued = true
+                Butterfly.post {
+                    updateQueued = false
+                    dg.items = data.value
+                    self.refreshData()
+                }
             }).until(self.removed)
         }
     }
@@ -322,21 +335,16 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         self.atEnd = action
     }
 
-    var itemCount: Int
-    let getItem: (Int) -> T
+    var items: Array<T> = []
     let makeView: (ObservableProperty<T>, Int) -> UIView
     let getType: (T) -> Int
     var atPosition: (Int) -> Void = { _ in }
 
     init(
-        itemCount: Int = 0,
-        getItem: @escaping (Int) -> T,
         makeView: @escaping (ObservableProperty<T>, Int) -> UIView,
         getType: @escaping (T) -> Int = { _ in 0 },
         atPosition: @escaping (Int) -> Void = { _ in }
     ) {
-        self.itemCount = itemCount
-        self.getItem = getItem
         self.makeView = makeView
         self.getType = getType
         self.atPosition = atPosition
@@ -344,7 +352,7 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
 
     private var registered: Set<Int> = []
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let item = getItem(indexPath.row)
+        let item = items[indexPath.row]
         let type = getType(item)
         if registered.insert(type).inserted {
             collectionView.register(ObsUICollectionViewCell.self, forCellWithReuseIdentifier: String(type))
@@ -378,11 +386,11 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return itemCount
+        return items.count
     }
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if(indexPath.row >= itemCount - 1 && itemCount > 1){
-            print("Triggered end with \(indexPath.row) size \(itemCount)")
+        if(indexPath.row >= items.count - 1 && items.count > 1){
+            print("Triggered end with \(indexPath.row) size \(items.count)")
             atEnd()
         }
         if let cell = cell as? ObsUICollectionViewCell {
