@@ -14,9 +14,11 @@ open class UIButtonWithLayer: UIButton {
     
     public enum Position: Int { case left = 0, top, right, bottom, center }
     
+    private var iconDefaultSize: CGSize = .zero
     public var iconLayer: CALayer? {
         didSet {
             if let iconLayer = iconLayer {
+                iconDefaultSize = iconLayer.bounds.size
                 iconLayerRatio = iconLayer.bounds.size.width / iconLayer.bounds.size.height
             }
             refreshManipLayer()
@@ -49,7 +51,7 @@ open class UIButtonWithLayer: UIButton {
     }
     private var iconLayerRatio: CGFloat = 1
     
-    public var iconPosition: Position = .center{
+    public var iconPosition: Position = .center {
         didSet {
             setNeedsLayout()
         }
@@ -129,20 +131,20 @@ open class UIButtonWithLayer: UIButton {
             let hasTitle = self.titleLabel?.text?.trimmingCharacters(in: .whitespaces).isEmpty == true
             if let iconLayer = iconLayer {
                 if isHorizontal {
-                    result.width += iconLayer.frame.size.width
+                    result.width += iconDefaultSize.width
                     if hasTitle {
                         result.width += iconPadding
                     }
                 } else {
-                    result.width = max(result.width, iconLayer.frame.size.width)
+                    result.width = max(result.width, iconDefaultSize.width)
                 }
                 if isVertical {
-                    result.height += iconLayer.frame.size.height
+                    result.height += iconDefaultSize.height
                     if hasTitle {
                         result.height += iconPadding
                     }
                 } else {
-                    result.height = max(result.height, iconLayer.frame.size.height)
+                    result.height = max(result.height, iconDefaultSize.height)
                 }
             }
             if let title = self.titleLabel?.text, !title.trimmingCharacters(in: .whitespaces).isEmpty, let labelSize = titleLabel?.sizeThatFits(CGSize(width: 1000, height: 1000)) {
@@ -171,20 +173,20 @@ open class UIButtonWithLayer: UIButton {
         let hasTitle = self.titleLabel?.text?.trimmingCharacters(in: .whitespaces).isEmpty == true
         if let iconLayer = iconLayer {
             if isHorizontal {
-                result.width += iconLayer.frame.size.width
+                result.width += iconDefaultSize.width
                 if hasTitle {
                     result.width += iconPadding
                 }
             } else {
-                result.width = max(result.width, iconLayer.frame.size.width)
+                result.width = max(result.width, iconDefaultSize.width)
             }
             if isVertical {
-                result.height += iconLayer.frame.size.height
+                result.height += iconDefaultSize.height
                 if hasTitle {
                     result.height += iconPadding
                 }
             } else {
-                result.height = max(result.height, iconLayer.frame.size.height)
+                result.height = max(result.height, iconDefaultSize.height)
             }
         }
         if let title = self.titleLabel?.text, !title.trimmingCharacters(in: .whitespaces).isEmpty, let labelSize = titleLabel?.sizeThatFits(size) {
@@ -211,14 +213,8 @@ open class UIButtonWithLayer: UIButton {
             if let iconLayer = iconLayer, let manipulatedLayer = manipulatedLayer {
                 switch iconPosition {
                 case .center:
-                    let newBounds = CGRect(
-                        x: placeableRect.origin.x + (placeableRect.size.width - iconLayer.bounds.size.width) / 2,
-                        y: placeableRect.origin.y + (placeableRect.size.height - iconLayer.bounds.size.height) / 2,
-                        width: iconLayer.bounds.size.width,
-                        height: iconLayer.bounds.size.height
-                    )
-                    iconLayer.resize(CGRect(origin: .zero, size: newBounds.size))
-                    manipulatedLayer.resize(newBounds)
+                    iconLayer.resize(CGRect(origin: .zero, size: placeableRect.size))
+                    manipulatedLayer.resize(placeableRect)
                 case .left:
                     let newBounds = CGRect(
                         x: placeableRect.origin.x,
@@ -286,13 +282,9 @@ open class UIButtonWithLayer: UIButton {
                 destination.origin.y = placeableRect.origin.y + (placeableRect.size.height - destination.size.height) / 2
             }
             titleLabel.frame = destination
-        } else if let iconLayer = iconLayer {
-            iconLayer.resize(CGRect(
-                x: placeableRect.origin.x + (placeableRect.size.width - iconLayer.bounds.size.width) / 2,
-                y: placeableRect.origin.y + (placeableRect.size.height - iconLayer.bounds.size.height) / 2,
-                width: iconLayer.bounds.size.width,
-                height: iconLayer.bounds.size.height
-            ))
+        } else if let iconLayer = iconLayer, let manipulatedLayer = manipulatedLayer {
+            iconLayer.resize(CGRect(origin: .zero, size: placeableRect.size))
+            manipulatedLayer.resize(placeableRect)
         }
     }
 }

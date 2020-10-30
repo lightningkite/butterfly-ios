@@ -13,6 +13,64 @@ import RxSwift
 
 open class ButterflyViewController: UIViewController, UINavigationControllerDelegate {
     
+    private var _viewSafeAreaLayoutGuide: UILayoutGuide? = nil
+    private var _viewSafeAreaLayoutGuideTop: NSLayoutConstraint? = nil
+    private var _viewSafeAreaLayoutGuideBottom: NSLayoutConstraint? = nil
+    private var _viewSafeAreaLayoutGuideLeft: NSLayoutConstraint? = nil
+    private var _viewSafeAreaLayoutGuideRight: NSLayoutConstraint? = nil
+    public var viewSafeAreaLayoutGuide: UILayoutGuide {
+        if #available(iOS 11.0, *) {
+            return self.view.safeAreaLayoutGuide
+        } else {
+            if let x = _viewSafeAreaLayoutGuide {
+                return x
+            } else {
+                let guide = UILayoutGuide()
+                self.view.addLayoutGuide(guide)
+                _viewSafeAreaLayoutGuideLeft = guide.leftAnchor.constraint(equalTo: self.view.leftAnchor)
+                _viewSafeAreaLayoutGuideLeft?.isActive = true
+                _viewSafeAreaLayoutGuideRight = guide.rightAnchor.constraint(equalTo: self.view.rightAnchor)
+                _viewSafeAreaLayoutGuideRight?.isActive = true
+                _viewSafeAreaLayoutGuideTop = guide.topAnchor.constraint(equalTo: self.view.topAnchor)
+                _viewSafeAreaLayoutGuideTop?.isActive = true
+                _viewSafeAreaLayoutGuideBottom = guide.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+                _viewSafeAreaLayoutGuideBottom?.isActive = true
+                _viewSafeAreaLayoutGuide = guide
+                return guide
+            }
+        }
+    }
+    private var _viewAdditionalSafeAreaInsets: UIEdgeInsets = .zero
+    public var viewAdditionalSafeAreaInsets: UIEdgeInsets {
+        get {
+            if #available(iOS 11.0, *) {
+                return self.additionalSafeAreaInsets
+            } else {
+                return _viewAdditionalSafeAreaInsets
+            }
+        }
+        set(value) {
+            if #available(iOS 11.0, *) {
+                self.additionalSafeAreaInsets = value
+            } else {
+                _viewAdditionalSafeAreaInsets = value
+                _viewSafeAreaLayoutGuideTop?.constant = value.top
+                _viewSafeAreaLayoutGuideBottom?.constant = value.bottom
+                _viewSafeAreaLayoutGuideLeft?.constant = value.left
+                _viewSafeAreaLayoutGuideRight?.constant = value.right
+            }
+        }
+    }
+    public var viewSafeAreaInsets: UIEdgeInsets {
+        get {
+            if #available(iOS 11.0, *) {
+                return self.view.safeAreaInsets
+            } else {
+                return _viewAdditionalSafeAreaInsets
+            }
+        }
+    }
+    
     open var main: ViewGenerator
     public init(_ main: ViewGenerator){
         self.main = main
@@ -51,10 +109,10 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
             m.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
             m.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         } else {
-            m.leftAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leftAnchor).isActive = true
-            m.rightAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.rightAnchor).isActive = true
-            m.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-            m.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+            m.leftAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.leftAnchor).isActive = true
+            m.rightAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.rightAnchor).isActive = true
+            m.topAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.topAnchor).isActive = true
+            m.bottomAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.bottomAnchor).isActive = true
         }
         
         showDialogEvent.addWeak(referenceA: self){ (this, request) in
@@ -112,7 +170,9 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
     }
     
     @objc func dismissKeyboard() {
-        resignAllFirstResponders()
+        post {
+            self.resignAllFirstResponders()
+        }
     }
     
     func addKeyboardObservers() {
@@ -170,7 +230,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
             UIView.animate(
                 withDuration: keyboardAnimationDuration.doubleValue,
                 animations: {
-                    self.additionalSafeAreaInsets.bottom = keyboardHeight
+                    self.viewAdditionalSafeAreaInsets.bottom = keyboardHeight
                     self.view.layoutIfNeeded()
                 },
                 completion: { [weak self] _ in
@@ -201,7 +261,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
             UIView.animate(
                 withDuration: animationDuration.doubleValue,
                 animations: {
-                    self.additionalSafeAreaInsets.bottom = 0
+                    self.viewAdditionalSafeAreaInsets.bottom = 0
                     self.view.layoutIfNeeded()
                 },
                 completion: { [weak self] _ in
@@ -211,9 +271,9 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
     }
 
     override open func viewWillLayoutSubviews(){
-        if self.view.safeAreaInsets != UIView.fullScreenSafeInsetsObs.value {
-            UIView.fullScreenSafeInsetsObs.value = self.view.safeAreaInsets
-            innerView.updateSafeInsets(self.view.safeAreaInsets)
+        if self.viewSafeAreaInsets != UIView.fullScreenSafeInsetsObs.value {
+            UIView.fullScreenSafeInsetsObs.value = self.viewSafeAreaInsets
+            innerView.updateSafeInsets(self.viewSafeAreaInsets)
         }
         super.viewWillLayoutSubviews()
     }

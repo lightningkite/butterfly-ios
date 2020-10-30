@@ -39,10 +39,10 @@ open class MonthCVD : CustomViewDelegate {
         self.currentMonthObs.subscribeBy(onNext:  { [weak self] (value) -> Void in self?.postInvalidate() }).forever()
         self.labelPaint.isAntiAlias = true
         self.labelPaint.style = Paint.Style.FILL
-        self.labelPaint.color = 0xFF808080.asColor()
+        self.labelPaint.color = .black
         self.dayPaint.isAntiAlias = true
         self.dayPaint.style = Paint.Style.FILL
-        self.dayPaint.color = 0xFF202020.asColor()
+        self.dayPaint.color = .black
         animationFrame.subscribe(onNext: { (timePassed: CGFloat) -> Void in if self.draggingId == self.DRAGGING_NONE, self.currentOffset != 0 {
                     var newOffset: CGFloat = self.currentOffset * Swift.max(0, (1 - 8 * CGFloat(timePassed)))
                     let min: CGFloat = 0.001

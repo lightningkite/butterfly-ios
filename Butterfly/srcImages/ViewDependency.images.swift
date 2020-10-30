@@ -343,7 +343,7 @@ private class ImageDelegate : NSObject, UIImagePickerControllerDelegate, UINavig
                 return
             }
         }
-        if let asset = info[.phAsset] as? PHAsset {
+        if #available(iOS 11.0, *), let asset = info[.phAsset] as? PHAsset {
             asset.getUrl { url in
                 if let url = url {
                     DispatchQueue.main.async {

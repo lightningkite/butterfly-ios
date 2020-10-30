@@ -189,9 +189,34 @@ public extension CGContext {
         let bounds = CGRect(x: left, y: top, width: bitmap.size.width, height: bitmap.size.height)
         bitmap.draw(in: bounds)
     }
-
     func drawBitmap(bitmap: UIImage, left: CGFloat, top: CGFloat, right: CGFloat, bottom: CGFloat) {
         let bounds = CGRect(x: left, y: top, width: right-left, height: bottom-top)
-        bitmap.draw(in: bounds)
+        let drawScale = max(max(max(self.ctm.a, self.ctm.b), self.ctm.c), self.ctm.d) / UIScreen.main.scale
+        let rawScale = max((right-left) * drawScale / bitmap.size.width, (bottom-top) * drawScale / bitmap.size.height)
+        let factor = getScaleFactor(from: rawScale)
+        (bitmap.optimizedForDrawing(scaling: factor) ?? bitmap).draw(in: bounds)
+    }
+}
+
+private func getScaleFactor(from: CGFloat) -> Int {
+    return min(16, max(1, Int(pow(Double(2), Double(ceil(log2(1 / from)))))))
+}
+
+private extension UIImage {
+    private static let cgImageInSpaceCache = ExtensionProperty<UIImage, Dictionary<Int, UIImage>>()
+    func optimizedForDrawing(scaling: Int) -> UIImage? {
+        if let cache = UIImage.cgImageInSpaceCache.get(self), let mine = cache[scaling] {
+            return mine
+        }
+        let cgScale: CGFloat = 1.0 / CGFloat(scaling)
+        let newSize = CGSize(width: self.size.width * cgScale, height: self.size.height * cgScale)
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
+        self.draw(in: CGRect(origin: .zero, size: newSize))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        var cache = UIImage.cgImageInSpaceCache.get(self) ?? [:]
+        cache[scaling] = image
+        UIImage.cgImageInSpaceCache.set(self, cache)
+        return image
     }
 }

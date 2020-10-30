@@ -18,13 +18,17 @@ public extension ViewControllerAccess {
         let currentFocus = UIResponder.current as? UIView
         var dismissOld = false
         if let currentFocus = currentFocus {
-            if let discardingRoot = discardingRoot, discardingRoot.contains(currentFocus) {
+            if let discardingRoot = discardingRoot, discardingRoot.containsSub(other: currentFocus) {
                 //We're discarding the focus
                 dismissOld = true
             }
         }
         if let root = root, let keyboardView = root.findFirstFocus(startup: true) {
-            keyboardView.requestFocus()
+            post {
+                if keyboardView.window != nil {
+                    keyboardView.requestFocus()
+                }
+            }
             dismissOld = false
         }
         if dismissOld {
@@ -34,10 +38,10 @@ public extension ViewControllerAccess {
 }
 
 private extension UIView {
-    func contains(other: UIView?) -> Bool {
+    func containsSub(other: UIView?) -> Bool {
         if self === other { return true }
         guard let other = other else { return false }
-        return self.contains(other: other.superview)
+        return self.containsSub(other: other.superview)
     }
 }
 

@@ -33,20 +33,12 @@ public enum HttpClient {
     }
 
     public static var defaultOptions = HttpOptions()
+    public static var concurrentRequests = 0
     public static func call(url: String, method: String = "GET", headers: Dictionary<String, String> = [:], body: HttpBody? = nil, options: HttpOptions = HttpClient.defaultOptions) -> Single<HttpResponse> {
         print("HttpClient: Sending \(method) request to \(url) with headers \(headers)")
         print(cleanURL(url))
         let urlObj = URL(string: cleanURL(url))!
         var single = Single.create { (emitter: SingleEmitter<HttpResponse>) in
-            let completionHandler = { (data:Data?, response:URLResponse?, error:Error?) in
-                if let casted = response as? HTTPURLResponse, let data = data {
-                    print("HttpClient: Response from \(method) request to \(urlObj) with headers \(headers): \(casted.statusCode)")
-                    emitter.onSuccess(HttpResponse(response: casted, data: data))
-                } else {
-                    print("HttpClient: ERROR!  Response is not URLResponse")
-                    emitter.onError(IllegalStateException("Response is not URLResponse"))
-                }
-            }
             
             var cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
             switch(options.cacheMode){
@@ -90,6 +82,19 @@ public enum HttpClient {
             }
             request.httpMethod = method
 
+            concurrentRequests += 1
+            print("HttpClient: concurrentRequests = \(concurrentRequests)")
+            let completionHandler = { [session] (data:Data?, response:URLResponse?, error:Error?) in
+                concurrentRequests -= 1
+                print("HttpClient: concurrentRequests = \(concurrentRequests)")
+                if let casted = response as? HTTPURLResponse, let data = data {
+                    print("HttpClient: Response from \(method) request to \(urlObj) with headers \(headers): \(casted.statusCode)")
+                    emitter.onSuccess(HttpResponse(response: casted, data: data))
+                } else {
+                    print("HttpClient: ERROR!  Response is not URLResponse")
+                    emitter.onError(IllegalStateException("Response is not URLResponse"))
+                }
+            }
             if let body = body {
                 request.setValue(body.mediaType, forHTTPHeaderField: "Content-Type")
                 session.uploadTask(with: request, from: body.data, completionHandler: completionHandler).resume()
@@ -168,17 +173,21 @@ public enum HttpClient {
             if let body = body {
                 request.setValue(body.mediaType, forHTTPHeaderField: "Content-Type")
                 let task = session.uploadTask(with: request, from: body.data, completionHandler: completionHandler)
-                let obs = task.progress.observe(\.fractionCompleted) { (progress, _) in
-                    progSubj.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
+                if #available(iOS 11.0, *) {
+                    let obs = task.progress.observe(\.fractionCompleted) { (progress, _) in
+                        progSubj.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
+                    }
+                    toHold.value.append(obs)
                 }
-                toHold.value.append(obs)
                 task.resume()
             } else {
                 let task = session.dataTask(with: request, completionHandler: completionHandler)
-                let obs = task.progress.observe(\.fractionCompleted) { (progress, _) in
-                    progSubj.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
+                if #available(iOS 11.0, *) {
+                    let obs = task.progress.observe(\.fractionCompleted) { (progress, _) in
+                        progSubj.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
+                    }
+                    toHold.value.append(obs)
                 }
-                toHold.value.append(obs)
                 task.resume()
             }
         }

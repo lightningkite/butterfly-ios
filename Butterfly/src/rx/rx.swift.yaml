@@ -33,6 +33,11 @@
   template: '~this~.subscribe(onNext: ~onNext~, onError: ~onError~, onCompleted: ~onComplete~)'
 
 ## Operators
+- id: io.reactivex.Observable.singleOrError
+  type: call
+  template:
+    pattern: '~this~.asSingle()'
+    imports: [RxSwift]
 - id: io.reactivex.Observable.delay
   type: call
   template:

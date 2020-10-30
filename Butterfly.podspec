@@ -7,7 +7,7 @@ Pod::Spec.new do |s|
 
   s.license = "GPL"
   s.author = { "Captain" => "joseph@lightningkite.com" }
-  s.platform = :ios, "11.0"
+  s.platform = :ios, "10.0"
   s.source = { :git => "https://github.com/lightningkite/butterfly-ios.git", :tag => "#{s.version}", :submodules => true }
   s.source_files =  "Butterfly/**/*.{swift,swift.yml,swift.yaml}"
 
