@@ -26,7 +26,7 @@ public class CustomView: FrameLayout {
         })
         self.layer.addSublayer(imageLayer)
     }
-
+    
     //--- CustomView.delegate
     public var delegate: CustomViewDelegate? {
         willSet {
@@ -63,7 +63,7 @@ public class CustomView: FrameLayout {
     private var drawCount = 0
     private var started = CFAbsoluteTimeGetCurrent()
     private var lastMessage = CFAbsoluteTimeGetCurrent()
-
+    
     func startRefresh(){
         let size = self.frame.size
         if stage.compareAndSet(expected: 0, setTo: 1) {
@@ -80,7 +80,7 @@ public class CustomView: FrameLayout {
                 }
                 let image = UIGraphicsGetImageFromCurrentImageContext()
                 UIGraphicsEndImageContext()
-
+                
                 DispatchQueue.main.async { [weak self] in
                     UIView.performWithoutAnimation {
                         if let self = self {
@@ -105,7 +105,7 @@ public class CustomView: FrameLayout {
             needsAnotherRender = true
         }
     }
-
+    
     public override func layoutSubviews() {
         super.layoutSubviews()
         self.imageLayer.frame = self.bounds
@@ -128,12 +128,12 @@ public class CustomView: FrameLayout {
         handleTouches(touches)
         super.touchesEnded(touches, with: event)
     }
-
+    
     override public func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         handleTouches(touches)
         super.touchesEnded(touches, with: event)
     }
-
+    
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
         if let delegate = delegate {
             return CGSize(
@@ -208,19 +208,19 @@ final class Atomic<A: Equatable> {
     init(_ value: A) {
         self._value = value
     }
-
+    
     var value: A {
         get {
             return queue.sync { self._value }
         }
     }
-
+    
     func mutate(_ transform: (inout A) -> ()) {
         queue.sync {
             transform(&self._value)
         }
     }
-
+    
     func compareAndSet(expected: A, setTo: A) -> Bool {
         var result = false
         queue.sync {

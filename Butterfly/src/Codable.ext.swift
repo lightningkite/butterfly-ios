@@ -60,6 +60,13 @@ public extension KeyedDecodingContainer {
         let string = try decode(String.self, forKey: key)
         return Double(string) ?? 0
     }
+    func decodeDoubleOrNull(forKey key: KeyedDecodingContainer<K>.Key) throws -> Double? {
+        if let result = try? decode(Double?.self, forKey: key) {
+            return result
+        }
+        let string = try decode(String.self, forKey: key)
+        return Double(string) ?? 0
+    }
 }
 
 
