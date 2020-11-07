@@ -168,10 +168,15 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
     }
+    var lastFocus: Date = Date()
     
     @objc func dismissKeyboard() {
+        let x = self.view.firstResponder
         post {
-            self.resignAllFirstResponders()
+            let y = self.view.firstResponder
+            if x === y {
+                self.resignAllFirstResponders()
+            }
         }
     }
     

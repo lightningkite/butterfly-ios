@@ -28,15 +28,15 @@ public class GeoAddress : Codable, KDataClass {
     convenience required public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         self.init(
-            coordinate: try values.decodeIfPresent(GeoCoordinate?.self, forKey: .coordinate) ?? nil,
-            name: try values.decodeIfPresent(String?.self, forKey: .name) ?? nil,
-            street: try values.decodeIfPresent(String?.self, forKey: .street) ?? nil,
-            subLocality: try values.decodeIfPresent(String?.self, forKey: .subLocality) ?? nil,
-            locality: try values.decodeIfPresent(String?.self, forKey: .locality) ?? nil,
-            subAdminArea: try values.decodeIfPresent(String?.self, forKey: .subAdminArea) ?? nil,
-            adminArea: try values.decodeIfPresent(String?.self, forKey: .adminArea) ?? nil,
-            countryName: try values.decodeIfPresent(String?.self, forKey: .countryName) ?? nil,
-            postalCode: try values.decodeIfPresent(String?.self, forKey: .postalCode) ?? nil
+            coordinate: values.contains(.coordinate) ? try values.decode(GeoCoordinate?.self, forKey: .coordinate) : nil,
+            name: values.contains(.name) ? try values.decode(String?.self, forKey: .name) : nil,
+            street: values.contains(.street) ? try values.decode(String?.self, forKey: .street) : nil,
+            subLocality: values.contains(.subLocality) ? try values.decode(String?.self, forKey: .subLocality) : nil,
+            locality: values.contains(.locality) ? try values.decode(String?.self, forKey: .locality) : nil,
+            subAdminArea: values.contains(.subAdminArea) ? try values.decode(String?.self, forKey: .subAdminArea) : nil,
+            adminArea: values.contains(.adminArea) ? try values.decode(String?.self, forKey: .adminArea) : nil,
+            countryName: values.contains(.countryName) ? try values.decode(String?.self, forKey: .countryName) : nil,
+            postalCode: values.contains(.postalCode) ? try values.decode(String?.self, forKey: .postalCode) : nil
         )
     }
     

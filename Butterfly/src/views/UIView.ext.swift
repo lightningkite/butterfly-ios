@@ -131,7 +131,7 @@ public extension UIView {
         backgroundColor = color
     }
     func setBackgroundColor(_ color: Int64) {
-        backgroundColor = color.asColor()
+        backgroundColor = UIColor(argb: color)
     }
 
 

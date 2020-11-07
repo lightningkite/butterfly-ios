@@ -3,3 +3,15 @@
   template:
     pattern: UIColor
     imports: [UIKit]
+
+- id: com.lightningkite.butterfly.views.colorValue
+  type: call
+  template:
+    pattern: 'UIColor(argb: ~0~)'
+    imports: [Butterfly]
+
+- id: com.lightningkite.butterfly.views.asColor
+  type: call
+  template:
+    pattern: 'UIColor(argb: ~this~)'
+    imports: [Butterfly]
