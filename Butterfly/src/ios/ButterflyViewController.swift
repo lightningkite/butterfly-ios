@@ -169,8 +169,10 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         view.addGestureRecognizer(tap)
     }
     var lastFocus: Date = Date()
+    var lastTapPosition: CGPoint = .zero
     
-    @objc func dismissKeyboard() {
+    @objc func dismissKeyboard(gestureRecognizer: UITapGestureRecognizer) {
+        lastTapPosition = gestureRecognizer.location(in: self.view)
         let x = self.view.firstResponder
         post {
             let y = self.view.firstResponder
