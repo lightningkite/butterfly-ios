@@ -64,8 +64,10 @@ public extension KeyedDecodingContainer {
         if let result = try? decode(Double?.self, forKey: key) {
             return result
         }
-        let string = try decode(String.self, forKey: key)
-        return Double(string) ?? 0
+        if let string = try decode(String?.self, forKey: key) {
+            return Double(string)
+        }
+        return nil
     }
 }
 

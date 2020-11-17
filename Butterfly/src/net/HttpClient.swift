@@ -111,18 +111,20 @@ public enum HttpClient {
         return single
     }
 
-    public static func callWithProgress(url: String, method: String = "GET", headers: Dictionary<String, String> = [:], body: HttpBody? = nil, options: HttpOptions = HttpClient.defaultOptions) -> Pair<ObservableProperty<HttpProgress>, Single<HttpResponse>> {
+    public static func callWithProgress<T>(url: String, method: String = "GET", headers: Dictionary<String, String> = [:], body: HttpBody? = nil, options: HttpOptions = HttpClient.defaultOptions, parse: @escaping (HttpResponse) -> Single<T>) -> Observable<HttpProgress<T>> {
         print("HttpClient: Sending \(method) request to \(url) with headers \(headers)")
         let toHold: Box<Array<Any>> = Box([])
         let urlObj = URL(string: cleanURL(url))!
-        let progSubj = PublishSubject<HttpProgress>()
-        var progObs: Observable<HttpProgress> = progSubj
-        var single = Single.create { (emitter: SingleEmitter<HttpResponse>) in
+        var obs = Observable.create { (emitter: ObservableEmitter<HttpProgress<T>>) in
             let completionHandler = { [toHold] (data:Data?, response:URLResponse?, error:Error?) in
-                progSubj.onNext(HttpProgress.Companion.INSTANCE.done)
                 if let casted = response as? HTTPURLResponse, let data = data {
                     print("HttpClient: Response from \(method) request to \(url) with headers \(headers): \(casted.statusCode)")
-                    emitter.onSuccess(HttpResponse(response: casted, data: data))
+                    emitter.onNext(HttpProgress(phase: .Read, ratio: 1))
+                    parse(HttpResponse(response: casted, data: data)).subscribeBy { (error) in
+                        emitter.onError(error)
+                    } onSuccess: { (result: T) in
+                        emitter.onNext(HttpProgress(phase: .Done, ratio: 1, response: result))
+                    }.forever()
                 } else {
                     print("HttpClient: ERROR!  Response is not URLResponse")
                     emitter.onError(IllegalStateException("Response is not URLResponse"))
@@ -175,7 +177,7 @@ public enum HttpClient {
                 let task = session.uploadTask(with: request, from: body.data, completionHandler: completionHandler)
                 if #available(iOS 11.0, *) {
                     let obs = task.progress.observe(\.fractionCompleted) { (progress, _) in
-                        progSubj.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
+                        emitter.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
                     }
                     toHold.value.append(obs)
                 }
@@ -184,7 +186,7 @@ public enum HttpClient {
                 let task = session.dataTask(with: request, completionHandler: completionHandler)
                 if #available(iOS 11.0, *) {
                     let obs = task.progress.observe(\.fractionCompleted) { (progress, _) in
-                        progSubj.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
+                        emitter.onNext(HttpProgress(phase: .Read, ratio: Float(progress.fractionCompleted)))
                     }
                     toHold.value.append(obs)
                 }
@@ -192,14 +194,12 @@ public enum HttpClient {
             }
         }
         if let io = ioScheduler {
-            single = single.subscribeOn(io)
-            progObs = progObs.subscribeOn(io)
+            obs = obs.subscribeOn(io)
         }
         if let resp = responseScheduler {
-            single = single.observeOn(resp)
-            progObs = progObs.observeOn(resp)
+            obs = obs.observeOn(resp)
         }
-        return Pair(first: progObs.asObservableProperty(defaultValue: HttpProgress.Companion.INSTANCE.connecting), second: single)
+        return obs
     }
 
     public static func call(url: String, method: String = "GET", headers: Dictionary<String, String> = [:], body: HttpBody? = nil, callTimeout:Int64? = nil, writeTimeout:Int64? = nil, readTimeout:Int64?=nil,connectTimeout:Int64?=nil) -> Single<HttpResponse> {

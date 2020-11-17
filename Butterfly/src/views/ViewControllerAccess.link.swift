@@ -16,6 +16,12 @@ public extension ViewControllerAccess {
             items.append(fixed)
         }
         let vc = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        vc.popoverPresentationController?.sourceView = self.parentViewController.view
+        if let b = self.parentViewController as? ButterflyViewController {
+            vc.popoverPresentationController?.sourceRect = CGRect(x: b.lastTapPosition.x, y: b.lastTapPosition.y, width: 1, height: 1)
+        } else {
+            vc.popoverPresentationController?.sourceRect = CGRect(x: self.parentViewController.view.frame.centerX(), y: self.parentViewController.view.frame.centerY(), width: 1, height: 1)
+        }
         self.parentViewController.present(vc, animated: true, completion: nil)
     }
 

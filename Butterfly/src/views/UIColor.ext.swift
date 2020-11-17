@@ -2,23 +2,6 @@
 import Foundation
 import UIKit
 
-public extension Int32 {
-    func asColor() -> UIColor {
-        return UIColor(argb: Int(self))
-    }
-}
-
-public extension Int64 {
-    func asColor() -> UIColor {
-        return UIColor(argb: Int(self))
-    }
-}
-public extension Int {
-    func asColor() -> UIColor {
-        return UIColor(argb: Int(self))
-    }
-}
-
 public extension UIColor {
     convenience init(red: Int, green: Int, blue: Int, alpha: Int = 0xFF) {
         self.init(
@@ -30,12 +13,12 @@ public extension UIColor {
     }
     
     // let's suppose alpha is the first component (ARGB)
-    convenience init(argb: Int) {
+    convenience init(argb: Int64) {
         self.init(
-            red: (argb >> 16) & 0xFF,
-            green: (argb >> 8) & 0xFF,
-            blue: argb & 0xFF,
-            alpha: (argb >> 24) & 0xFF
+            red: Int((argb >> 16) & 0xFF),
+            green: Int((argb >> 8) & 0xFF),
+            blue: Int(argb & 0xFF),
+            alpha: Int((argb >> 24) & 0xFF)
         )
     }
     

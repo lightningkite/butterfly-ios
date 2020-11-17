@@ -24,12 +24,12 @@ public class RxTransformationOnlyObservableProperty<T> : ObservableProperty<T> {
 }
 
 public extension ObservableProperty where T: Equatable {
-    func distinctUntilChanged() -> ObservableProperty<T> { return self.plusRx(operator: { (it) -> Observable<T> in it.startWith(self.value).distinctUntilChanged().skip(1) }) }
+    func distinctUntilChanged() -> ObservableProperty<T> { return self.plusRx(`operator`: { (it) -> Observable<T> in it.startWith(self.value).distinctUntilChanged().skip(1) }) }
 }
 
 public extension ObservableProperty {
     func plusRx(`operator`: @escaping  (Observable<T>) -> Observable<T>) -> ObservableProperty<T> {
-        return (RxTransformationOnlyObservableProperty(basedOn: self as ObservableProperty<T>, operator: `operator` as (Observable<T>) -> Observable<T>) as RxTransformationOnlyObservableProperty<T>)
+        return (RxTransformationOnlyObservableProperty(basedOn: self as ObservableProperty<T>, `operator`: `operator` as (Observable<T>) -> Observable<T>) as RxTransformationOnlyObservableProperty<T>)
     }
 }
 

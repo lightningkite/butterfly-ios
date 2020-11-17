@@ -15,21 +15,16 @@ public enum HttpPhase: String, KEnum, StringEnum, CaseIterable {
     }
 }
 
-public class HttpProgress : KDataClass {
+public class HttpProgress<T> {
     public var phase: HttpPhase
     public var ratio: Float
-    public init(phase: HttpPhase, ratio: Float) {
+    public var response: T?
+    public init(phase: HttpPhase, ratio: Float = 0.5, response: T? = nil) {
         self.phase = phase
         self.ratio = ratio
+        self.response = response
         //Necessary properties should be initialized now
     }
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(phase)
-        hasher.combine(ratio)
-    }
-    public static func == (lhs: HttpProgress, rhs: HttpProgress) -> Bool { return lhs.phase == rhs.phase && lhs.ratio == rhs.ratio }
-    public var description: String { return "HttpProgress(phase = \(self.phase), ratio = \(self.ratio))" }
-    public func copy(phase: HttpPhase? = nil, ratio: Float? = nil) -> HttpProgress { return HttpProgress(phase: phase ?? self.phase, ratio: ratio ?? self.ratio) }
     
     public var approximate: Float {
         get { return run { () -> Float in 
@@ -55,19 +50,6 @@ public class HttpProgress : KDataClass {
                 }
                 
         } }
-    }
-    public class Companion {
-        public init() {
-            self.connecting = HttpProgress(phase: HttpPhase.Connect, ratio: 0)
-            self.waiting = HttpProgress(phase: HttpPhase.Waiting, ratio: 0)
-            self.done = HttpProgress(phase: HttpPhase.Done, ratio: 0)
-            //Necessary properties should be initialized now
-        }
-        public static let INSTANCE = Companion()
-        
-        public let connecting: HttpProgress
-        public let waiting: HttpProgress
-        public let done: HttpProgress
     }
 }
 

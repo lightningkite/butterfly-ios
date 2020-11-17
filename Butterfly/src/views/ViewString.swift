@@ -65,7 +65,7 @@ public class ViewStringList : ViewString {
     }
     
     public func get(dependency: ViewControllerAccess) -> String {
-        return self.parts.map({ (it) -> String in it.get(dependency: dependency) }).joined(separator: self.separator)
+        return self.parts.joined(separator: self.separator, transform: { (it) -> String in it.get(dependency: dependency) })
     }
 }
 
@@ -86,11 +86,11 @@ public extension ViewString {
         } else if let thing = thing as? ViewStringResource {
             return String(kotlin: thing.resource)
         } else if let thing = thing as? ViewStringTemplate {
-            return thing.template.toDebugString() + "(" + thing.arguments.map({ (it) -> String in run { () -> String in 
+            return thing.template.toDebugString() + "(" + thing.arguments.joined(separator: ", ", transform: { (it) -> String in run { () -> String in 
                             if let it = it as? ViewString { return it.toDebugString() } else { return "\(it)" }
-            } }).joined(separator: ", ") + ")"
+            } }) + ")"
         } else if let thing = thing as? ViewStringList {
-            return thing.parts.map({ (it) -> String in it.toDebugString() }).joined(separator: thing.separator)
+            return thing.parts.joined(separator: thing.separator, transform: { (it) -> String in it.toDebugString() })
         } else if let thing = thing as? ViewStringComplex {
             return "<Complex string \(thing)>"
         } else  {

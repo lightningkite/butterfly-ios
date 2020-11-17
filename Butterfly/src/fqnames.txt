@@ -135,6 +135,7 @@ com.lightningkite.butterfly.location.oneLine
 com.lightningkite.butterfly.location.coordinate
 com.lightningkite.butterfly.location
 com.lightningkite.butterfly.location.GeoAddress
+com.lightningkite.butterfly.location.distanceToMiles
 com.lightningkite.butterfly.location.GeoCoordinate
 com.lightningkite.butterfly.location.geocode
 com.lightningkite.butterfly.location.LocationResult
@@ -233,6 +234,7 @@ com.lightningkite.butterfly.observables.binding.bindLong
 com.lightningkite.butterfly.observables.binding.bindFloat
 com.lightningkite.butterfly.observables.binding.whenScrolledToEnd
 com.lightningkite.butterfly.observables.binding.reverseDirection
+com.lightningkite.butterfly.observables.binding.defaultLayoutManager
 com.lightningkite.butterfly.observables.binding.RVTypeHandler
 com.lightningkite.butterfly.observables.binding.bindMulti
 com.lightningkite.butterfly.observables.binding.bindRefresh
@@ -349,6 +351,11 @@ com.lightningkite.butterfly.views.requestVideosGallery
 com.lightningkite.butterfly.views.requestVideoCamera
 com.lightningkite.butterfly.views.requestMediasGallery
 com.lightningkite.butterfly.views.requestMediaGallery
+com.lightningkite.butterfly.views.requestFile
+com.lightningkite.butterfly.views.requestFiles
+com.lightningkite.butterfly.views.getMimeType
+com.lightningkite.butterfly.views.getFileName
+com.lightningkite.butterfly.views.downloadFile
 com.lightningkite.butterfly.views.getString
 com.lightningkite.butterfly.views.getColor
 com.lightningkite.butterfly.views.displayMetrics
