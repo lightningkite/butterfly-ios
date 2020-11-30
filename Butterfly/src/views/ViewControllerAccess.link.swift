@@ -25,7 +25,7 @@ public extension ViewControllerAccess {
         self.parentViewController.present(vc, animated: true, completion: nil)
     }
 
-    func openUrl(url: String) -> Bool {
+    func openUrl(url: String, newWindow: Bool = true) -> Bool {
         if let url = URL(string: url) {
             if UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)

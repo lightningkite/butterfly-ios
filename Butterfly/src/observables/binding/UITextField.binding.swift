@@ -106,6 +106,64 @@ public extension UITextField {
     }
 }
 
+//--- EditText.bindIntegerNullable(MutableObservableProperty<Int?>)
+public extension UITextField {
+    func bindIntegerNullable(_ observable: MutableObservableProperty<Int?>) -> Void {
+        delegate = DoneDelegate.shared
+        observable.subscribeBy { ( value) in
+            let currentValue = Int(self.textString)
+            if currentValue != value {
+                if let value = value {
+                    self.textString = String(value)
+                } else {
+                    self.textString = ""
+                }
+                self.notifyParentSizeChanged()
+            }
+        }.until(self.removed)
+        addAction(for: UITextField.Event.editingChanged) { [weak self] in
+            if let self = self {
+                let currentValue = Int(self.textString)
+                if observable.value != currentValue {
+                    observable.value = currentValue
+                }
+            }
+        }
+    }
+    func bindIntegerNullable(observable: MutableObservableProperty<Int?>) -> Void {
+        return bindInteger(observable)
+    }
+}
+
+//--- EditText.bindDoubleNullable(MutableObservableProperty<Double?>)
+public extension UITextField {
+    func bindDoubleNullable(_ observable: MutableObservableProperty<Double?>) -> Void {
+        delegate = DoneDelegate.shared
+        observable.subscribeBy { ( value) in
+            let currentValue = Double(self.textString)
+            if currentValue != value {
+                if let value = value {
+                    self.textString = String(value)
+                } else {
+                    self.textString = ""
+                }
+                self.notifyParentSizeChanged()
+            }
+        }.until(self.removed)
+        addAction(for: UITextField.Event.editingChanged) { [weak self] in
+            if let self = self {
+                let currentValue = Double(self.textString)
+                if observable.value != currentValue {
+                    observable.value = currentValue
+                }
+            }
+        }
+    }
+    func bindDoubleNullable(observable: MutableObservableProperty<Double?>) -> Void {
+        return bindDouble(observable)
+    }
+}
+
 public extension UITextField {
     func bindString(_ observable: ObservableProperty<String>) {
         return bindString(observable: observable)
