@@ -225,6 +225,8 @@ com.lightningkite.butterfly.observables.binding.bindTimeAlone
 com.lightningkite.butterfly.observables.binding.bindString
 com.lightningkite.butterfly.observables.binding.bindInteger
 com.lightningkite.butterfly.observables.binding.bindDouble
+com.lightningkite.butterfly.observables.binding.bindIntegerNullable
+com.lightningkite.butterfly.observables.binding.bindDoubleNullable
 com.lightningkite.butterfly.observables.binding.bindImage
 com.lightningkite.butterfly.observables.binding.bindVideoThumbnail
 com.lightningkite.butterfly.observables.binding.LinearLayoutBoundSubview
@@ -362,6 +364,7 @@ com.lightningkite.butterfly.views.displayMetrics
 com.lightningkite.butterfly.views.compoundDrawable
 com.lightningkite.butterfly.views.ColorValue
 com.lightningkite.butterfly.views.asColor
+com.lightningkite.butterfly.views.colorValue
 com.lightningkite.butterfly.views.colorAlpha
 com.lightningkite.butterfly.views.CustomViewDelegate
 com.lightningkite.butterfly.views.DjangoErrorTranslator
