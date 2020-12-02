@@ -45,7 +45,8 @@ public extension ViewControllerAccess {
     }
     //--- ViewControllerAccess.requestImageGallery((URL)->Unit)
     func requestImageGallery(callback: @escaping (URL) -> Void) {
-        withLibraryPermission {if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
+        withLibraryPermission {
+            if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
                 let imageDelegate = self.imageDelegate
                 imageDelegate.forImages()
                 imageDelegate.onImagePicked = callback
@@ -115,7 +116,15 @@ public extension ViewControllerAccess {
 
     //--- ViewControllerAccess.requestMediaGallery((URL)->Unit)
     func requestMediaGallery(callback: @escaping (URL) -> Void) -> Void {
-
+        withLibraryPermission {
+            if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum){
+                let imageDelegate = self.imageDelegate
+                imageDelegate.forAll()
+                imageDelegate.onImagePicked = callback
+                imageDelegate.prepareGallery()
+                self.parentViewController.present(imageDelegate.imagePicker, animated: true, completion: nil)
+            }
+        }
     }
 
     //--- ViewControllerAccess.requestImagesGallery((List<URL>)->Unit)
@@ -186,19 +195,73 @@ public extension ViewControllerAccess {
         }
         return nil
     }
-
-    func requestFiles(callback: @escaping (Array<URL>) -> Void){
+    
+    func requestDocuments(callback: @escaping (Array<URL>) -> Void){
         let docDelegate = self.documentDelegate
         docDelegate.onDocumentsPicked = callback
         docDelegate.prepareMenu()
         self.parentViewController.present(docDelegate.documentPicker, animated: true, completion: nil)
     }
 
-    func requestFile(callback: @escaping (URL) -> Void){
+    func requestDocument(callback: @escaping (URL) -> Void){
         let docDelegate = self.documentDelegate
         docDelegate.onDocumentPicked = callback
         docDelegate.prepareMenu()
         self.parentViewController.present(docDelegate.documentPicker, animated: true, completion: nil)
+    }
+    
+    func requestFiles(callback: @escaping (Array<URL>) -> Void){
+        let optionMenu = UIAlertController(title: nil, message: "What kind of files?", preferredStyle: .actionSheet)
+            
+        // 2
+        let image = UIAlertAction(title: "Images", style: .default, handler: { _ in
+            self.requestImagesGallery(callback: callback)
+        })
+        let video = UIAlertAction(title: "Videos", style: .default, handler: { _ in
+            self.requestVideosGallery(callback: callback)
+        })
+        let doc = UIAlertAction(title: "Documents", style: .default, handler: { _ in
+            self.requestDocuments(callback: callback)
+        })
+            
+        // 3
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            
+        // 4
+        optionMenu.addAction(image)
+        optionMenu.addAction(video)
+        optionMenu.addAction(doc)
+        optionMenu.addAction(cancelAction)
+        
+        // 5
+        self.parentViewController.present(optionMenu, animated: true, completion: nil)
+    }
+
+    func requestFile(callback: @escaping (URL) -> Void){
+        let optionMenu = UIAlertController(title: nil, message: "What kind of file?", preferredStyle: .actionSheet)
+            
+        // 2
+        let image = UIAlertAction(title: "Image", style: .default, handler: { _ in
+            self.requestImageGallery(callback: callback)
+        })
+        let video = UIAlertAction(title: "Video", style: .default, handler: { _ in
+            self.requestVideoGallery(callback: callback)
+        })
+        let doc = UIAlertAction(title: "Document", style: .default, handler: { _ in
+            self.requestDocument(callback: callback)
+        })
+            
+        // 3
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            
+        // 4
+        optionMenu.addAction(image)
+        optionMenu.addAction(video)
+        optionMenu.addAction(doc)
+        optionMenu.addAction(cancelAction)
+        
+        // 5
+        self.parentViewController.present(optionMenu, animated: true, completion: nil)
     }
 
     func getFileName(uri:URL) -> String? {
