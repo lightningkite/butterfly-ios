@@ -108,10 +108,10 @@
 
 - id: kotlin.collections.associate
   type: call
-  template: "Dictionary(~this~.map(~0~), uniquingKeysWith: { $0.0 })"
+  template: "Dictionary(~this~.map(~0~), uniquingKeysWith: { (a, _) in a })"
 - id: kotlin.collections.associateBy
   type: call
-  template: "Dictionary(~this~.map { it in (~0~(it), it) }, uniquingKeysWith: { $0.0 })"
+  template: "Dictionary(~this~.map { it in (~0~(it), it) }, uniquingKeysWith: { (a, _) in a })"
 
 - id: kotlin.collections.toList
   type: call

@@ -131,7 +131,7 @@ public extension UITextField {
         }
     }
     func bindIntegerNullable(observable: MutableObservableProperty<Int?>) -> Void {
-        return bindInteger(observable)
+        return bindIntegerNullable(observable)
     }
 }
 
@@ -160,7 +160,7 @@ public extension UITextField {
         }
     }
     func bindDoubleNullable(observable: MutableObservableProperty<Double?>) -> Void {
-        return bindDouble(observable)
+        return bindDoubleNullable(observable)
     }
 }
 

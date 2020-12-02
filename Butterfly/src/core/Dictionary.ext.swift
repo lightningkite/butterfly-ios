@@ -7,6 +7,13 @@ public func dictionaryFrom<A, B>(_ contents: Array<Pair<A, B>>) -> Dictionary<A,
     return Dictionary(contents.map { $0.toTuple() }, uniquingKeysWith: { (_, a) in a })
 }
 public extension Dictionary {
+    
+    init<S>(uniqueKeysWithValues keysAndValues: S) where S : Sequence, S.Element == Pair<Key, Value> {
+        self.init(uniqueKeysWithValues: keysAndValues.map { $0.toTuple() })
+    }
+    init<S>(_ keysAndValues: S, uniquingKeysWith: (Value, Value) -> Value) where S : Sequence, S.Element == Pair<Key, Value> {
+        self.init(keysAndValues.map { $0.toTuple() }, uniquingKeysWith: uniquingKeysWith)
+    }
 
     mutating func putAll(from: Dictionary<Key, Value>) {
         for (key, value) in from {
@@ -40,5 +47,9 @@ public extension Dictionary {
         var temp = self
         temp.removeValue(forKey: key)
         return temp
+    }
+    
+    func mapValuesFromPairs<OUT>(_ transform: (Element) -> OUT) -> Dictionary<Key, OUT> {
+        return Dictionary<Key, OUT>(uniqueKeysWithValues: self.map { ($0.key, transform($0)) })
     }
 }

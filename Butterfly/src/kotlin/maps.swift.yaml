@@ -91,6 +91,6 @@
   type: call
   template: ~this~.value
 
-- id: kotlin.collections.Map.entries
-  type: get
-  template: ~this~
+- id: kotlin.collections.mapValues
+  type: call
+  template: ~this~.mapValuesFromPairs(~*~)

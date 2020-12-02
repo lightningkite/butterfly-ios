@@ -23,7 +23,7 @@ public class CombineObservableProperty<T, A, B> : ObservableProperty<T> {
         get {
             let combinerCopy = self.combiner
             return self.observableA.onChange.startWith(self.observableA.value)
-                .combineLatest(observable: self.observableB.onChange.startWith(self.observableB.value), function:  { [unowned combiner] (a: A, b: B) -> T in combinerCopy(a, b) })
+                .combineLatest(observable: self.observableB.onChange.startWith(self.observableB.value), function:  { (a: A, b: B) -> T in combinerCopy(a, b) })
                 .skip(1)
         }
     }
