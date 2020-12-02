@@ -85,6 +85,7 @@ public enum HttpClient {
             concurrentRequests += 1
             print("HttpClient: concurrentRequests = \(concurrentRequests)")
             let completionHandler = { [session] (data:Data?, response:URLResponse?, error:Error?) in
+                let _ = session //We hold on this to ensure it doesn't get deinited
                 concurrentRequests -= 1
                 print("HttpClient: concurrentRequests = \(concurrentRequests)")
                 if let casted = response as? HTTPURLResponse, let data = data {
@@ -117,6 +118,7 @@ public enum HttpClient {
         let urlObj = URL(string: cleanURL(url))!
         var obs = Observable.create { (emitter: ObservableEmitter<HttpProgress<T>>) in
             let completionHandler = { [toHold] (data:Data?, response:URLResponse?, error:Error?) in
+                let _ = toHold //Holding to ensure it doesn't get cleaned up
                 if let casted = response as? HTTPURLResponse, let data = data {
                     print("HttpClient: Response from \(method) request to \(url) with headers \(headers): \(casted.statusCode)")
                     emitter.onNext(HttpProgress(phase: .Read, ratio: 1))
@@ -213,8 +215,8 @@ public enum HttpClient {
 
     static public func webSocket(url: String) -> Observable<ConnectedWebSocket> {
         return Observable.using({ () -> ConnectedWebSocket in
-            var out = ConnectedWebSocket(url: url)
-            var request = URLRequest(url: URL(string: cleanURL(url))!)
+            let out = ConnectedWebSocket(url: url)
+            let request = URLRequest(url: URL(string: cleanURL(url))!)
             let socket = WebSocket(request: request)
             socket.delegate = out
             out.underlyingSocket = socket

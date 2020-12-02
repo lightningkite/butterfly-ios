@@ -17,8 +17,7 @@ public protocol CALayerToImage {
 extension CALayer : CALayerToImage {
     public func addOnStateChange(_ view: UIView?, action: @escaping (UIControl.State) -> Void) {
         if let view = view as? UIControl {
-            let _ = view.addOnStateChange(retainer: self, id: 0, action: { [weak self, weak view] state in
-                guard let self = self else { return }
+            let _ = view.addOnStateChange(retainer: self, id: 0, action: { [weak view] state in
                 action(state)
                 view?.setNeedsDisplay()
             })

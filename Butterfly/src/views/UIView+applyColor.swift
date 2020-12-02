@@ -18,7 +18,7 @@ public func applyColor(_ view: UIView?, _ colorSet: @escaping (_ state: UIContro
                 to(colorSet(state), state)
             })
     } else if let self = view as? UIControl {
-        self.addOnStateChange(retainer: self, id: 0, action: { state in
+        let _ = self.addOnStateChange(retainer: self, id: 0, action: { state in
             to(colorSet(state), state)
         })
     }
@@ -31,7 +31,7 @@ public func applyColor(_ view: UIView?, _ colorSet: StateSelector<UIColor>, to: 
                 to(colorSet.get(state), state)
             })
     } else if let self = view as? UIControl {
-        self.addOnStateChange(retainer: self, id: 0, action: { state in
+        let _ = self.addOnStateChange(retainer: self, id: 0, action: { state in
             to(colorSet.get(state), state)
         })
     }

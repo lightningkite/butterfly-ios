@@ -4,17 +4,14 @@ import Foundation
 public enum Preferences {
     static public let INSTANCE = Self.self
     public static func set<T: Codable>(key: String, value: T) {
-        if let string = try? value.toJsonString() {
-            UserDefaults.standard.setValue(string, forKey: key)
-        }
+        UserDefaults.standard.setValue(value.toJsonString(), forKey: key)
     }
     public static func remove(key: String) -> Void {
         UserDefaults.standard.removeObject(forKey: key)
     }
     public static func get<T: Codable>(key: String) -> T? {
-        if let string = UserDefaults.standard.string(forKey: key),
-            let parsed: T? = try? string.fromJsonString() {
-            return parsed
+        if let string = UserDefaults.standard.string(forKey: key) {
+            return string.fromJsonString()
         }
         return nil
     }

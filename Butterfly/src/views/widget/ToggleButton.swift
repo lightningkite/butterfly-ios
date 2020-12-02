@@ -72,7 +72,7 @@ public class ToggleButton: UIButtonWithLayer, CompoundButton {
         commonInit()
     }
     
-    override public required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
     }

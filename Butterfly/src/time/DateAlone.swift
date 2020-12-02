@@ -180,31 +180,31 @@ public extension DateAlone {
         return formatter.string(from: dateFrom(dateAlone: self, timeAlone: TimeAlone.noon))
     }
 
-    func setDayOfWeek(value: Int) -> DateAlone {
+    @discardableResult func setDayOfWeek(value: Int) -> DateAlone {
         self.addDays(value - dayOfWeek)
         correct()
         return self
     }
-    func setDayOfMonth(value: Int) -> DateAlone {
+    @discardableResult func setDayOfMonth(value: Int) -> DateAlone {
         self.day = value
         correct()
         return self
     }
-    func setMonthOfYear(value: Int) -> DateAlone {
+    @discardableResult func setMonthOfYear(value: Int) -> DateAlone {
         self.month = value
         correct()
         return self
     }
-    func setYearAd(value: Int) -> DateAlone {
+    @discardableResult func setYearAd(value: Int) -> DateAlone {
         self.year = value
         correct()
         return self
     }
 
-    func setAddDayOfWeek(value: Int) -> DateAlone { addDays(value); return self }
-    func setAddDayOfMonth(value: Int) -> DateAlone { addDays(value); return self }
-    func setAddMonthOfYear(value: Int) -> DateAlone { addMonths(value); cap(); return self }
-    func setAddYearAd(value: Int) -> DateAlone { year += value; cap(); return self }
+    @discardableResult func setAddDayOfWeek(value: Int) -> DateAlone { addDays(value); return self }
+    @discardableResult func setAddDayOfMonth(value: Int) -> DateAlone { addDays(value); return self }
+    @discardableResult func setAddMonthOfYear(value: Int) -> DateAlone { addMonths(value); cap(); return self }
+    @discardableResult func setAddYearAd(value: Int) -> DateAlone { year += value; cap(); return self }
 
     func dayOfWeek(value: Int) -> DateAlone {
         return copy().setDayOfWeek(value: value)

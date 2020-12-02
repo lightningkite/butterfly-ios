@@ -42,7 +42,7 @@ public final class ConnectedWebSocket: WebSocketDelegate, Disposable {
             _read.onNext(WebSocketFrame(text: string))
             break
         case .connected(let headers):
-            print("Socket to \(url) opened successfully.")
+            print("Socket to \(url) opened successfully with \(headers).")
             ownConnection.onNext(self)
             break
         case .disconnected(let reason, let code):
@@ -51,7 +51,7 @@ public final class ConnectedWebSocket: WebSocketDelegate, Disposable {
             _read.onComplete()
             break
         case .error(let error):
-            print("Socket to \(url) failed with error \(error)")
+            print("Socket to \(url) failed with error \(String(describing: error))")
             ownConnection.onError(error ?? Exception())
             read.onError(error ?? Exception())
             break

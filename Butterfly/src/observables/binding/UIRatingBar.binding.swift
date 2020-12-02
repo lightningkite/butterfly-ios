@@ -9,12 +9,12 @@ public extension UIRatingBar {
         self.settings.fillMode = .full
 
         var suppress = false
-        observable.subscribeBy { (value) in
+        observable.subscribeBy(onNext:  { (value) in
             guard !suppress else { return }
             suppress = true
             self.rating = Double(value)
             suppress = false
-        }.until(self.removed)
+        }).until(self.removed)
         self.didTouchCosmos = { rating in
             guard !suppress else { return }
             suppress = true
@@ -33,9 +33,9 @@ public extension UIRatingBar {
         self.settings.totalStars = Int(stars)
         self.settings.fillMode = .full
 
-        observable.subscribeBy { (value) in
+        observable.subscribeBy(onNext:  { (value) in
             self.rating = Double(value)
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bind(stars: Int, observable: ObservableProperty<Int>) -> Void {
         return bind(stars, observable)
@@ -49,12 +49,12 @@ public extension UIRatingBar {
         self.settings.fillMode = .precise
 
         var suppress = false
-        observable.subscribeBy { (value) in
+        observable.subscribeBy(onNext:  { (value) in
             guard !suppress else { return }
             suppress = true
             self.rating = Double(value)
             suppress = false
-        }.until(self.removed)
+        }).until(self.removed)
         self.didTouchCosmos = { rating in
             guard !suppress else { return }
             suppress = true
@@ -73,9 +73,9 @@ public extension UIRatingBar {
         self.settings.totalStars = Int(stars)
         self.settings.fillMode = .precise
 
-        observable.subscribeBy { (value) in
+        observable.subscribeBy(onNext:  { (value) in
             self.rating = Double(value)
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bindFloat(stars: Int, observable: ObservableProperty<Float>) -> Void {
         return bindFloat(stars, observable)

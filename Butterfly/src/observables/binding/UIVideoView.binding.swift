@@ -5,22 +5,22 @@ import RxSwift
 
 public extension UIVideoView {
     func bind(video: ObservableProperty<Video?>) {
-        video.subscribeBy { v in
+        video.subscribeBy(onNext:  { v in
             if let v = v {
                 self.setVideo(video: v)
             } else {
                 self.clearVideo()
             }
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bindAndStart(video: ObservableProperty<Video?>) {
-        video.subscribeBy { v in
+        video.subscribeBy(onNext:  { v in
             if let v = v {
                 self.setVideo(video: v)
                 self.controller.player?.play()
             } else {
                 self.clearVideo()
             }
-        }.until(self.removed)
+        }).until(self.removed)
     }
 }

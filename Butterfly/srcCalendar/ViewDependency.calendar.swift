@@ -8,7 +8,7 @@ import EventKitUI
 public extension ViewControllerAccess {
 
     //--- ViewControllerAccess.openEvent(String, String, String, Date, Date)
-    public func openEvent(_ title: String, _ description: String, _ location: String, _ start: Date, _ end: Date) -> Void {
+    func openEvent(_ title: String, _ description: String, _ location: String, _ start: Date, _ end: Date) -> Void {
         let store = EKEventStore()
         store.requestAccess(to: .event) { (hasPermission, error) in
             if hasPermission {
@@ -28,14 +28,12 @@ public extension ViewControllerAccess {
             }
         }
     }
-    public func openEvent(title: String, myDescription: String, location: String, start: Date, end: Date) -> Void {
+    func openEvent(title: String, myDescription: String, location: String, start: Date, end: Date) -> Void {
         return openEvent(title, myDescription, location, start, end)
     }
 }
 extension ViewControllerAccess: EKEventEditViewDelegate {
     public func eventEditViewController(_ controller: EKEventEditViewController, didCompleteWith action: EKEventEditViewAction) {
-        self.parentViewController.dismiss(animated: true) {[weak self] in
-            
-        }
+        self.parentViewController.dismiss(animated: true)
     }
 }

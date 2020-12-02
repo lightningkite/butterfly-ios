@@ -8,12 +8,12 @@ public extension UIPageControl {
     func bind(_ count: Int, _ selected: MutableObservableProperty<Int>) -> Void {
         self.numberOfPages = Int(count)
         var suppress = false
-        selected.subscribeBy { value in
+        selected.subscribeBy(onNext:  { value in
             guard !suppress else { return }
             suppress = true
             self.currentPage = Int(value)
             suppress = false
-        }.until(self.removed)
+        }).until(self.removed)
         self.addAction(for: .valueChanged, action: {
             guard !suppress else { return }
             suppress = true
@@ -29,16 +29,16 @@ public extension UIPageControl {
 //--- PageIndicatorView.bind(ObservableProperty<Int>, MutableObservableProperty<Int>)
 public extension UIPageControl {
     func bind(_ count: ObservableProperty<Int>, _ selected: MutableObservableProperty<Int>) -> Void {
-        count.subscribeBy { count in
+        count.subscribeBy(onNext: { count in
             self.numberOfPages = Int(count)
-        }
+        }).until(self.removed)
         var suppress = false
-        selected.subscribeBy { value in
+        selected.subscribeBy(onNext:  { value in
             guard !suppress else { return }
             suppress = true
             self.currentPage = Int(value)
             suppress = false
-        }.until(self.removed)
+        }).until(self.removed)
         self.addAction(for: .valueChanged, action: {
             guard !suppress else { return }
             suppress = true

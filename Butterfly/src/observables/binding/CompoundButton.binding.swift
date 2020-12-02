@@ -6,12 +6,12 @@ import UIKit
 //--- CompoundButton.bindSelect(T, MutableObservableProperty<T>)
 public extension CompoundButton {
     func bindSelect<T: Equatable>(_ myValue: T, _ selected: MutableObservableProperty<T>) -> Void {
-        selected.subscribeBy { ( value) in
+        selected.subscribeBy(onNext:  { ( value) in
             let shouldBeOn = value == myValue
             if self.isChecked != shouldBeOn {
                 self.isChecked = shouldBeOn
             }
-        }.until((self as! UIView).removed)
+        }).until((self as! UIView).removed)
         self.setOnCheckedChangeListener { (self, value) in
             if value && selected.value != myValue {
                 selected.value = myValue
@@ -28,12 +28,12 @@ public extension CompoundButton {
 //--- CompoundButton.bindSelectNullable(T, MutableObservableProperty<T?>)
 public extension CompoundButton {
     func bindSelectNullable<T: Equatable>(_ myValue: T, _ selected: MutableObservableProperty<T?>) -> Void {
-        selected.subscribeBy { ( value) in
+        selected.subscribeBy(onNext:  { ( value) in
             let shouldBeOn = value == myValue
             if self.isChecked != shouldBeOn {
                 self.isChecked = shouldBeOn
             }
-        }.until((self as! UIView).removed)
+        }).until((self as! UIView).removed)
         self.setOnCheckedChangeListener { (self, value) in
             if value && selected.value != myValue {
                 selected.value = myValue
@@ -51,7 +51,7 @@ public extension CompoundButton {
 public extension CompoundButton {
     func bindSelectInvert<T: Equatable>(_ myValue: T, _ selected: MutableObservableProperty<T?>) -> Void {
         var suppress:Bool = false
-        selected.subscribeBy { ( value) in
+        selected.subscribeBy(onNext:  { ( value) in
             if !suppress{
                 suppress = true
                 let shouldBeOn = value == myValue || value == nil
@@ -60,7 +60,7 @@ public extension CompoundButton {
                 }
                 suppress = false
             }
-        }.until((self as! UIView).removed)
+        }).until((self as! UIView).removed)
         self.setOnCheckedChangeListener { (self, value) in
             if !suppress{
                 suppress = true
@@ -83,14 +83,14 @@ public extension CompoundButton {
 //--- CompoundButton.bind(MutableObservableProperty<Boolean>)
 public extension CompoundButton {
     func bind(_ observable: MutableObservableProperty<Bool>) -> Void {
-        observable.subscribeBy { ( value) in
+        observable.subscribeBy(onNext:  { ( value) in
             if self.isChecked != value {
                 self.isChecked = value
             }
-        }.until((self as! UIView).removed)
+        }).until((self as! UIView).removed)
         self.setOnCheckedChangeListener { (self, value) in
             if observable.value != self.isChecked {
-                observable.value = self.isChecked ?? false
+                observable.value = self.isChecked 
             }
         }
     }

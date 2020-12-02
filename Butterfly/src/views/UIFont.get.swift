@@ -58,8 +58,6 @@ extension UIFont {
                 }
             case .Bold:
                 return UIFont.boldSystemFont(ofSize: size)
-            @unknown default:
-                return UIFont.systemFont(ofSize: size)
             }
         }
     }

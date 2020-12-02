@@ -12,16 +12,16 @@ public extension Dropdown {
         self.delegate = boundDataSource
         retain(as: "boundDataSource", item: boundDataSource, until: removed)
 
-        options.subscribeBy { value in
+        options.subscribeBy(onNext:  { value in
             self.pickerView.reloadAllComponents()
-        }.until(self.removed)
+        }).until(self.removed)
         self.selectedView = makeView(selected)
-        selected.subscribeBy { value in
-            var index = options.value.index(of: value) ?? -1
+        selected.subscribeBy(onNext:  { value in
+            let index = options.value.firstIndex(of: value) ?? -1
             if index != -1 {
                 self.pickerView.selectRow(index, inComponent: 0, animated: false)
             }
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bind<T: Equatable>(options: ObservableProperty<Array<T>>, selected: MutableObservableProperty<T>, makeView: @escaping (ObservableProperty<T>) -> UIView) -> Void {
         return bind(options, selected, makeView)
@@ -32,16 +32,16 @@ public extension Dropdown {
         self.delegate = boundDataSource
         retain(as: "boundDataSource", item: boundDataSource, until: removed)
 
-        options.subscribeBy { value in
+        options.subscribeBy(onNext:  { value in
             self.pickerView.reloadAllComponents()
-        }.until(self.removed)
+        }).until(self.removed)
         self.selectedView = Dropdown.defaultRow(selected.map(read: toString))
-        selected.subscribeBy { value in
-            var index = options.value.index(of: value) ?? -1
+        selected.subscribeBy(onNext:  { value in
+            let index = options.value.firstIndex(of: value) ?? -1
             if index != -1 {
                 self.pickerView.selectRow(index, inComponent: 0, animated: false)
             }
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bind<T: Equatable>(options: ObservableProperty<Array<T>>, selected: MutableObservableProperty<T>, toString: @escaping (T) -> String = { "\($0)" } ) -> Void {
         return bind(options, selected, toString)
@@ -52,16 +52,16 @@ public extension Dropdown {
         self.delegate = boundDataSource
         retain(as: "boundDataSource", item: boundDataSource, until: removed)
 
-        options.subscribeBy { value in
+        options.subscribeBy(onNext:  { value in
             self.pickerView.reloadAllComponents()
-        }.until(self.removed)
+        }).until(self.removed)
         self.selectedView = Dropdown.defaultRow(selected.flatMap(transformation: toString))
-        selected.subscribeBy { value in
-            var index = options.value.index(of: value) ?? -1
+        selected.subscribeBy(onNext:  { value in
+            let index = options.value.firstIndex(of: value) ?? -1
             if index != -1 {
                 self.pickerView.selectRow(index, inComponent: 0, animated: false)
             }
-        }.until(self.removed)
+        }).until(self.removed)
     }
 
     static var defaultRow: (_ obs: ObservableProperty<String>)->UIView = { obs in

@@ -22,9 +22,9 @@ public extension UISegmentedControl {
                 selected.value = Int(self?.selectedSegmentIndex ?? 0)
             })
         }
-        selected.subscribeBy { value in
+        selected.subscribeBy(onNext:  { value in
             self.selectedSegmentIndex = Int(value)
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bind(tabs: Array<String>, selected: MutableObservableProperty<Int>, allowReselect:Bool = false) -> Void {
         return bind(tabs, selected, allowReselect)
@@ -48,9 +48,9 @@ public extension UISegmentedControl {
                 selected.value = tabs[self?.selectedSegmentIndex ?? 0]
             })
         }
-        selected.subscribeBy { value in
+        selected.subscribeBy(onNext:  { value in
             self.selectedSegmentIndex = tabs.firstIndex(of: value) ?? 0
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bind<T: Equatable>(tabs: Array<T>, selected: MutableObservableProperty<T>, allowReselect:Bool = false, toString: @escaping (T)->String) -> Void {
         return bind(tabs, selected, allowReselect, toString)
@@ -80,9 +80,9 @@ public extension UISegmentedControl {
                 }
             })
         }
-        selected.subscribeBy { value in
+        selected.subscribeBy(onNext:  { value in
             self.selectedSegmentIndex = options.value.firstIndex(of: value) ?? 0
-        }.until(self.removed)
+        }).until(self.removed)
     }
     
     func bind<T:Equatable>(_ options:ObservableProperty<Array<T>>, _ selected: MutableObservableProperty<T>, _ allowReselect:Bool = false, _ toString: @escaping (T)->String) -> Void{

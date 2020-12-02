@@ -27,7 +27,7 @@ extension UIView {
                 return current
             }
             let new = PublishSubject<UIView>()
-            new.add { view in
+            let _ = new.add { view in
                 return false
             }
             UIView.ext.set(self, new)
@@ -40,7 +40,7 @@ extension UIView {
 
     public func addOnLayoutSubviews(action:@escaping ()->Void) {
         action()
-        let _ = onLayoutSubviews.add(listener: { [weak self] view in
+        let _ = onLayoutSubviews.add(listener: { view in
             action()
             return false
         })

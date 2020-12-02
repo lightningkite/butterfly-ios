@@ -293,7 +293,7 @@ public class CalendarDrawing {
             canvas.drawTextCentered(text: String(kotlin: date.day), centerX: inner.centerX(), centerY: inner.centerY(), paint: paint)
         } else {
             let originalColor = paint.color
-            var myPaint = paint
+            let myPaint = paint
             myPaint.color = paint.color.colorAlpha(desiredAlpha: 64)
             canvas.drawTextCentered(text: String(kotlin: date.day), centerX: inner.centerX(), centerY: inner.centerY(), paint: myPaint)
             myPaint.color = originalColor

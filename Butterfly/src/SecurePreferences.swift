@@ -14,9 +14,7 @@ public enum SecurePreferences {
     }
 
     public static func set<T: Codable>(key: String, value: T) {
-        if let string = try? value.toJsonString() {
-            keychain[key] = string
-        }
+        keychain[key] = value.toJsonString()
     }
 
     public static func remove(key: String) -> Void {
@@ -24,9 +22,8 @@ public enum SecurePreferences {
     }
 
     public static func get<T: Codable>(key: String) -> T? {
-        if let string = keychain[key],
-            let parsed: T? = try? string.fromJsonString() {
-            return parsed
+        if let string = keychain[key] {
+            return string.fromJsonString()
         }
         return nil
     }

@@ -129,7 +129,7 @@ open class UIButtonWithLayer: UIButton {
             let isHorizontal = iconPosition == .left || iconPosition == .right
             let isVertical = iconPosition == .top || iconPosition == .bottom
             let hasTitle = self.titleLabel?.text?.trimmingCharacters(in: .whitespaces).isEmpty == true
-            if let iconLayer = iconLayer {
+            if iconLayer != nil {
                 if isHorizontal {
                     result.width += iconDefaultSize.width
                     if hasTitle {
@@ -171,7 +171,7 @@ open class UIButtonWithLayer: UIButton {
         let isHorizontal = iconPosition == .left || iconPosition == .right
         let isVertical = iconPosition == .top || iconPosition == .bottom
         let hasTitle = self.titleLabel?.text?.trimmingCharacters(in: .whitespaces).isEmpty == true
-        if let iconLayer = iconLayer {
+        if iconLayer != nil {
             if isHorizontal {
                 result.width += iconDefaultSize.width
                 if hasTitle {

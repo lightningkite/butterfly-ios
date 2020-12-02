@@ -9,18 +9,18 @@ import Alamofire
 //--- ImageView.bindImage(ObservableProperty<Image?>)
 public extension ViewWithImage {
     func bindImage(_ image: ObservableProperty<Image?>) -> Void {
-        image.subscribeBy { it in
+        image.subscribeBy(onNext:  { it in
             self.loadImage(it)
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bindImage(image: ObservableProperty<Image?>) -> Void {
         return bindImage(image)
     }
     
     func bindImage(_ image: ObservableProperty<Image>) -> Void {
-        image.subscribeBy { it in
+        image.subscribeBy(onNext:  { it in
             self.loadImage(it)
-        }.until(self.removed)
+        }).until(self.removed)
     }
     func bindImage(image: ObservableProperty<Image>) -> Void {
         return bindImage(image)

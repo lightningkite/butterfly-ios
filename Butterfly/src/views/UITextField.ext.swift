@@ -28,7 +28,7 @@ public extension UITextField {
         set(value){}
     }
     func addDismissButton(){
-        var toolbar = UIToolbar()
+        let toolbar = UIToolbar()
         toolbar.barStyle = UIBarStyle.default
         toolbar.isTranslucent = true
         toolbar.sizeToFit()

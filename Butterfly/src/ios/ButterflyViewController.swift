@@ -136,14 +136,14 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         
         hideKeyboardWhenTappedAround()
 
-         ApplicationAccess.INSTANCE.softInputActive.subscribeBy { it in
+        ApplicationAccess.INSTANCE.softInputActive.subscribeBy(onNext:  { it in
             guard !self.suppressKeyboardUpdate else { return }
-             if it {
+            if it {
                 self.view.findNextFocus()?.becomeFirstResponder()
-             } else {
+            } else {
                 self.resignAllFirstResponders()
-             }
-        }.forever()
+            }
+        }).forever()
     }
     
     private var suppressKeyboardUpdate: Bool = false
@@ -218,8 +218,6 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
     /// - Parameter notification: System keyboard notification
     @objc func keyboardWillChangeFrame(notification: NSNotification) {
         if
-            let window = view.window,
-            let responder = view.firstResponder,
             let userInfo = notification.userInfo,
             let keyboardFrameValue = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue,
             let keyboardAnimationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber
@@ -240,7 +238,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
                     self.viewAdditionalSafeAreaInsets.bottom = keyboardHeight
                     self.view.layoutIfNeeded()
                 },
-                completion: { [weak self] _ in
+                completion: { _ in
                 }
             )
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
@@ -256,7 +254,6 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
     /// - Parameter notification: System keyboard notification
     @objc func keyboardWillHide(notification: NSNotification) {
         if
-            let window = self.view.window,
             let userInfo = notification.userInfo,
             let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? NSNumber
         {
@@ -271,7 +268,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
                     self.viewAdditionalSafeAreaInsets.bottom = 0
                     self.view.layoutIfNeeded()
                 },
-                completion: { [weak self] _ in
+                completion: { _ in
                 }
             )
         }

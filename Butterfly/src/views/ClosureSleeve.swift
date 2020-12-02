@@ -74,7 +74,7 @@ public extension UIBarButtonItem {
 
 public extension NSObject {
     private static var anything = ExtensionProperty<NSObject, Dictionary<String, Any?>>()
-    var extensions: Dictionary<String, Any>? {
+    var extensions: Dictionary<String, Any?>? {
         get {
             return NSObject.anything.get(self)
         }
@@ -89,7 +89,7 @@ public extension NSObject {
         })
     }
     func checkRetained(as string: String = "[\(arc4random())]") -> Any? {
-        return NSObject.anything.get(self)?[string]
+        return NSObject.anything.get(self)?[string]?.flatMap({ $0 })
     }
     func unretain(_ string: String) {
         NSObject.anything.modify(self, defaultValue: [:]) { box in

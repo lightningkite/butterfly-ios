@@ -158,7 +158,7 @@ public extension UIView {
     @objc func setOnLongClickListener(_ action: @escaping (UIView)->Bool) {
         self.isUserInteractionEnabled = true
         let recognizer = UILongPressGestureRecognizer()
-        recognizer.addAction(until: removed) { [unowned recognizer, weak self] in
+        let _ = recognizer.addAction(until: removed) { [unowned recognizer, weak self] in
             if recognizer.state == .ended, let self = self {
                 let _ = action(self)
             }
@@ -185,7 +185,7 @@ public extension UIView {
     @objc func onLongClick(action: @escaping ()->Void) {
         self.isUserInteractionEnabled = true
         let recognizer = UILongPressGestureRecognizer()
-        recognizer.addAction(until: removed) { [unowned recognizer, weak self] in
+        let _ = recognizer.addAction(until: removed) { [unowned recognizer] in
             if recognizer.state == .ended {
                 action()
             }
@@ -196,7 +196,7 @@ public extension UIView {
     @objc func onLongClickWithGR(action: @escaping (UILongPressGestureRecognizer)->Void) {
         self.isUserInteractionEnabled = true
         let recognizer = UILongPressGestureRecognizer()
-        recognizer.addAction(until: removed) { [unowned recognizer, weak self] in
+        let _ = recognizer.addAction(until: removed) { [unowned recognizer] in
             action(recognizer)
         }
         retain(as: "onLongClickRecognizer", item: recognizer, until: removed)

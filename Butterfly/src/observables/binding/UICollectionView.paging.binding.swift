@@ -101,6 +101,8 @@ public extension UICollectionView {
                         at = .top
                     case .horizontal:
                         at = .left
+                    @unknown default:
+                        fatalError("Got unrecognized scroll direction")
                     }
                 }
                 self.scrollToItem(at: IndexPath(item: 0, section: 0), at: at, animated: true)

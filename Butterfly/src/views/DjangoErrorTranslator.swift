@@ -20,7 +20,6 @@ public class DjangoErrorTranslator {
         if node == nil { return }
         if let node = node as? NSDictionary {
             for _it in node{
-                let key = _it.key
                 let value = _it.value
                 
                 self.handleNode(builder: builder, node: value)

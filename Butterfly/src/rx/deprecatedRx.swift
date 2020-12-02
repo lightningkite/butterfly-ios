@@ -27,10 +27,10 @@ public extension Observable where Element: Any {
 }
 
 public extension Observable where Element: Any {
-    func addWeak<A : AnyObject>(_ referenceA: A, listener: @escaping  (A, Element) -> Void) -> Disposable {
+    @discardableResult func addWeak<A : AnyObject>(_ referenceA: A, listener: @escaping  (A, Element) -> Void) -> Disposable {
         return addWeak(referenceA: referenceA, listener: listener)
     }
-    func addWeak<A : AnyObject>(referenceA: A, listener: @escaping  (A, Element) -> Void) -> Disposable {
+    @discardableResult func addWeak<A : AnyObject>(referenceA: A, listener: @escaping  (A, Element) -> Void) -> Disposable {
         var disposable: Disposable? = nil
         weak var weakA: A? = referenceA
         let disp = self.subscribeBy(onNext: { (item: Element) -> Void in
@@ -48,10 +48,10 @@ public extension Observable where Element: Any {
 }
 
 public extension Observable where Element: Any {
-    func addWeak<A : AnyObject, B : AnyObject>(_ referenceA: A, _ referenceB: B, listener: @escaping  (A, B, Element) -> Void) -> Disposable {
+    @discardableResult func addWeak<A : AnyObject, B : AnyObject>(_ referenceA: A, _ referenceB: B, listener: @escaping  (A, B, Element) -> Void) -> Disposable {
         return addWeak(referenceA: referenceA, referenceB: referenceB, listener: listener)
     }
-    func addWeak<A : AnyObject, B : AnyObject>(referenceA: A, referenceB: B, listener: @escaping  (A, B, Element) -> Void) -> Disposable {
+    @discardableResult func addWeak<A : AnyObject, B : AnyObject>(referenceA: A, referenceB: B, listener: @escaping  (A, B, Element) -> Void) -> Disposable {
         var disposable: Disposable? = nil
         weak var weakA: A? = referenceA
         weak var weakB: B? = referenceB
@@ -72,10 +72,10 @@ public extension Observable where Element: Any {
 
 
 public extension Observable where Element: Any {
-    func addWeak<A : AnyObject, B : AnyObject, C : AnyObject>(_ referenceA: A, _ referenceB: B, _ referenceC: C, listener: @escaping  (A, B, C, Element) -> Void) -> Disposable {
+    @discardableResult func addWeak<A : AnyObject, B : AnyObject, C : AnyObject>(_ referenceA: A, _ referenceB: B, _ referenceC: C, listener: @escaping  (A, B, C, Element) -> Void) -> Disposable {
         return addWeak(referenceA: referenceA, referenceB: referenceB, referenceC: referenceC, listener: listener)
     }
-    func addWeak<A : AnyObject, B : AnyObject, C : AnyObject>(referenceA: A, referenceB: B, referenceC: C, listener: @escaping  (A, B, C, Element) -> Void) -> Disposable {
+    @discardableResult func addWeak<A : AnyObject, B : AnyObject, C : AnyObject>(referenceA: A, referenceB: B, referenceC: C, listener: @escaping  (A, B, C, Element) -> Void) -> Disposable {
         var disposable: Disposable? = nil
         weak var weakA: A? = referenceA
         weak var weakB: B? = referenceB

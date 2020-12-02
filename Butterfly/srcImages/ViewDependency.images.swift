@@ -128,7 +128,7 @@ public extension ViewControllerAccess {
     }
 
     //--- ViewControllerAccess.requestImagesGallery((List<URL>)->Unit)
-    public func requestImagesGallery(callback: @escaping (Array<URL>) -> Void) -> Void {
+    func requestImagesGallery(callback: @escaping (Array<URL>) -> Void) -> Void {
         if PHPhotoLibrary.authorizationStatus() == .authorized {
             self.requestImagesGalleryRaw(type: .allPhotos, callback: callback)
         } else {
@@ -169,7 +169,7 @@ public extension ViewControllerAccess {
     }
 
     //--- ViewControllerAccess.requestImageCamera((URL)->Unit)
-    public func requestImageCamera(front:Bool = false, callback: @escaping (URL) -> Void) {
+    func requestImageCamera(front:Bool = false, callback: @escaping (URL) -> Void) {
         withCameraPermission {
             DispatchQueue.main.async {
                 if UIImagePickerController.isSourceTypeAvailable(.camera){
@@ -186,7 +186,7 @@ public extension ViewControllerAccess {
     }
 
 
-    public func getMimeType(uri:URL) -> String? {
+    func getMimeType(uri:URL) -> String? {
         let pathExtension = uri.pathExtension
         if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as NSString, nil)?.takeRetainedValue() {
             if let mimetype = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
@@ -520,8 +520,8 @@ extension UIImage {
 extension UIImage {
     convenience init?(fileURLWithPath url: URL, scale: CGFloat = 1.0) {
         do {
-            let data = try NSData(contentsOf: url)
-            self.init(data: data! as Data, scale: scale)
+            let data = try Data(contentsOf: url)
+            self.init(data: data, scale: scale)
         } catch {
             print("-- Error: \(error)")
             return nil

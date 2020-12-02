@@ -22,19 +22,21 @@ public extension LinearLayout {
                 let excessViews = existingViews.count - value.count
                 if excessViews > 0 {
                     //remove views
-                    for iter in ((1...excessViews)){
+                    for _ in ((1...excessViews)){
                         let old = existingViews.remove(at: (existingViews.count - 1))
                         self.removeView(old.view)
                     }
-                } else { if existingViews.count < value.count {
+                } else {
+                    if existingViews.count < value.count {
                         //add views
-                        for iter in ((1...((-excessViews)))){
+                        for _ in ((1...((-excessViews)))){
                             let prop = StandardObservableProperty(underlyingValue: defaultValue)
                             let view = makeView(prop)
                             self.addView(view, self.params(gravity: AlignPair.Companion.INSTANCE.centerFill))
                             existingViews.append(LinearLayoutBoundSubview(view: view, property: prop))
                         }
-                } }
+                    }
+                }
                 
                 //Update views
                 for index in (value.indices){
@@ -53,13 +55,13 @@ public extension LinearLayout {
                 let excessViews = existingViews.count - value.count
                 if excessViews > 0 {
                     //remove views
-                    for iter in ((1...excessViews)){
+                    for _ in ((1...excessViews)){
                         let old = existingViews.remove(at: (existingViews.count - 1))
                         self.removeView(old.view)
                     }
                 } else { if existingViews.count < value.count {
                         //add views
-                        for iter in ((1...((-excessViews)))){
+                    for _ in ((1...((-excessViews)))){
                             let prop = StandardObservableProperty(underlyingValue: defaultValue)
                             let view = makeView(prop)
                             self.addView(view, self.params(gravity: AlignPair.Companion.INSTANCE.center))
