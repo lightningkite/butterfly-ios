@@ -1,0 +1,13 @@
+
+- id: kotlin.ByteArray
+  type: type
+  requiresMutable: true
+  template: Data
+
+- id: kotlin.ByteArray
+  type: typeRef
+  template: Data
+
+- id: kotlin.ByteArray.size
+  type: get
+  template: ~this~.count
