@@ -34,3 +34,11 @@
 - id: kotlin.ranges.coerceAtLeast
   type: call
   template: Swift.max(~this~, ~0~)
+
+- id: kotlin.comparisons.maxOf
+  type: call
+  template: Swift.max(~*~)
+
+- id: kotlin.comparisons.minOf
+  type: call
+  template: Swift.min(~*~)
