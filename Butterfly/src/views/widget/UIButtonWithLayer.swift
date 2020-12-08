@@ -283,8 +283,21 @@ open class UIButtonWithLayer: UIButton {
             }
             titleLabel.frame = destination
         } else if let iconLayer = iconLayer, let manipulatedLayer = manipulatedLayer {
-            iconLayer.resize(CGRect(origin: .zero, size: placeableRect.size))
-            manipulatedLayer.resize(placeableRect)
+            var ratioCorrectRect = placeableRect
+            let iconRatio = iconDefaultSize.width / iconDefaultSize.height
+            if placeableRect.size.width / placeableRect.size.height > iconRatio {
+                //Wider
+                let size = placeableRect.size.height * iconRatio
+                ratioCorrectRect.size.width = size
+                ratioCorrectRect.origin.x -= (size - placeableRect.size.width) / 2
+            } else {
+                //Taller
+                let size = placeableRect.size.width / iconRatio
+                ratioCorrectRect.size.height = size
+                ratioCorrectRect.origin.y -= (size - placeableRect.size.height) / 2
+            }
+            iconLayer.resize(CGRect(origin: .zero, size: ratioCorrectRect.size))
+            manipulatedLayer.resize(ratioCorrectRect)
         }
     }
 }

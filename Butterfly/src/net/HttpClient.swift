@@ -201,7 +201,7 @@ public enum HttpClient {
         if let resp = responseScheduler {
             obs = obs.observeOn(resp)
         }
-        return obs
+        return obs.replay(1).refCount()
     }
 
     public static func call(url: String, method: String = "GET", headers: Dictionary<String, String> = [:], body: HttpBody? = nil, callTimeout:Int64? = nil, writeTimeout:Int64? = nil, readTimeout:Int64?=nil,connectTimeout:Int64?=nil) -> Single<HttpResponse> {
