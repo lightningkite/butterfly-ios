@@ -15,12 +15,23 @@ private extension UICollectionViewCompositionalLayout {
     }
 }
 
-public enum QuickCompositionalLayout {
+internal class FixedLayout: UICollectionViewCompositionalLayout {
+    
+    override func invalidationContext(forBoundsChange newBounds: CGRect) -> UICollectionViewLayoutInvalidationContext {
+        let context = super.invalidationContext(forBoundsChange: newBounds) as! UICollectionViewFlowLayoutInvalidationContext
+        if let collectionView = collectionView {
+            context.invalidateFlowLayoutDelegateMetrics = collectionView.bounds.size != newBounds.size
+        }
+        return context
+    }
+}
+
+public class QuickCompositionalLayout {
     public static func list(vertical: Bool = true, reverse: Bool = false) -> UICollectionViewLayout {
         if vertical {
             let size = NSCollectionLayoutSize(
                 widthDimension: NSCollectionLayoutDimension.fractionalWidth(1),
-                heightDimension: NSCollectionLayoutDimension.estimated(100)
+                heightDimension: NSCollectionLayoutDimension.estimated(45)
             )
             let item = NSCollectionLayoutItem(layoutSize: size)
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitem: item, count: 1)
@@ -30,7 +41,7 @@ public enum QuickCompositionalLayout {
             return result
         } else {
             let size = NSCollectionLayoutSize(
-                widthDimension: NSCollectionLayoutDimension.estimated(100),
+                widthDimension: NSCollectionLayoutDimension.estimated(45),
                 heightDimension: NSCollectionLayoutDimension.fractionalHeight(1)
             )
             let item = NSCollectionLayoutItem(layoutSize: size)
@@ -70,10 +81,73 @@ public enum QuickCompositionalLayout {
 
 //--- RecyclerView.whenScrolledToEnd(()->Unit)
 public extension UICollectionView {
-    func refreshSizes(){
-        post {
-            self.retainPositionTargetIndex {
+    private static let itemsToReloadSoon = ExtensionProperty<UICollectionView, Set<IndexPath>>()
+    private var itemsToReloadSoon: Set<IndexPath> {
+        get {
+            return UICollectionView.itemsToReloadSoon.get(self) ?? []
+        }
+        set(value) {
+            UICollectionView.itemsToReloadSoon.set(self, value)
+        }
+    }
+    func reloadItemsSoon(_ items: Set<IndexPath>) {
+        if itemsToReloadSoon.isEmpty {
+            post {
+                let itemsToReload = self.itemsToReloadSoon.filter { $0.section < self.numberOfSections && $0.row < self.numberOfItems(inSection: $0.section) }
+                print(itemsToReload)
+                self.reloadItems(at: Array(itemsToReload))
+                self.itemsToReloadSoon = []
+            }
+        }
+        for i in items {
+            itemsToReloadSoon.insert(i)
+        }
+    }
+    
+    private static let refreshQueued = ExtensionProperty<UICollectionView, Bool>()
+    func refreshDataDelayed() {
+        if !(UICollectionView.refreshQueued.get(self) ?? false) {
+            UICollectionView.refreshQueued.set(self, true)
+            post {
+                self.refreshData()
+                UICollectionView.refreshQueued.set(self, false)
+            }
+        }
+    }
+    func refreshData(){
+        self.retainPositionTargetIndex {
+            self.reloadData()
+        }
+    }
+    
+    private static let refreshSizeQueued = ExtensionProperty<UICollectionView, Bool>()
+    func refreshSizes() {
+        if !(UICollectionView.refreshSizeQueued.get(self) ?? false) {
+            UICollectionView.refreshSizeQueued.set(self, true)
+            
+            guard let centerId = self.indexPathForItem(at: CGPoint(x: self.contentOffset.x + self.frame.midX, y: self.contentOffset.y)) else { return }
+            guard let oldCenterPos = self.collectionViewLayout.layoutAttributesForItem(at: centerId)?.frame.origin else { return }
+            let oldScreenY = oldCenterPos.y - self.contentOffset.y
+            
+            post {
                 self.collectionViewLayout.invalidateLayout()
+                self.layoutIfNeeded()
+                self.collectionViewLayout.invalidateLayout()
+                self.layoutIfNeeded()
+                var lastDiff: CGFloat = 10000.0
+                while true {
+                    let newCenterPos = self.collectionViewLayout.layoutAttributesForItem(at: centerId)?.frame.origin ?? oldCenterPos
+                    let newScreenY = newCenterPos.y - self.contentOffset.y
+                    let offset = newScreenY - oldScreenY
+                    if lastDiff == offset {
+                        break
+                    }
+                    lastDiff = offset
+                    self.contentOffset.y += offset
+                    self.layoutIfNeeded()
+                    if abs(offset) < 4 { break }
+                }
+                UICollectionView.refreshSizeQueued.set(self, false)
             }
         }
     }
@@ -81,11 +155,6 @@ public extension UICollectionView {
         get { return contentInset }
         set(value) {
             self.contentInset = value
-        }
-    }
-    func refreshData(){
-        self.retainPositionTargetIndex {
-            self.reloadData()
         }
     }
     func scrollToItemSafe(at: IndexPath, at pos: ScrollPosition = .centeredVertically, animated: Bool = false){
@@ -97,6 +166,7 @@ public extension UICollectionView {
         guard let centerId = self.indexPathForItem(at: CGPoint(x: self.contentOffset.x + self.frame.midX, y: self.contentOffset.y)) else { around(); return }
         guard let oldCenterPos = self.collectionViewLayout.layoutAttributesForItem(at: centerId)?.frame.origin else { around(); return }
         let oldScreenY = oldCenterPos.y - self.contentOffset.y
+        print("Cell \(centerId) was at \(oldScreenY)")
         around()
         while true {
             let newCenterPos = self.collectionViewLayout.layoutAttributesForItem(at: centerId)?.frame.origin ?? oldCenterPos
@@ -104,7 +174,13 @@ public extension UICollectionView {
             let offset = newScreenY - oldScreenY
             self.contentOffset.y += offset
             self.layoutIfNeeded()
+            print("Cell \(centerId) is now at \(newScreenY) after moving \(offset)")
             if abs(offset) < 4 { break }
+        }
+        post {
+            let newCenterPos = self.collectionViewLayout.layoutAttributesForItem(at: centerId)?.frame.origin ?? oldCenterPos
+            let newScreenY = newCenterPos.y - self.contentOffset.y
+            print("Cell \(centerId) is now at \(newScreenY) after a post")
         }
     }
     func whenScrolledToEnd(action: @escaping () -> Void) -> Void{
@@ -349,7 +425,7 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         self.getType = getType
         self.atPosition = atPosition
     }
-
+    
     private var registered: Set<Int> = []
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = items[indexPath.row]
@@ -358,10 +434,12 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
             collectionView.register(ObsUICollectionViewCell.self, forCellWithReuseIdentifier: String(type))
         }
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(type), for: indexPath) as! ObsUICollectionViewCell
+        cell.indexPath = indexPath
+        cell.resizeEnabled = false
         if collectionView.reverseDirection {
-            cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
+            cell.transform = CGAffineTransform(scaleX: 1, y: -1)
         } else {
-            cell.contentView.transform = .identity
+            cell.transform = .identity
         }
         cell.setNeedsDisplay()
 
@@ -377,9 +455,8 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
             fatalError("Could not find cell property")
         }
         cell.absorbCaps(collectionView: collectionView)
-//        cell.setNeedsLayout()
-//        cell.layoutIfNeeded()
-//        cell.bounds.size = cell.systemLayoutSizeFitting(collectionView.bounds.size, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        cell.setNeedsLayout()
+        cell.resizeEnabled = true
         post {
             cell.refreshLifecycle()
         }
@@ -393,14 +470,14 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
             print("Triggered end with \(indexPath.row) size \(items.count)")
             atEnd()
         }
-        if let cell = cell as? ObsUICollectionViewCell {
-            cell.resizeEnabled = true
-        }
     }
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
 
         if let cell = cell as? ObsUICollectionViewCell {
-            cell.resizeEnabled = false
+            cell.indexPath = nil
+            post {
+                cell.refreshLifecycle()
+            }
         }
     }
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
@@ -411,9 +488,12 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
     }
 }
 
-class ObsUICollectionViewCell: UICollectionViewCell {
+class ObsUICollectionViewCell: UICollectionViewCell, ListensToChildSize {
+    
+    weak var collectionView: UICollectionView?
     var obs: Any?
     var resizeEnabled = false
+    var indexPath: IndexPath? = nil
     
     var heightSetSize: CGFloat? = nil
     var widthSetSize: CGFloat? = nil
@@ -440,6 +520,7 @@ class ObsUICollectionViewCell: UICollectionViewCell {
     }
     
     func absorbCaps(collectionView: UICollectionView){
+        self.collectionView = collectionView
         if let layout = collectionView.collectionViewLayout as? UICollectionViewCompositionalLayout {
             if let s = layout.fractionalWidth {
                 widthSetSize = collectionView.frame.size.width * s
@@ -450,7 +531,8 @@ class ObsUICollectionViewCell: UICollectionViewCell {
         }
     }
     
-    override func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
+    var lastSize: CGSize = .zero
+    private func internalMeasure(_ targetSize: CGSize) -> CGSize {
         var newTargetSize = targetSize
         if let widthSetSize = widthSetSize {
             newTargetSize.width = widthSetSize
@@ -468,6 +550,12 @@ class ObsUICollectionViewCell: UICollectionViewCell {
         return CGSize(width: maxX, height: maxY)
     }
     
+    override func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
+        let newSize = internalMeasure(targetSize)
+        lastSize = newSize
+        return newSize
+    }
+    
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         return systemLayoutSizeFitting(size)
     }
@@ -475,15 +563,19 @@ class ObsUICollectionViewCell: UICollectionViewCell {
         return systemLayoutSizeFitting(CGSize.zero)
     }
     
-    override var transform: CGAffineTransform {
-        get {
-            return super.transform
-        }
-        set(value){
-            super.transform = value
+    func childSizeUpdated(_ child: UIView) {
+        guard resizeEnabled, lastSize != internalMeasure(.zero) else { return }
+        self.setNeedsLayout()
+        if let collectionView = collectionView {
+            if self.indexPath != nil {
+                collectionView.refreshSizes()
+            }
         }
     }
-
+    
+    deinit {
+        self.removedDeinitHandler()
+    }
 }
 
 public extension UICollectionView {
@@ -503,7 +595,7 @@ public extension UICollectionView {
             let transform = value ? CGAffineTransform(scaleX: 1, y: -1) : .identity
             self.transform = transform
             for cell in self.visibleCells {
-                cell.contentView.transform = transform
+                cell.transform = transform
                 cell.setNeedsDisplay()
             }
         }

@@ -218,29 +218,17 @@ public extension UIView {
     func notifyParentSizeChanged() {
         self.setNeedsLayout()
         if let p = self.superview as? ListensToChildSize {
-//            p.child
             p.childSizeUpdated(self)
-//             var current = p
-//             while
-//                 !(current is LinearLayout) &&
-//                     !(current is FrameLayout) &&
-//                     !(current is UIScrollView)
-//             {
-//                 if let su = current.superview {
-//                     current = su
-//                     if let cell = current as? SizedUICollectionViewCell {
-//                         cell.refreshSize()
-//                         break
-//                     }
-//                 } else {
-//                     break
-//                 }
-//             }
+        }
+        if let p = self.superview, let g = p.superview as? UICollectionViewCell {
+            if let g = g as? ListensToChildSize {
+                g.childSizeUpdated(self)
+            }
         }
     }
 
     func post(_ action: @escaping () -> Void){
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: action)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.0000001, execute: action)
     }
 }
 

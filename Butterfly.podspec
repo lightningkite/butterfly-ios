@@ -26,6 +26,7 @@ Pod::Spec.new do |s|
   s.dependency "RxRelay"
   s.dependency "Starscream"
   s.dependency "IBPCollectionViewCompositionalLayout"
+  s.dependency "CollectionKit"
 
   s.subspec 'Core' do |core|
     core.source_files =  "Butterfly/src/**/*.{swift,swift.yml,swift.yaml}"

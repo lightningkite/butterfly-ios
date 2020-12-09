@@ -14,7 +14,7 @@ public extension UIView {
         }
     }
 
-    func refreshLifecycle(){
+    func refreshLifecycle() {
 
         let previouslyActive = UIView.beenActiveExtension.get(self) == true
         if !previouslyActive && window != nil {
@@ -27,6 +27,15 @@ public extension UIView {
 
         for view in self.subviews {
             view.refreshLifecycle()
+        }
+    }
+    
+    func removedDeinitHandler() {
+        if let toRemove = UIView.disposablesExtension.remove(ObjectIdentifier(self)) {
+            toRemove.forEach { $0.dispose() }
+        }
+        for view in self.subviews {
+            view.removedDeinitHandler()
         }
     }
 

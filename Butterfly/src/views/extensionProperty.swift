@@ -109,25 +109,28 @@ import Foundation
 import Foundation
 
 private class WeakObject<T: AnyObject>: Equatable, Hashable, CustomStringConvertible {
+    var identifierNumber: Int
     weak var object: T?
-    var recordedAddress: ObjectIdentifier
     init(_ object: T) {
         self.object = object
-        self.recordedAddress = ObjectIdentifier(object)
+        self.identifierNumber = Int(bitPattern: ObjectIdentifier(object)) >> 2
+    }
+    init(identifier: ObjectIdentifier) {
+        self.identifierNumber = Int(bitPattern: identifier) >> 2
     }
 
     func hash(into hasher: inout Hasher) {
-        hasher.combine(recordedAddress)
+        hasher.combine(identifierNumber)
     }
 
     var alive: Bool { return object !== nil }
 
     static func == (lhs: WeakObject<T>, rhs: WeakObject<T>) -> Bool {
-        return lhs.recordedAddress == rhs.recordedAddress
+        return lhs.identifierNumber == rhs.identifierNumber
     }
     
     var description: String {
-        return String(describing: recordedAddress)
+        return String(describing: identifierNumber)
     }
 }
 
@@ -139,7 +142,8 @@ public class ExtensionProperty<On: AnyObject, T> {
         
         DispatchQueue.global(qos: .background).async {
             var delayedChecks: Array<()->Void> = []
-            for i in 0...10000 {
+            let countToTest = 100000
+            for i in 0...countToTest {
                 let newItem = NSObject()
                 assert(ext.get(newItem) == nil)
                 ext.set(newItem, i)
@@ -155,6 +159,7 @@ public class ExtensionProperty<On: AnyObject, T> {
                     delayedChecks = []
                 }
             }
+            print("Count is \(ext.count).")
         }
 
         ext.set(exampleItem, 1)
@@ -169,7 +174,21 @@ public class ExtensionProperty<On: AnyObject, T> {
     }
     private let lock = SpinLock()
     private var table: Dictionary<WeakObject<On>, T> = [:]
+    public var count: Int {
+        return table.count
+    }
 
+    public func get(_ from: ObjectIdentifier) -> T? {
+        checkClean()
+        return lock.run {
+            let key = WeakObject<On>(identifier: from)
+            cleanKey(key)
+            return table[key]
+        }
+    }
+    public func remove(_ from: ObjectIdentifier) -> T? {
+        return table.removeValue(forKey: WeakObject(identifier: from))
+    }
     public func get(_ from: On) -> T? {
         checkClean()
         return lock.run {
