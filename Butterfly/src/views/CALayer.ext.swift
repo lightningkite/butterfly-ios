@@ -60,25 +60,27 @@ extension CALayer : CALayerToImage {
             baseSize = self.bounds.size
             CALayer.baseSize.set(self, self.bounds.size)
         }
-
-        if scaleOverResize {
-            self.setAffineTransform(.identity)
-            self.frame = bounds
-            let xScale = bounds.size.width / baseSize.width
-            let yScale = bounds.size.height / baseSize.height
-            self.setAffineTransform(
-                CGAffineTransform.identity
-                    .translatedBy(
-                        x: -(1 - xScale) * bounds.size.width / 2,
-                        y: -(1 - yScale) * bounds.size.height / 2
-                    )
-                    .scaledBy(
-                        x: xScale,
-                        y: yScale
-                    )
-            )
-        } else {
-            self.frame = bounds
+        
+        CATransaction.withDisabledActions {
+            if scaleOverResize {
+                self.setAffineTransform(.identity)
+                self.frame = bounds
+                let xScale = bounds.size.width / baseSize.width
+                let yScale = bounds.size.height / baseSize.height
+                self.setAffineTransform(
+                    CGAffineTransform.identity
+                        .translatedBy(
+                            x: -(1 - xScale) * bounds.size.width / 2,
+                            y: -(1 - yScale) * bounds.size.height / 2
+                        )
+                        .scaledBy(
+                            x: xScale,
+                            y: yScale
+                        )
+                )
+            } else {
+                self.frame = bounds
+            }
         }
         CALayer.onResize.get(self)?.invokeAll(self.bounds)
     }

@@ -195,6 +195,7 @@ open class SwapView: UIView {
             }
         }
         dependency.runKeyboardUpdate(root: to, discardingRoot: previousView)
+        notifyParentSizeChanged()
         swapping = false
     }
     

@@ -135,10 +135,10 @@ public extension UIView {
     }
 
 
-    func postInvalidate() {
+    @objc func postInvalidate() {
         setNeedsDisplay()
     }
-    func invalidate() {
+    @objc func invalidate() {
         setNeedsDisplay()
     }
 

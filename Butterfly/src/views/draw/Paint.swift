@@ -32,7 +32,7 @@ public class Paint {
             return result
         }
         let result = CGFloat(NSString(string: text).size(withAttributes: attributes).width)
-        Paint.measureText_cache[key] = result
+//        Paint.measureText_cache[key] = result
         return result
     }
     public func measureText(text: String) -> CGFloat {

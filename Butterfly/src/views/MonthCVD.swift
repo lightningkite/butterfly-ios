@@ -150,7 +150,7 @@ open class MonthCVD : CustomViewDelegate {
     
     private let calcMonthB: DateAlone
     
-    override public func draw(canvas: CGContext, width: CGFloat, height: CGFloat, displayMetrics: DisplayMetrics) -> Void {
+    override open func draw(canvas: CGContext, width: CGFloat, height: CGFloat, displayMetrics: DisplayMetrics) -> Void {
         self.measure(width: width, height: height, displayMetrics: displayMetrics)
         if self.currentOffset > 0 {
             //draw past month and current month

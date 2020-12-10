@@ -64,6 +64,9 @@ public class CustomView: FrameLayout {
     private var started = CFAbsoluteTimeGetCurrent()
     private var lastMessage = CFAbsoluteTimeGetCurrent()
     
+    public override func postInvalidate() {
+        startRefresh()
+    }
     func startRefresh(){
         let size = self.frame.size
         if stage.compareAndSet(expected: 0, setTo: 1) {
@@ -82,16 +85,16 @@ public class CustomView: FrameLayout {
                 UIGraphicsEndImageContext()
                 
                 DispatchQueue.main.async { [weak self] in
-                    UIView.performWithoutAnimation {
-                        if let self = self {
-                            self.stage.mutate { $0 = 0 }
-                            if let image = image, let cgImage = image.cgImage {
+                    if let self = self {
+                        if let image = image, let cgImage = image.cgImage {
+                            CATransaction.withDisabledActions {
                                 self.imageLayer.contents = cgImage
                             }
-                            self.setNeedsDisplay()
-                            if self.needsAnotherRender {
-                                self.startRefresh()
-                            }
+                        }
+                        self.setNeedsDisplay()
+                        self.stage.mutate { $0 = 0 }
+                        if self.needsAnotherRender {
+                            self.startRefresh()
                         }
                     }
                 }
@@ -232,5 +235,15 @@ final class Atomic<A: Equatable> {
             }
         }
         return result
+    }
+}
+extension CATransaction {
+    class func withDisabledActions<T>(_ body: () throws -> T) rethrows -> T {
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        defer {
+            CATransaction.commit()
+        }
+        return try body()
     }
 }
