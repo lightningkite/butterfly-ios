@@ -6,7 +6,8 @@ public extension Date {
     func iso8601() -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
         return formatter.string(from: self)
     }
 
@@ -226,5 +227,20 @@ public func dateFrom(dateAlone: DateAlone, timeAlone: TimeAlone) -> Date {
 }
 
 public func dateFromIso(iso8601: String) -> Date? {
-    ISO8601DateFormatter().date(from: iso8601)
+    //2020-12-17T22:35:25.727503
+    let dateParts = iso8601.substringBefore(delimiter: "T").split(separator: "-")
+    let timeParts = iso8601.substringAfter(delimiter: "T").split(separator: ":")
+    let secondPart = (timeParts.getOrNull(index: 2)?.prefix(while: { $0.isDigit() || $0 == "." })).flatMap { Double($0) }
+    let components = DateComponents(
+        year: Int(dateParts[0]),
+        month: Int(dateParts[1]),
+        day: Int(dateParts[2]),
+        hour: Int(timeParts[0]),
+        minute: Int(timeParts[1]),
+        second: secondPart.map { Int($0) },
+        nanosecond: secondPart.map { Int($0 % 1.0 / 0.000000001) }
+    )
+    var cal = Calendar(identifier: .iso8601)
+    cal.timeZone = TimeZone(secondsFromGMT: 0)!
+    return cal.date(from: components)
 }

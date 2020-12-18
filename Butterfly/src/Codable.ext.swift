@@ -3,30 +3,12 @@ import Foundation
 
 
 //--- Codable
-public extension Formatter {
-    static let iso8601: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .iso8601)
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXXX"
-        return formatter
-    }()
-    static let iso8601noFS: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.calendar = Calendar(identifier: .iso8601)
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssXXXXX"
-        return formatter
-    }()
-}
 
 public var encoder: JSONEncoder = {
     let e = JSONEncoder()
     e.dateEncodingStrategy = JSONEncoder.DateEncodingStrategy.custom { (date, encoder) in
         var container = encoder.singleValueContainer()
-        try container.encode(Formatter.iso8601.string(from: date))
+        try container.encode(date.iso8601())
     }
     return e
 }()
@@ -35,8 +17,8 @@ public var decoder: JSONDecoder = {
     d.dateDecodingStrategy = JSONDecoder.DateDecodingStrategy.custom { (decoder) in
         let container = try decoder.singleValueContainer()
         let string = try container.decode(String.self)
-        if let date = Formatter.iso8601.date(from: string) ?? Formatter.iso8601noFS.date(from: string) {
-            return date
+        if let d = dateFromIso(iso8601: string) {
+            return d
         }
         throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")    }
     return d

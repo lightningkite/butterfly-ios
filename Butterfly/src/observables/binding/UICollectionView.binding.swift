@@ -437,9 +437,9 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
         cell.indexPath = indexPath
         cell.resizeEnabled = false
         if collectionView.reverseDirection {
-            cell.transform = CGAffineTransform(scaleX: 1, y: -1)
+            cell.contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         } else {
-            cell.transform = .identity
+            cell.contentView.transform = .identity
         }
         cell.setNeedsDisplay()
 
@@ -595,7 +595,7 @@ public extension UICollectionView {
             let transform = value ? CGAffineTransform(scaleX: 1, y: -1) : .identity
             self.transform = transform
             for cell in self.visibleCells {
-                cell.transform = transform
+                cell.contentView.transform = transform
                 cell.setNeedsDisplay()
             }
         }

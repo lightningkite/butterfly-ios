@@ -91,6 +91,8 @@ public enum HttpClient {
                 if let casted = response as? HTTPURLResponse, let data = data {
                     print("HttpClient: Response from \(method) request to \(urlObj) with headers \(headers): \(casted.statusCode)")
                     emitter.onSuccess(HttpResponse(response: casted, data: data))
+                } else if let error = error {
+                    emitter.onError(error)
                 } else {
                     print("HttpClient: ERROR!  Response is not URLResponse")
                     emitter.onError(IllegalStateException("Response is not URLResponse"))
@@ -127,6 +129,8 @@ public enum HttpClient {
                     } onSuccess: { (result: T) in
                         emitter.onNext(HttpProgress(phase: .Done, ratio: 1, response: result))
                     }.forever()
+                } else if let error = error {
+                    emitter.onError(error)
                 } else {
                     print("HttpClient: ERROR!  Response is not URLResponse")
                     emitter.onError(IllegalStateException("Response is not URLResponse"))
