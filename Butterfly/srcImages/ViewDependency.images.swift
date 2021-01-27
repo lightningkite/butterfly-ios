@@ -211,9 +211,12 @@ public extension ViewControllerAccess {
     }
     
     func requestFiles(callback: @escaping (Array<URL>) -> Void){
-        let optionMenu = UIAlertController(title: nil, message: "What kind of files?", preferredStyle: .actionSheet)
+        let optionMenu = UIAlertController(
+            title: nil,
+            message: "What kind of file?",
+            preferredStyle: UIDevice.current.userInterfaceIdiom == .pad ? .alert : .actionSheet
+        )
             
-        // 2
         let image = UIAlertAction(title: "Images", style: .default, handler: { _ in
             self.requestImagesGallery(callback: callback)
         })
@@ -224,23 +227,28 @@ public extension ViewControllerAccess {
             self.requestDocuments(callback: callback)
         })
             
-        // 3
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
             
-        // 4
         optionMenu.addAction(image)
         optionMenu.addAction(video)
         optionMenu.addAction(doc)
         optionMenu.addAction(cancelAction)
         
-        // 5
+        if let b = self.parentViewController as? ButterflyViewController {
+            optionMenu.popoverPresentationController?.sourceRect = CGRect(x: b.lastTapPosition.x, y: b.lastTapPosition.y, width: 1, height: 1)
+        } else {
+            optionMenu.popoverPresentationController?.sourceRect = CGRect(x: self.parentViewController.view.frame.centerX(), y: self.parentViewController.view.frame.centerY(), width: 1, height: 1)
+        }
         self.parentViewController.present(optionMenu, animated: true, completion: nil)
     }
 
     func requestFile(callback: @escaping (URL) -> Void){
-        let optionMenu = UIAlertController(title: nil, message: "What kind of file?", preferredStyle: .actionSheet)
+        let optionMenu = UIAlertController(
+            title: nil,
+            message: "What kind of file?",
+            preferredStyle: UIDevice.current.userInterfaceIdiom == .pad ? .alert : .actionSheet
+        )
             
-        // 2
         let image = UIAlertAction(title: "Image", style: .default, handler: { _ in
             self.requestImageGallery(callback: callback)
         })
@@ -251,41 +259,45 @@ public extension ViewControllerAccess {
             self.requestDocument(callback: callback)
         })
             
-        // 3
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
             
-        // 4
         optionMenu.addAction(image)
         optionMenu.addAction(video)
         optionMenu.addAction(doc)
         optionMenu.addAction(cancelAction)
         
-        // 5
+        if let b = self.parentViewController as? ButterflyViewController {
+            optionMenu.popoverPresentationController?.sourceRect = CGRect(x: b.lastTapPosition.x, y: b.lastTapPosition.y, width: 1, height: 1)
+        } else {
+            optionMenu.popoverPresentationController?.sourceRect = CGRect(x: self.parentViewController.view.frame.centerX(), y: self.parentViewController.view.frame.centerY(), width: 1, height: 1)
+        }
         self.parentViewController.present(optionMenu, animated: true, completion: nil)
     }
 
     func getFileName(uri:URL) -> String? {
-        return uri.lastPathComponent
+        return UUID().uuidString + uri.lastPathComponent
     }
 
     func downloadFile(url:String){
         let url = URL(string: url)!
 
-        let documentsUrl:URL? =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let documentsUrl:URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
         let destinationFileUrl = documentsUrl?.appendingPathComponent(getFileName(uri: url)!)
 
         let task = URLSession.shared.downloadTask(with: url) { localURL, urlResponse, error in
             if let localTemp = localURL, let destination = destinationFileUrl{
                 do {
                     try FileManager.default.copyItem(at: localTemp, to: destination)
-
-                    let alertDisapperTimeInSeconds = 2.0
-                    let alert = UIAlertController(title: nil, message: "Download Finished", preferredStyle: .actionSheet)
+                    
                     DispatchQueue.main.sync {
-                        self.parentViewController.present(alert, animated: true)
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + alertDisapperTimeInSeconds) {
-                        alert.dismiss(animated: true)
+                        let ac = UIActivityViewController(activityItems: [destination], applicationActivities: nil)
+                        ac.popoverPresentationController?.sourceView = self.parentViewController.view
+                        if let b = self.parentViewController as? ButterflyViewController {
+                            ac.popoverPresentationController?.sourceRect = CGRect(x: b.lastTapPosition.x, y: b.lastTapPosition.y, width: 1, height: 1)
+                        } else {
+                            ac.popoverPresentationController?.sourceRect = CGRect(x: self.parentViewController.view.frame.centerX(), y: self.parentViewController.view.frame.centerY(), width: 1, height: 1)
+                        }
+                        self.parentViewController.present(ac, animated: true)
                     }
                 } catch (let writeError) {
                     print("Error creating a file \(destination) : \(writeError)")
@@ -444,7 +456,10 @@ fileprivate extension PHAsset {
             }
             self.requestContentEditingInput(with: options, completionHandler: {(contentEditingInput: PHContentEditingInput?, info: [AnyHashable : Any]) -> Void in
                 DispatchQueue.main.async {
-                    completionHandler(contentEditingInput!.fullSizeImageURL as URL?)
+                    if contentEditingInput == nil {
+                        showDialog(message: ViewStringRaw(string: "You've successfully triggered a minor error we didn't know was possible.  You'd be a great help if you'd report back to us how you caused it to happen."))
+                    }
+                    completionHandler(contentEditingInput?.fullSizeImageURL as URL?)
                 }
             })
         } else if self.mediaType == .video {

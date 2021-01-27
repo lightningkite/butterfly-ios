@@ -69,7 +69,7 @@ public extension ViewControllerAccess {
         if options.count == 1 {
             options[0].1()
         } else {
-            let optionsView = UIAlertController(title: "Open in Maps", message: nil, preferredStyle: .actionSheet)
+            let optionsView = UIAlertController(title: "Open in Maps", message: nil, preferredStyle: .alert)
             for option in options {
                 optionsView.addAction(UIAlertAction(title: option.0, style: .default, handler: { (action) in
                     optionsView.dismiss(animated: true, completion: nil)
