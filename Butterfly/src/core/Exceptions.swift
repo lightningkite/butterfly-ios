@@ -10,6 +10,7 @@ open class Exception: Error {
 }
 
 public class IllegalStateException: Exception {}
+public class IndexOutOfBoundsException: Exception {}
 public class IllegalArgumentException: Exception {}
 public class NoSuchElementException: Exception {}
 

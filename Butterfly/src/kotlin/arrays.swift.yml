@@ -66,26 +66,28 @@
 - id: kotlin.DoubleArray
   type: typeRef
   template: Array<Double>
+- id: kotlin.CharArray
+  type: typeRef
+  template: Array<Character>
 - id: kotlin.Array
   type: typeRef
   template: Array
 
 # Size
-- id: kotlin.ShortArray.size
+- id: array.size
   type: get
   template: ~this~.count
-- id: kotlin.IntArray.size
+- id: array.get
+  type: call
+  template: ~this~[~0~]
+- id: array.set
+  type: call
+  template: ~this~[~0~] = ~1~
+
+- id: kotlin.collections.indices
   type: get
-  template: ~this~.count
-- id: kotlin.LongArray.size
-  type: get
-  template: ~this~.count
-- id: kotlin.FloatArray.size
-  type: get
-  template: ~this~.count
-- id: kotlin.DoubleArray.size
-  type: get
-  template: ~this~.count
-- id: kotlin.Array.size
-  type: get
-  template: ~this~.count
+  actualReceiver: array
+  template:
+    pattern: new NumberRange(0, ~this~.length-1)
+    imports:
+      NumberRange: butterfly-web/dist/Kotlin

@@ -33,6 +33,12 @@
 - id: kotlin.math.sqrt
   type: call
   template: sqrt(~0~)
+- id: kotlin.math.ln
+  type: call
+  template: ln(~0~)
+- id: kotlin.math.PI
+  type: get
+  template: .pi
 
 
 - id: java.lang.Math.min
@@ -68,3 +74,9 @@
 - id: java.lang.Math.sqrt
   type: call
   template: sqrt(~0~)
+- id: java.lang.Math.ln
+  type: call
+  template: ln(~0~)
+- id: java.lang.Math.PI
+  type: get
+  template: .pi

@@ -166,6 +166,11 @@
 - id: kotlin.text.StringBuilder
   type: call
   template: 'Box("")'
+- id: kotlin.text.buildString
+  type: type
+  template:
+    pattern: 'also(Box(""), ~0~).value'
+    imports: [ Butterfly ]
 - id: kotlin.text.StringBuilder.append
   type: call
   template: ~this~.value.append(~0~)

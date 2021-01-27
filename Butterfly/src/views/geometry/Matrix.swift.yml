@@ -40,3 +40,7 @@
 - id: android.graphics.Matrix.preConcat
   type: call
   template: '~this~.apply(CGAffineTransform.concatenating, ~0~)'
+
+- id: com.lightningkite.butterfly.views.geometry.setValues
+  type: call
+  template: '~this~.a = ~0~; ~this~.b = ~1~; ~this~.c = ~2~; ~this~.d = ~3~; ~this~.tx = ~4~; ~this~.ty = ~5~'
