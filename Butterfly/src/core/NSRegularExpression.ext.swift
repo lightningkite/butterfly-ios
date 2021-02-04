@@ -48,4 +48,7 @@ public extension String {
         let result = regex.matchEntire(input: self)
         return result != nil
     }
+    func replacingOccurrences(of: NSRegularExpression, with: String) -> String {
+        return of.stringByReplacingMatches(in: self, options: [], range: NSRange(0..<self.utf16.count), withTemplate: with)
+    }
 }

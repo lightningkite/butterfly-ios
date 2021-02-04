@@ -8,6 +8,7 @@
 
 import UIKit
 
+@IBDesignable
 open class LinearLayout: UIView, ListensToChildSize {
     
     public var padding: UIEdgeInsets = .zero {
@@ -15,9 +16,98 @@ open class LinearLayout: UIView, ListensToChildSize {
             self.setNeedsLayout()
         }
     }
+    
     public var gravity: AlignPair = .topLeft {
         didSet {
             self.setNeedsLayout()
+        }
+    }
+    
+    @IBInspectable
+    public var gravityInt: String {
+        get {
+            switch(gravity){
+            case .center:
+                return "center"
+            case .fill:
+                return "fill"
+            case .topLeft:
+                return "topLeft"
+            case .topCenter:
+                return "topCenter"
+            case .topFill:
+                return "topFill"
+            case .topRight:
+                return "topRight"
+            case .centerLeft:
+                return "centerLeft"
+            case .centerCenter:
+                return "centerCenter"
+            case .centerFill:
+                return "centerFill"
+            case .centerRight:
+                return "centerRight"
+            case .fillLeft:
+                return "fillLeft"
+            case .fillCenter:
+                return "fillCenter"
+            case .fillFill:
+                return "fillFill"
+            case .fillRight:
+                return "fillRight"
+            case .bottomLeft:
+                return "bottomLeft"
+            case .bottomCenter:
+                return "bottomCenter"
+            case .bottomFill:
+                return "bottomFill"
+            case .bottomRight:
+                return "bottomRight"
+            default:
+                return ""
+            }
+        }
+        set(value) {
+            switch(value) {
+            case "center":
+                gravity = .center
+            case "fill":
+                gravity = .fill
+            case "topLeft":
+                gravity = .topLeft
+            case "topCenter":
+                gravity = .topCenter
+            case "topFill":
+                gravity = .topFill
+            case "topRight":
+                gravity = .topRight
+            case "centerLeft":
+                gravity = .centerLeft
+            case "centerCenter":
+                gravity = .centerCenter
+            case "centerFill":
+                gravity = .centerFill
+            case "centerRight":
+                gravity = .centerRight
+            case "fillLeft":
+                gravity = .fillLeft
+            case "fillCenter":
+                gravity = .fillCenter
+            case "fillFill":
+                gravity = .fillFill
+            case "fillRight":
+                gravity = .fillRight
+            case "bottomLeft":
+                gravity = .bottomLeft
+            case "bottomCenter":
+                gravity = .bottomCenter
+            case "bottomFill":
+                gravity = .bottomFill
+            case "bottomRight":
+                gravity = .bottomRight
+            default:
+                gravity = .center
+        }
         }
     }
     
@@ -81,7 +171,15 @@ open class LinearLayout: UIView, ListensToChildSize {
     internal var subviewsWithParams: Array<(UIView, LayoutParams)> = Array()
     
     public func childSizeUpdated(_ child: UIView){
-        self.notifyParentSizeChanged()
+        if let p = getParams(for: child) {
+            if p.weight > 0 {
+                setNeedsLayout()
+            } else {
+                self.notifyParentSizeChanged()
+            }
+        } else {
+            setNeedsLayout()
+        }
     }
     
     public func getParams(for view: UIView) -> LayoutParams? {
@@ -111,7 +209,7 @@ open class LinearLayout: UIView, ListensToChildSize {
     public func addSubview(_ view: UIView, _ params: LayoutParams) {
         addSubview(view)
         subviewsWithParams.append((view, params))
-        setNeedsLayout()
+        notifyParentSizeChanged()
     }
     public func addSubview(
         _ view: UIView,
@@ -125,14 +223,14 @@ open class LinearLayout: UIView, ListensToChildSize {
         addSubview(view)
         let params = LayoutParams(minimumSize: minimumSize, size: size, margin: margin, padding:padding, gravity: gravity, weight: weight)
         subviewsWithParams.append((view, params))
-        setNeedsLayout()
+        notifyParentSizeChanged()
     }
     
     public override func willRemoveSubview(_ subview: UIView) {
         subviewsWithParams.removeAll { it in it.0 == subview }
         measurements.removeValue(forKey: subview)
         childBounds.removeValue(forKey: subview)
-        setNeedsLayout()
+        notifyParentSizeChanged()
         post {
             subview.refreshLifecycle()
         }
@@ -146,6 +244,18 @@ open class LinearLayout: UIView, ListensToChildSize {
     internal var childBounds: Dictionary<UIView, CGRect> = Dictionary()
     
     public var orientation: Dimension = .x
+    
+    
+    @IBInspectable
+    public var vertical: Bool {
+        get {
+            return orientation == .y
+        }
+        set(value) {
+            orientation = value ? .y : .x
+        }
+    }
+    
     private func makePoint(primary: CGFloat, secondary: CGFloat) -> CGPoint {
         switch orientation {
         case .x:
