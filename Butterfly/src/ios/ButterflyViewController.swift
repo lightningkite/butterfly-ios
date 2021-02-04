@@ -235,7 +235,11 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
             UIView.animate(
                 withDuration: keyboardAnimationDuration.doubleValue,
                 animations: {
-                    self.viewAdditionalSafeAreaInsets.bottom = keyboardHeight
+                    if #available(iOS 11.0, *) {
+                        self.viewAdditionalSafeAreaInsets.bottom = keyboardHeight - (self.view.window?.safeAreaInsets.bottom ?? 0)
+                    } else {
+                        self.viewAdditionalSafeAreaInsets.bottom = keyboardHeight
+                    }
                     self.view.layoutIfNeeded()
                 },
                 completion: { _ in

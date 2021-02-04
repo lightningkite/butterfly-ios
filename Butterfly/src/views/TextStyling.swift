@@ -12,34 +12,19 @@ import UIKit
 
 private let viewLetterSpacing = ExtensionProperty<UIView, CGFloat>()
 private let viewAllCaps = ExtensionProperty<UIView, Bool>()
+private let viewLineSpacingMultiplier = ExtensionProperty<UIView, CGFloat>()
 public var defaultLetterSpacing: CGFloat = 0
+public var defaultLineSpacingMultiplier: CGFloat = 1
 
 public extension UILabel {
     var lineSpacingMultiplier: CGFloat {
-        get {
-            if let attr = self.attributedText?.attribute(.paragraphStyle, at: 0, effectiveRange: nil) as? NSParagraphStyle {
-                return attr.lineHeightMultiple
-            } else {
-                return 1
-            }
+        get{
+            return viewLineSpacingMultiplier.get(self) ?? defaultLineSpacingMultiplier
         }
         set(value){
-            guard let labelText = self.text else { return }
-
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.lineHeightMultiple = value
-
-            let attributedString:NSMutableAttributedString
-            if let labelattributedText = self.attributedText {
-                attributedString = NSMutableAttributedString(attributedString: labelattributedText)
-            } else {
-                attributedString = NSMutableAttributedString(string: labelText)
-            }
-
-            // Line spacing attribute
-            attributedString.addAttribute(NSAttributedString.Key.paragraphStyle, value:paragraphStyle, range:NSMakeRange(0, attributedString.length))
-
-            self.attributedText = attributedString
+            viewLineSpacingMultiplier.set(self, value)
+            let current = textString
+            textString = current
         }
     }
 
@@ -96,7 +81,11 @@ public extension UILabel {
             if textAllCaps {
                 toSet = toSet.uppercased()
             }
-            self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * font.pointSize])
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
+            
+            self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * font.pointSize, NSAttributedString.Key.paragraphStyle: paragraphStyle])
             notifyParentSizeChanged()
         }
     }
@@ -111,6 +100,16 @@ public extension UILabel {
 }
 
 public extension UITextView {
+    var lineSpacingMultiplier: CGFloat {
+        get{
+            return viewLineSpacingMultiplier.get(self) ?? defaultLineSpacingMultiplier
+        }
+        set(value){
+            viewLineSpacingMultiplier.set(self, value)
+            let current = textString
+            textString = current
+        }
+    }
     @objc
     var letterSpacing: CGFloat {
         get{
@@ -150,12 +149,27 @@ public extension UITextView {
             if textAllCaps {
                 toSet = toSet.uppercased()
             }
-            self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)])
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
+            
+            self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12), NSAttributedString.Key.paragraphStyle: paragraphStyle])
+            notifyParentSizeChanged()
         }
     }
 }
 
 public extension UITextField {
+    var lineSpacingMultiplier: CGFloat {
+        get{
+            return viewLineSpacingMultiplier.get(self) ?? defaultLineSpacingMultiplier
+        }
+        set(value){
+            viewLineSpacingMultiplier.set(self, value)
+            let current = textString
+            textString = current
+        }
+    }
     @objc
     var letterSpacing: CGFloat {
         get{
@@ -195,12 +209,27 @@ public extension UITextField {
             if textAllCaps {
                 toSet = toSet.uppercased()
             }
-            self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)])
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
+            
+            self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12), NSAttributedString.Key.paragraphStyle: paragraphStyle])
+            notifyParentSizeChanged()
         }
     }
 }
 
 public extension UIButton {
+    var lineSpacingMultiplier: CGFloat {
+        get{
+            return viewLineSpacingMultiplier.get(self) ?? defaultLineSpacingMultiplier
+        }
+        set(value){
+            viewLineSpacingMultiplier.set(self, value)
+            let current = textString
+            textString = current
+        }
+    }
     @objc
     var letterSpacing: CGFloat {
         get{
@@ -242,8 +271,12 @@ public extension UIButton {
             if textAllCaps {
                 toSet = toSet.uppercased()
             }
+            
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
             let font = titleLabel?.font
-            self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)]), for: .normal)
+            self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12), NSAttributedString.Key.paragraphStyle: paragraphStyle]), for: .normal)
+            notifyParentSizeChanged()
         }
     }
     var text: String {
@@ -251,12 +284,7 @@ public extension UIButton {
             return title(for: .normal) ?? ""
         }
         set(value) {
-            var toSet = value
-            if textAllCaps {
-                toSet = toSet.uppercased()
-            }
-            let font = titleLabel?.font
-            self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12)]), for: .normal)
+            self.textString = value
         }
     }
 }
