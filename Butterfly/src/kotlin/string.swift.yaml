@@ -167,7 +167,7 @@
   type: call
   template: 'Box("")'
 - id: kotlin.text.buildString
-  type: type
+  type: call
   template:
     pattern: 'also(Box(""), ~0~).value'
     imports: [ Butterfly ]
