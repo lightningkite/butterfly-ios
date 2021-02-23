@@ -83,6 +83,7 @@ public extension UILabel {
             }
             
             let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = self.textAlignment
             paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
             
             self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * font.pointSize, NSAttributedString.Key.paragraphStyle: paragraphStyle])
@@ -151,6 +152,7 @@ public extension UITextView {
             }
             
             let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = self.textAlignment
             paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
             
             self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12), NSAttributedString.Key.paragraphStyle: paragraphStyle])
@@ -211,6 +213,7 @@ public extension UITextField {
             }
             
             let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = self.textAlignment
             paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
             
             self.attributedText = NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12), NSAttributedString.Key.paragraphStyle: paragraphStyle])
@@ -273,6 +276,7 @@ public extension UIButton {
             }
             
             let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.alignment = .center
             paragraphStyle.lineHeightMultiple = lineSpacingMultiplier
             let font = titleLabel?.font
             self.setAttributedTitle(NSAttributedString(string: toSet, attributes: [.kern: letterSpacing * (font?.pointSize ?? 12), NSAttributedString.Key.paragraphStyle: paragraphStyle]), for: .normal)
