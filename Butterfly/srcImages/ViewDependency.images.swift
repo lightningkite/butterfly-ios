@@ -143,27 +143,9 @@ public extension ViewControllerAccess {
         let pickerController = DKImagePickerController()
         pickerController.assetType = type
         pickerController.didSelectAssets = { (assets: [DKAsset]) in
-            print("didSelectAssets")
-            print(assets)
-            //Select Assets
-            var result: Array<URL> = []
-            var remaining = assets.count
-            print("Assets remaining: \(remaining)")
-            for item in assets {
-                item.originalAsset!.getUrl { url in
-                    remaining -= 1
-                    print("Assets remaining: \(remaining)")
-                    if let url = url {
-                        result.append(url)
-                    } else {
-                        //... dunno how to handle error
-                    }
-                    if remaining == 0 {
-                        print("Finish")
-                        callback(result)
-                    }
-                }
-            }
+            DKImageAssetExporter.sharedInstance.exportAssetsAsynchronously(assets: assets, completion: { info in
+                callback(assets.map { $0.localTemporaryPath! })
+            })
         }
         self.parentViewController.present(pickerController, animated: true){}
     }
@@ -418,21 +400,12 @@ private class ImageDelegate : NSObject, UIImagePickerControllerDelegate, UINavig
                 return
             }
         }
-        if #available(iOS 11.0, *), let asset = info[.phAsset] as? PHAsset {
-            asset.getUrl { url in
-                if let url = url {
-                    DispatchQueue.main.async {
-                        picker.dismiss(animated: true, completion: {
-                            self.onImagePicked?(url)
-                            self.onImagePicked = nil
-                        })
-                    }
-                } else {
-                    picker.dismiss(animated: true, completion: {
-                        self.onImagePicked = nil
-                    })
-                }
-            }
+        if let originalImage = info[.editedImage] as? UIImage, let url = originalImage.saveTemp() {
+            print("Image retrieved using save as backup")
+            picker.dismiss(animated: true, completion: {
+                self.onImagePicked?(url)
+                self.onImagePicked = nil
+            })
         } else if let originalImage = info[.originalImage] as? UIImage, let url = originalImage.saveTemp() {
             print("Image retrieved using save as backup")
             picker.dismiss(animated: true, completion: {
@@ -442,40 +415,6 @@ private class ImageDelegate : NSObject, UIImagePickerControllerDelegate, UINavig
         } else {
             picker.dismiss(animated: true, completion: {
                 self.onImagePicked = nil
-            })
-        }
-    }
-}
-
-fileprivate extension PHAsset {
-    func getUrl(completionHandler: @escaping (URL?)->Void) {
-        if self.mediaType == .image {
-            let options: PHContentEditingInputRequestOptions = PHContentEditingInputRequestOptions()
-            options.canHandleAdjustmentData = {(adjustmeta: PHAdjustmentData) -> Bool in
-                return true
-            }
-            self.requestContentEditingInput(with: options, completionHandler: {(contentEditingInput: PHContentEditingInput?, info: [AnyHashable : Any]) -> Void in
-                DispatchQueue.main.async {
-                    if contentEditingInput == nil {
-                        showDialog(message: ViewStringRaw(string: "You've successfully triggered a minor error we didn't know was possible.  You'd be a great help if you'd report back to us how you caused it to happen."))
-                    }
-                    completionHandler(contentEditingInput?.fullSizeImageURL as URL?)
-                }
-            })
-        } else if self.mediaType == .video {
-            let options: PHVideoRequestOptions = PHVideoRequestOptions()
-            options.version = .original
-            PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: {(asset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
-                if let urlAsset = asset as? AVURLAsset {
-                    let localVideoUrl: URL = urlAsset.url as URL
-                    DispatchQueue.main.async {
-                        completionHandler(localVideoUrl)
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        completionHandler(nil)
-                    }
-                }
             })
         }
     }
@@ -544,28 +483,3 @@ extension UIImage {
     }
 }
 
-extension PHAsset {
-
-    func getURL(completionHandler : @escaping ((_ responseURL : URL?) -> Void)){
-        if self.mediaType == .image {
-            let options: PHContentEditingInputRequestOptions = PHContentEditingInputRequestOptions()
-            options.canHandleAdjustmentData = {(adjustmeta: PHAdjustmentData) -> Bool in
-                return true
-            }
-            self.requestContentEditingInput(with: options, completionHandler: {(contentEditingInput: PHContentEditingInput?, info: [AnyHashable : Any]) -> Void in
-                completionHandler(contentEditingInput?.fullSizeImageURL as URL?)
-            })
-        } else if self.mediaType == .video {
-            let options: PHVideoRequestOptions = PHVideoRequestOptions()
-            options.version = .original
-            PHImageManager.default().requestAVAsset(forVideo: self, options: options, resultHandler: {(asset: AVAsset?, audioMix: AVAudioMix?, info: [AnyHashable : Any]?) -> Void in
-                if let urlAsset = asset as? AVURLAsset {
-                    let localVideoUrl: URL = urlAsset.url as URL
-                    completionHandler(localVideoUrl)
-                } else {
-                    completionHandler(nil)
-                }
-            })
-        }
-    }
-}
