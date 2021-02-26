@@ -35,6 +35,7 @@ Pod::Spec.new do |s|
     images.dependency "DKImagePickerController/Core"
     images.dependency "DKImagePickerController/ImageDataManager"
     images.dependency "DKImagePickerController/Resource"
+    images.dependency "DKImagePickerController/Camera"
   end
   s.subspec 'Calendar' do |calendar|
     calendar.source_files =  "Butterfly/srcCalendar/**/*.{swift,swift.yml,swift.yaml}"
