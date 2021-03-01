@@ -86,6 +86,11 @@
   type: call
   template: ~this~.remove(~0~)
 
+- id: kotlin.collections.plusAssign
+  actualReceiver: kotlin.collections.MutableSet
+  type: call
+  template: '~this~.insert(~0~)'
+
 - id: kotlin.collections.plus
   receiver: kotlin.collections.Set
   type: call

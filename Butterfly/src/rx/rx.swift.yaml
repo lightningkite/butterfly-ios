@@ -526,3 +526,20 @@
   template:
     pattern: PublishSubject()
     imports: [RxSwift]
+
+
+- id: io.reactivex.subjects.BehaviorSubject
+  type: type
+  template:
+    pattern: BehaviorSubject<~T0~>
+    imports: [ RxSwift ]
+- id: io.reactivex.subjects.BehaviorSubject.create
+  type: call
+  template:
+    pattern: BehaviorSubject()
+    imports: [ RxSwift ]
+- id: io.reactivex.subjects.BehaviorSubject.createDefault
+  type: call
+  template:
+    pattern: 'BehaviorSubject(value: ~0~)'
+    imports: [ RxSwift ]

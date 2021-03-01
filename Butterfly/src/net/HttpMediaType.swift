@@ -6,3 +6,7 @@ public enum HttpMediaTypes {
     public static var TEXT = "text/plain"
     public static var JPEG = "image/jpeg"
 }
+
+public func mediaTypeOrNull(_ value: String) -> String? {
+    return
+}
