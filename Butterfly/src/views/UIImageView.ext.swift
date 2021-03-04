@@ -4,7 +4,6 @@
 //  Created by Joseph Ivie on 10/9/19.
 //
 
-import Foundation
 import UIKit
 import AlamofireImage
 import Alamofire
