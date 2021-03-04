@@ -8,5 +8,6 @@ public enum HttpMediaTypes {
 }
 
 public func mediaTypeOrNull(_ value: String) -> String? {
-    return
+    if value.contains("/") { return value }
+    return nil
 }

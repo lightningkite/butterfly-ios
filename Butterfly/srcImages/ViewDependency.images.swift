@@ -259,7 +259,11 @@ public extension ViewControllerAccess {
     func getFileName(uri:URL) -> String? {
         return UUID().uuidString + uri.lastPathComponent
     }
-
+    
+    func getFileName(name: String, type: HttpMediaType) -> String? {
+        return UUID().uuidString + name
+    }
+    
     func downloadFile(url:String){
         let url = URL(string: url)!
 
@@ -288,6 +292,27 @@ public extension ViewControllerAccess {
         }
 
         task.resume()
+    }
+    
+    func downloadFileData(data: Data, name: String, type: HttpMediaType){
+
+        let documentsUrl:URL? = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        let destinationFileUrl = documentsUrl?.appendingPathComponent(getFileName(name: name, type: type)!)
+        if let destination = destinationFileUrl{
+            do {
+                try data.write(to: destination)
+                let ac = UIActivityViewController(activityItems: [destination], applicationActivities: nil)
+                ac.popoverPresentationController?.sourceView = self.parentViewController.view
+                if let b = self.parentViewController as? ButterflyViewController {
+                    ac.popoverPresentationController?.sourceRect = CGRect(x: b.lastTapPosition.x, y: b.lastTapPosition.y, width: 1, height: 1)
+                } else {
+                    ac.popoverPresentationController?.sourceRect = CGRect(x: self.parentViewController.view.frame.centerX(), y: self.parentViewController.view.frame.centerY(), width: 1, height: 1)
+                }
+                self.parentViewController.present(ac, animated: true)
+            } catch (let writeError) {
+                print("Error creating a file \(destination) : \(writeError)")
+            }
+        }
     }
 
     private func withCameraPermission(action: @escaping ()->Void) {

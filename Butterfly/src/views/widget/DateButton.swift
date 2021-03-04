@@ -24,7 +24,7 @@ public class DateButton : UIButtonWithLayer {
         }
     }
 
-    public var onDateEntered = PublishSubject<Date>()
+    public var onDateEntered = PublishSubject<Date?>()
     
     var format: DateFormatter = {
         let format = DateFormatter()
@@ -32,6 +32,8 @@ public class DateButton : UIButtonWithLayer {
         format.timeStyle = .none;
         return format
     }()
+    
+    var defaultText: String = ""
 
     var picker = UIDatePicker(frame: .zero)
     let toolbar: UIToolbar = {
@@ -79,16 +81,20 @@ public class DateButton : UIButtonWithLayer {
         self.date = self.picker.date
     }
 
-    public var date: Date = Date() {
+    public var date: Date? = nil {
         didSet {
-            picker.date = date
+            picker.date = date ?? Date()
             onDateEntered.invokeAll(self.date)
             updateText()
         }
     }
 
     public func updateText() {
-        setTitle(format.string(from: date), for: .normal)
+        if let date = date {
+            setTitle(format.string(from: date), for: .normal)
+        } else {
+            setTitle(defaultText, for: .normal)
+        }
     }
 
     override public var inputView: UIView {

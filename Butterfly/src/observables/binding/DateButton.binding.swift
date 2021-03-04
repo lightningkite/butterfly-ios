@@ -12,7 +12,7 @@ public extension DateButton {
             }
         }).until(self.removed)
         self.onDateEntered.subscribeBy { value in
-            if observable.value != value {
+            if let value = value, observable.value != value {
                 observable.value = value
             }
         }.until(self.removed)
@@ -33,7 +33,7 @@ public extension TimeButton {
             }
         }).until(self.removed)
         self.onDateEntered.subscribeBy { value in
-            if observable.value != value {
+            if let value = value, observable.value != value {
                 observable.value = value
             }
         }.until(self.removed)
@@ -47,19 +47,35 @@ public extension TimeButton {
 public extension DateButton {
     func bindDateAlone(_ observable: MutableObservableProperty<DateAlone>) -> Void {
         observable.subscribeBy(onNext:  { ( value) in
-            if self.date.dateAlone != value {
+            if self.date?.dateAlone != value {
                 self.date = dateFrom(dateAlone: value, timeAlone: Date().timeAlone)
             }
         }).until(self.removed)
         self.onDateEntered.subscribeBy { value in
-            let newValue = self.date.dateAlone
-            if observable.value != newValue {
+            if let newValue = self.date?.dateAlone, observable.value != newValue {
                 observable.value = newValue
             }
         }.until(self.removed)
     }
     func bindDateAlone(date: MutableObservableProperty<DateAlone>) -> Void {
         return bindDateAlone(date)
+    }
+    func bindDateAloneNull(dependency: ViewControllerAccess, date: MutableObservableProperty<DateAlone?>, startText: ViewString) -> Void {
+        date.subscribeBy(onNext:  { ( value) in
+            if self.date?.dateAlone != value {
+                if let value = value {
+                    self.date = dateFrom(dateAlone: value, timeAlone: Date().timeAlone)
+                } else {
+                    self.date = nil
+                }
+            }
+        }).until(self.removed)
+        self.onDateEntered.subscribeBy { value in
+            let newValue = self.date?.dateAlone
+            if date.value != newValue {
+                date.value = newValue
+            }
+        }.until(self.removed)
     }
 }
 
@@ -68,13 +84,12 @@ public extension TimeButton {
     func bindTimeAlone(_ observable: MutableObservableProperty<TimeAlone>, _ minuteInterval: Int = 1) -> Void {
         self.minuteInterval = Int(minuteInterval)
         observable.subscribeBy(onNext:  { ( value) in
-            if self.date.timeAlone != value {
+            if self.date?.timeAlone != value {
                 self.date = dateFrom(dateAlone: Date().dateAlone, timeAlone: value)
             }
         }).until(self.removed)
         self.onDateEntered.subscribeBy { value in
-            let newValue = self.date.timeAlone
-            if observable.value != newValue {
+            if let newValue = self.date?.timeAlone, observable.value != newValue {
                 observable.value = newValue
             }
         }.until(self.removed)
