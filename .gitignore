@@ -2,7 +2,6 @@
 local.properties
 **/build
 **/Pods
-*.xcworkspace
 **/xcuserdata
 **.iml
 **.iws
