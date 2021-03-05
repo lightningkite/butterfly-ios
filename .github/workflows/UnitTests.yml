@@ -1,0 +1,18 @@
+name: UnitTests
+
+on:
+  push:
+    branches: [ master, ci_setup ]
+  pull_request:
+    branches: master
+
+  workflow_dispatch:
+
+jobs:                 
+  run-unit-tests:
+    runs-on: macOS-latest
+    steps:
+      - name: Build and test
+        run: xcodebuild -workspace Butterfly.xcworkspace -scheme Butterfly -sdk iphonesimulator -destination "${destination}" test
+        env:
+          destination: 'platform=iOS Simulator,OS=14.4,name=iPhone 12 Pro Max'
