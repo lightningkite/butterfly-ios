@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import Butterfly
+@testable import LKButterfly
 
 class DateAloneTests: XCTestCase {
     

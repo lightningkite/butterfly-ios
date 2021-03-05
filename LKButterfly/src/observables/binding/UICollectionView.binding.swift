@@ -217,7 +217,7 @@ public extension UICollectionView {
             data.subscribeBy(onNext:  { it in
                 guard !updateQueued else { return }
                 updateQueued = true
-                Butterfly.post {
+                LKButterfly.post {
                     updateQueued = false
                     dg.items = data.value
                     self.refreshData()
@@ -245,7 +245,7 @@ public extension UICollectionView {
             data.subscribeBy(onNext:  { it in
                 guard !updateQueued else { return }
                 updateQueued = true
-                Butterfly.post {
+                LKButterfly.post {
                     updateQueued = false
                     dg.items = data.value
                     self.refreshData()
@@ -269,7 +269,7 @@ public extension UICollectionView {
             data.subscribeBy(onNext:  { it in
                 guard !updateQueued else { return }
                 updateQueued = true
-                Butterfly.post {
+                LKButterfly.post {
                     updateQueued = false
                     dg.items = data.value
                     self.refreshData()

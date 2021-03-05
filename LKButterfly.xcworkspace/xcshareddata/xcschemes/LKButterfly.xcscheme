@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5EAABE96233EC33F007E7CED"
-               BuildableName = "Butterfly.framework"
-               BlueprintName = "Butterfly"
-               ReferencedContainer = "container:Butterfly.xcodeproj">
+               BuildableName = "LKButterfly.framework"
+               BlueprintName = "LKButterfly"
+               ReferencedContainer = "container:LKButterfly.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5EAABE9F233EC33F007E7CED"
-               BuildableName = "ButterflyTests.xctest"
-               BlueprintName = "ButterflyTests"
-               ReferencedContainer = "container:Butterfly.xcodeproj">
+               BuildableName = "LKButterflyTests.xctest"
+               BlueprintName = "LKButterflyTests"
+               ReferencedContainer = "container:LKButterfly.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -61,9 +61,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5EAABE96233EC33F007E7CED"
-            BuildableName = "Butterfly.framework"
-            BlueprintName = "Butterfly"
-            ReferencedContainer = "container:Butterfly.xcodeproj">
+            BuildableName = "LKButterfly.framework"
+            BlueprintName = "LKButterfly"
+            ReferencedContainer = "container:LKButterfly.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

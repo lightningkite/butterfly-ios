@@ -9,10 +9,10 @@
 #import <Foundation/Foundation.h>
 
 //! Project version number for butterfly.
-FOUNDATION_EXPORT double ButterflyVersionNumber;
+FOUNDATION_EXPORT double LKButterflyVersionNumber;
 
 //! Project version string for butterfly.
-FOUNDATION_EXPORT const unsigned char ButterflyVersionString[];
+FOUNDATION_EXPORT const unsigned char LKButterflyVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <butterfly/PublicHeader.h>
 
