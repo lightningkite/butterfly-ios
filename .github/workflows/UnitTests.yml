@@ -2,7 +2,7 @@ name: UnitTests
 
 on:
   push:
-    branches: [ master, project_name_refactor ]
+    branches: [ master ]
   pull_request:
     branches: master
 

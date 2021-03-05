@@ -513,37 +513,6 @@
 			path = srcImages;
 			sourceTree = "<group>";
 		};
-		23FB241525F2DF9900B320FF /* com */ = {
-			isa = PBXGroup;
-			children = (
-				23FB241625F2DF9900B320FF /* lightningkite */,
-			);
-			path = com;
-			sourceTree = "<group>";
-		};
-		23FB241625F2DF9900B320FF /* lightningkite */ = {
-			isa = PBXGroup;
-			children = (
-				23FB241725F2DF9900B320FF /* butterfly */,
-			);
-			path = lightningkite;
-			sourceTree = "<group>";
-		};
-		23FB241725F2DF9900B320FF /* butterfly */ = {
-			isa = PBXGroup;
-			children = (
-				23FB241825F2DF9900B320FF /* kotlin */,
-			);
-			path = butterfly;
-			sourceTree = "<group>";
-		};
-		23FB241825F2DF9900B320FF /* kotlin */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = kotlin;
-			sourceTree = "<group>";
-		};
 		23FB241A25F2DF9900B320FF /* srcLocation */ = {
 			isa = PBXGroup;
 			children = (
@@ -946,7 +915,6 @@
 		7CEC9BC624AEA8B800C5A0AE /* LKButterfly */ = {
 			isa = PBXGroup;
 			children = (
-				23FB241525F2DF9900B320FF /* com */,
 				23FB241925F2DF9900B320FF /* Info.plist */,
 				23FB241425F2DF9900B320FF /* LKButterfly.h */,
 				23FB241E25F2DF9900B320FF /* src */,
