@@ -200,19 +200,19 @@
     deferTo: android.view.View
     defaults:
       attribute/customClass: UIVideoView
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: de.hdodenhof.circleimageview.CircleImageView
   type: type
   template:
     pattern: CircleImageView
-    imports: [ Butterfly ]
+    imports: [ LKButterfly ]
   xib:
     name: imageView
     deferTo: android.widget.ImageView
     defaults:
       attribute/customClass: CircleImageView
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: android.widget.TextView
   type: type
@@ -277,25 +277,25 @@
   type: type
   template:
     pattern: SelectableText
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: label
     deferTo: android.widget.TextView
     defaults:
       attribute/customClass: SelectableText
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: com.lightningkite.butterfly.views.widget.CustomView
   type: type
   template:
     pattern: CustomView
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: view
     deferTo: android.view.View
     defaults:
       attribute/customClass: CustomView
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 
 - id: android.widget.Button
@@ -363,7 +363,7 @@
           - path: attribute/customClass
             constant: UIButtonWithLayer
           - path: attribute/customModule
-            constant: Butterfly
+            constant: LKButterfly
       android:drawableTint:
         multiple:
           - path: userDefined/iconTint
@@ -371,7 +371,7 @@
           - path: attribute/customClass
             constant: UIButtonWithLayer
           - path: attribute/customModule
-            constant: Butterfly
+            constant: LKButterfly
       android:drawableLeft:
         multiple:
           - path: userDefined/iconResource
@@ -382,7 +382,7 @@
           - path: attribute/customClass
             constant: UIButtonWithLayer
           - path: attribute/customModule
-            constant: Butterfly
+            constant: LKButterfly
       android:drawableTop:
         multiple:
           - path: userDefined/iconResource
@@ -393,7 +393,7 @@
           - path: attribute/customClass
             constant: UIButtonWithLayer
           - path: attribute/customModule
-            constant: Butterfly
+            constant: LKButterfly
       android:drawableRight:
         multiple:
           - path: userDefined/iconResource
@@ -404,7 +404,7 @@
           - path: attribute/customClass
             constant: UIButtonWithLayer
           - path: attribute/customModule
-            constant: Butterfly
+            constant: LKButterfly
       android:drawableBottom:
         multiple:
           - path: userDefined/iconResource
@@ -415,7 +415,7 @@
           - path: attribute/customClass
             constant: UIButtonWithLayer
           - path: attribute/customModule
-            constant: Butterfly
+            constant: LKButterfly
       android:padding:
         multiple:
           - path: property/contentEdgeInsets:inset/attribute/minX
@@ -457,25 +457,25 @@
   type: type
   template:
     pattern: ToggleButton
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: button
     deferTo: android.widget.Button
     defaults:
       attribute/customClass: ToggleButton
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: android.widget.Spinner
   type: type
   template:
     pattern: Dropdown
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: button
     deferTo: android.widget.Button
     defaults:
       attribute/customClass: Dropdown
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: android.widget.SeekBar
   type: type
@@ -506,7 +506,7 @@
     deferTo: android.view.View
     defaults:
       attribute/customClass: UIRatingBar
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
     attributes:
       android:numStars:
         path: userDefined/totalStars
@@ -560,43 +560,43 @@
   type: type
   template:
     pattern: LabeledCheckbox
-    imports: [ Butterfly ]
+    imports: [ LKButterfly ]
   xib:
     name: view
     deferTo: android.widget.Button
     defaults:
       attribute/customClass: LabeledCheckbox
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: android.widget.RadioButton
   type: type
   template:
     pattern: LabeledRadioButton
-    imports: [ Butterfly ]
+    imports: [ LKButterfly ]
   xib:
     name: view
     deferTo: android.widget.Button
     defaults:
       attribute/customClass: LabeledCheckbox
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: android.widget.Switch
   type: type
   template:
     pattern: LabeledSwitch
-    imports: [ Butterfly ]
+    imports: [ LKButterfly ]
   xib:
     name: view
     deferTo: android.widget.Button
     defaults:
       attribute/customClass: LabeledSwitch
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: android.widget.RadioGroup
   type: type
   template:
     pattern: SimpleStackView
-    imports: [ Butterfly ]
+    imports: [ LKButterfly ]
   xib:
     name: view
     deferTo: android.widget.LinearLayout
@@ -613,7 +613,7 @@
     deferTo: nonandroid.UseMarginInsets
     defaults:
       attribute/customClass: UITextFieldPadded
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
     attributes:
       android:drawableLeft: # Skip until proven neccessary
       android:drawableRight: # Skip until proven neccessary
@@ -728,13 +728,13 @@
   type: type
   template:
     pattern: UIAutoCompleteTextField
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: textField
     deferTo: android.widget.EditText
     defaults:
       attribute/customClass: UIAutoCompleteTextFieldPadded
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: com.lightningkite.butterfly.views.widget.MultilineEditText
   type: type
@@ -750,25 +750,25 @@
   type: type
   template:
     pattern: TimeButton
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: button
     deferTo: android.widget.Button
     defaults:
       attribute/customClass: TimeButton
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: com.lightningkite.butterfly.views.widget.DateButton
   type: type
   template:
     pattern: DateButton
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: button
     deferTo: android.widget.Button
     defaults:
       attribute/customClass: DateButton
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 
 
@@ -777,13 +777,13 @@
   type: type
   template:
     pattern: LinearLayout
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: view
     deferTo: nonandroid.UseMarginInsets
     defaults:
       attribute/customClass: LinearLayout
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
     attributes:
       android:orientation:
         mapValues:
@@ -818,25 +818,25 @@
   type: type
   template:
     pattern: ViewFlipper
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: view
     deferTo: android.widget.FrameLayout
     defaults:
       attribute/customClass: ViewFlipper
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: com.lightningkite.butterfly.views.widget.SwapView
   type: type
   template:
     pattern: SwapView
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: view
     deferTo: android.widget.FrameLayout
     defaults:
       attribute/customClass: SwapView
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
 
 - id: android.widget.ScrollView
   type: type
@@ -873,13 +873,13 @@
   type: type
   template:
     pattern: MaterialSegmentedControl
-    imports: [Butterfly]
+    imports: [LKButterfly]
   xib:
     name: segmentedControl
     deferTo: android.view.View
     defaults:
       attribute/customClass: MaterialSegmentedControl
-      attribute/customModule: Butterfly
+      attribute/customModule: LKButterfly
     attributes:
       app:tabMode:
         mapValues:
@@ -943,7 +943,7 @@
     defaults:
       property/collectionViewLayout:collectionViewFlowLayout/attribute/id: "<id>"
       property/collectionViewLayout:collectionViewFlowLayout/attribute/customClass: ViewPagerLayout
-      property/collectionViewLayout:collectionViewFlowLayout/attribute/customModule: Butterfly
+      property/collectionViewLayout:collectionViewFlowLayout/attribute/customModule: LKButterfly
       property/backgroundColor:
         type: color
         value: "#0000"

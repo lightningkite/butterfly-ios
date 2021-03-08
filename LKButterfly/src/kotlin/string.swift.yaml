@@ -170,7 +170,7 @@
   type: call
   template:
     pattern: 'also(Box(""), ~0~).value'
-    imports: [ Butterfly ]
+    imports: [ LKButterfly ]
 - id: kotlin.text.StringBuilder.append
   type: call
   template: ~this~.value.append(~0~)

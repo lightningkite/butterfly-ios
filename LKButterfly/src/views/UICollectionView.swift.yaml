@@ -10,27 +10,27 @@
   type: type
   template:
     pattern: UICollectionViewCompositionalLayout
-    imports: [UIKit, Butterfly]
+    imports: [UIKit, LKButterfly]
 
 - id: androidx.recyclerview.widget.LinearLayoutManager
   type: call
   arguments: [android.content.Context]
   template:
     pattern: "QuickCompositionalLayout.list()"
-    imports: [Butterfly]
+    imports: [LKButterfly]
 
 - id: androidx.recyclerview.widget.GridLayoutManager
   type: type
   template:
     pattern: UICollectionViewCompositionalLayout
-    imports: [UIKit, Butterfly]
+    imports: [UIKit, LKButterfly]
 
 - id: androidx.recyclerview.widget.GridLayoutManager
   type: call
   arguments: [android.content.Context, kotlin.Int]
   template:
     pattern: "QuickCompositionalLayout.grid(orthogonalCount: ~1~)"
-    imports: [Butterfly]
+    imports: [LKButterfly]
 
 # TODO
 #- id: androidx.recyclerview.widget.LinearLayoutManager
@@ -38,4 +38,4 @@
 #  arguments: [android.content.Context, kotlin.Int, kotlin.Boolean]
 #  template:
 #    pattern: "UICollectionViewCompositionalLayout.list()"
-#    imports: [Butterfly ]
+#    imports: [LKButterfly ]

@@ -8,22 +8,22 @@
   type: call
   template:
     pattern: 'UIColor(argb: ~0~)'
-    imports: [Butterfly]
+    imports: [LKButterfly]
 
 - id: com.lightningkite.butterfly.views.asColor
   type: call
   template:
     pattern: 'UIColor(argb: ~this~)'
-    imports: [Butterfly]
+    imports: [LKButterfly]
 
 - id: com.lightningkite.butterfly.views.colorValue
   type: call
   template:
     pattern: 'UIColor(argb: ~0~)'
-    imports: [Butterfly]
+    imports: [LKButterfly]
 
 - id: com.lightningkite.butterfly.views.asColor
   type: call
   template:
     pattern: 'UIColor(argb: ~this~)'
-    imports: [Butterfly]
+    imports: [LKButterfly]

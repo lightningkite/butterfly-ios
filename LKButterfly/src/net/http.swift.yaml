@@ -4,4 +4,4 @@
   type: call
   template:
     pattern: mediaTypeOrNull(~0~)
-    imports: [Butterfly]
+    imports: [LKButterfly]
