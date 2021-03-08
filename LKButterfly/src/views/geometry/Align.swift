@@ -31,6 +31,7 @@ public class AlignPair : KDataClass {
     public var description: String { return "AlignPair(horizontal = \(self.horizontal), vertical = \(self.vertical))" }
     public func copy(horizontal: Align? = nil, vertical: Align? = nil) -> AlignPair { return AlignPair(horizontal: horizontal ?? self.horizontal, vertical: vertical ?? self.vertical) }
     
+    
     public class Companion {
         public init() {
             self.center = AlignPair(horizontal: Align.center, vertical: Align.center)

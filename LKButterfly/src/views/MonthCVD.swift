@@ -150,7 +150,7 @@ open class MonthCVD : CustomViewDelegate {
     
     private let calcMonthB: DateAlone
     
-    override open func draw(canvas: CGContext, width: CGFloat, height: CGFloat, displayMetrics: DisplayMetrics) -> Void {
+    override public func draw(canvas: CGContext, width: CGFloat, height: CGFloat, displayMetrics: DisplayMetrics) -> Void {
         self.measure(width: width, height: height, displayMetrics: displayMetrics)
         if self.currentOffset > 0 {
             //draw past month and current month
@@ -293,7 +293,7 @@ public class CalendarDrawing {
             canvas.drawTextCentered(text: String(kotlin: date.day), centerX: inner.centerX(), centerY: inner.centerY(), paint: paint)
         } else {
             let originalColor = paint.color
-            let myPaint = paint
+            var myPaint = paint
             myPaint.color = paint.color.colorAlpha(desiredAlpha: 64)
             canvas.drawTextCentered(text: String(kotlin: date.day), centerX: inner.centerX(), centerY: inner.centerY(), paint: myPaint)
             myPaint.color = originalColor

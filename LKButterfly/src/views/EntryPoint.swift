@@ -3,7 +3,7 @@
 // Package: com.lightningkite.butterfly.views
 import Foundation
 
-public protocol EntryPoint: HasBackAction {
+public protocol EntryPoint: AnyObject, HasBackAction {
     
     func handleDeepLink(schema: String, host: String, path: String, params: Dictionary<String, String>) -> Void 
     var mainStack: ObservableStack<ViewGenerator>? { get }

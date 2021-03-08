@@ -19,8 +19,8 @@ public class PolygonF : KDataClass {
     
     public func contains(point: CGPoint) -> Bool {
         let intersections = self.points.indices.count(predicate: { (it) -> Bool in 
-            let a = self.points[it]
-            let b = self.points[(it + 1) % self.points.count]
+                var a = self.points[it]
+                var b = self.points[(it + 1) % self.points.count]
                 return Geometry.INSTANCE.rayIntersectsLine(rayX: point.x, rayY: point.y, rayToX: point.x + 100, rayToY: point.y, lineX1: a.x, lineY1: a.y, lineX2: b.x, lineY2: b.y)
         })
         return intersections % 2 == 1
