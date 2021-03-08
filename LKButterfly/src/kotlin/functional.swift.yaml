@@ -1,0 +1,42 @@
+---
+- id: kotlin.let
+  type: call
+  template:
+    pattern: "(~0~)(~this~)"
+    imports: [LKButterfly]
+
+- id: kotlin.run
+  type: call
+  template:
+    pattern: "(~0~)(~this~)"
+    imports: [LKButterfly]
+
+- id: kotlin.with
+  type: call
+  template:
+    pattern: "(~1~)(~0~)"
+    imports: [LKButterfly]
+
+- id: kotlin.also
+  type: call
+  template:
+    pattern: "also(~this~, ~0~)"
+    imports: [LKButterfly]
+
+- id: kotlin.apply
+  type: call
+  template:
+    pattern: "also(~this~, ~0~)"
+    imports: [LKButterfly]
+
+- id: kotlin.takeIf
+  type: call
+  template:
+    pattern: takeIf(~this~, ~0~)
+    imports: [LKButterfly]
+
+- id: kotlin.takeUnless
+  type: call
+  template:
+    pattern: takeUnless(~this~, ~0~)
+    imports: [LKButterfly]

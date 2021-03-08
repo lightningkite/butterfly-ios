@@ -1,0 +1,29 @@
+- id: com.lightningkite.butterfly.views.ColorValue
+  type: type
+  template:
+    pattern: UIColor
+    imports: [UIKit]
+
+- id: com.lightningkite.butterfly.views.colorValue
+  type: call
+  template:
+    pattern: 'UIColor(argb: ~0~)'
+    imports: [LKButterfly]
+
+- id: com.lightningkite.butterfly.views.asColor
+  type: call
+  template:
+    pattern: 'UIColor(argb: ~this~)'
+    imports: [LKButterfly]
+
+- id: com.lightningkite.butterfly.views.colorValue
+  type: call
+  template:
+    pattern: 'UIColor(argb: ~0~)'
+    imports: [LKButterfly]
+
+- id: com.lightningkite.butterfly.views.asColor
+  type: call
+  template:
+    pattern: 'UIColor(argb: ~this~)'
+    imports: [LKButterfly]

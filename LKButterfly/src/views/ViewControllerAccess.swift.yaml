@@ -1,0 +1,11 @@
+
+- id: com.lightningkite.butterfly.android.ActivityAccess
+  type: type
+  template:
+    pattern: ViewControllerAccess
+    imports: [LKButterfly]
+- id: com.lightningkite.butterfly.views.ViewDependency
+  type: type
+  template:
+    pattern: ViewControllerAccess
+    imports: [LKButterfly]
