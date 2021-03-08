@@ -2,7 +2,7 @@ platform :ios, '11.0'
 
 use_frameworks!
 
-target 'Butterfly' do
+target 'LKButterfly' do
     pod 'Alamofire'
     pod 'AlamofireImage'
     pod 'KeychainAccess'
@@ -18,7 +18,7 @@ target 'Butterfly' do
     pod 'IBPCollectionViewCompositionalLayout'
 end
 
-target 'ButterflyTests' do
+target 'LKButterflyTests' do
     pod 'Alamofire'
     pod 'KeychainAccess'
     pod 'RxSwift', '5.1.1'

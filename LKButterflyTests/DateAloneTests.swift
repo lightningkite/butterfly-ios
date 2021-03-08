@@ -7,18 +7,18 @@
 //
 
 import XCTest
-@testable import Butterfly
+@testable import LKButterfly
 
 class DateAloneTests: XCTestCase {
     
     var testDates = (-5000...5000).map {
-        Date().dateAlone.safeAddDayOfWeek($0)
+        Date().dateAlone.safeAddDayOfWeek(value: $0)
     }
     var testDatesPerformance = (-500...500).map {
-        Date().dateAlone.safeAddDayOfWeek($0)
+        Date().dateAlone.safeAddDayOfWeek(value: $0)
     }
     var testDatesShort = (-20...20).map {
-        Date().dateAlone.safeAddDayOfWeek($0)
+        Date().dateAlone.safeAddDayOfWeek(value: $0)
     }
 
     func testDayOfWeekRead(){
@@ -28,73 +28,73 @@ class DateAloneTests: XCTestCase {
     }
 
     func testDayOfWeek(){
-        for testValue in 1.toInt()...7.toInt() {
+        for testValue in 1...7 {
             for date in testDatesShort {
-                let actual = date.dayOfWeek(testValue)
-                let expected = date.safeDayOfWeek(testValue)
+                let actual = date.dayOfWeek(value:testValue)
+                let expected = date.safeDayOfWeek(value:testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
     }
     func testDayOfMonth(){
-        for testValue in 1.toInt()...28.toInt() {
+        for testValue in 1...28 {
             for date in testDatesShort {
-                let actual = date.dayOfMonth(testValue)
-                let expected = date.safeDayOfMonth(testValue)
+                let actual = date.dayOfMonth(value: testValue)
+                let expected = date.safeDayOfMonth(value: testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
     }
     func testMonthOfYear(){
-        for testValue in 1.toInt()...12.toInt() {
+        for testValue in 1...12 {
             for date in testDatesShort {
-                let actual = date.monthOfYear(testValue)
-                let expected = date.safeMonthOfYear(testValue)
+                let actual = date.monthOfYear(value:testValue)
+                let expected = date.safeMonthOfYear(value:testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
     }
     func testYearAd(){
-        for testValue in 1970.toInt()...2020.toInt() {
+        for testValue in 1970...2002 {
             for date in testDates {
-                let actual = date.yearAd(testValue)
-                let expected = date.safeYearAd(testValue)
+                let actual = date.yearAd(value:testValue)
+                let expected = date.safeYearAd(value:testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
     }
     func testAddDayOfWeek(){
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4{
             for date in testDates {
-                let actual = date.addDayOfWeek(testValue)
-                let expected = date.safeAddDayOfWeek(testValue)
+                let actual = date.addDayOfWeek(value:testValue)
+                let expected = date.safeAddDayOfWeek(value:testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
     }
     func testAddDayOfMonth(){
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDates {
-                let actual = date.addDayOfMonth(testValue)
-                let expected = date.safeAddDayOfMonth(testValue)
+                let actual = date.addDayOfMonth(value:testValue)
+                let expected = date.safeAddDayOfMonth(value:testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
     }
     func testAddMonthOfYear(){
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDates {
-                let actual = date.addMonthOfYear(testValue)
-                let expected = date.safeAddMonthOfYear(testValue)
+                let actual = date.addMonthOfYear(value:testValue)
+                let expected = date.safeAddMonthOfYear(value:testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
     }
     func testAddYearAd(){
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4{
             for date in testDates {
-                let actual = date.addYearAd(testValue)
-                let expected = date.safeAddYearAd(testValue)
+                let actual = date.addYearAd(value:testValue)
+                let expected = date.safeAddYearAd(value:testValue)
                 XCTAssertEqual(actual, expected, "Failed for \(date.toString()): expected \(expected.toString()), got \(actual.toString())")
             }
         }
@@ -102,9 +102,9 @@ class DateAloneTests: XCTestCase {
 
     func testDayOfWeekPerformance(){
         let myStart = Date()
-        for testValue in 1.toInt()...7.toInt() {
+        for testValue in 1...7 {
             for date in testDatesPerformance {
-                let actual = date.dayOfWeek(testValue)
+                let actual = date.dayOfWeek(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -112,9 +112,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in 1.toInt()...7.toInt() {
+        for testValue in 1...7 {
             for date in testDatesPerformance {
-                let expected = date.safeDayOfWeek(testValue)
+                let expected = date.safeDayOfWeek(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)
@@ -124,9 +124,9 @@ class DateAloneTests: XCTestCase {
     }
     func testDayOfMonthPerformance(){
         let myStart = Date()
-        for testValue in 1.toInt()...28.toInt() {
+        for testValue in 1...28 {
             for date in testDatesPerformance {
-                let actual = date.dayOfMonth(testValue)
+                let actual = date.dayOfMonth(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -134,9 +134,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in 1.toInt()...28.toInt() {
+        for testValue in 1...28 {
             for date in testDatesPerformance {
-                let expected = date.safeDayOfMonth(testValue)
+                let expected = date.safeDayOfMonth(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)
@@ -146,9 +146,9 @@ class DateAloneTests: XCTestCase {
     }
     func testMonthOfYearPerformance(){
         let myStart = Date()
-        for testValue in 1.toInt()...12.toInt() {
+        for testValue in 1...12 {
             for date in testDatesPerformance {
-                let actual = date.monthOfYear(testValue)
+                let actual = date.monthOfYear(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -156,9 +156,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in 1.toInt()...12.toInt() {
+        for testValue in 1...12 {
             for date in testDatesPerformance {
-                let expected = date.safeMonthOfYear(testValue)
+                let expected = date.safeMonthOfYear(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)
@@ -168,9 +168,9 @@ class DateAloneTests: XCTestCase {
     }
     func testYearAdPerformance(){
         let myStart = Date()
-        for testValue in 1970.toInt()...2020.toInt() {
+        for testValue in 1970...2020 {
             for date in testDatesPerformance {
-                let actual = date.yearAd(testValue)
+                let actual = date.yearAd(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -178,9 +178,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in 1970.toInt()...2020.toInt() {
+        for testValue in 1970...2020 {
             for date in testDatesPerformance {
-                let expected = date.safeYearAd(testValue)
+                let expected = date.safeYearAd(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)
@@ -190,9 +190,9 @@ class DateAloneTests: XCTestCase {
     }
     func testAddDayOfWeekPerformance(){
         let myStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let actual = date.addDayOfWeek(testValue)
+                let actual = date.addDayOfWeek(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -200,9 +200,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let expected = date.safeAddDayOfWeek(testValue)
+                let expected = date.safeAddDayOfWeek(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)
@@ -212,9 +212,9 @@ class DateAloneTests: XCTestCase {
     }
     func testAddDayOfMonthPerformance(){
         let myStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let actual = date.addDayOfMonth(testValue)
+                let actual = date.addDayOfMonth(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -222,9 +222,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let expected = date.safeAddDayOfMonth(testValue)
+                let expected = date.safeAddDayOfMonth(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)
@@ -234,9 +234,9 @@ class DateAloneTests: XCTestCase {
     }
     func testAddMonthOfYearPerformance(){
         let myStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let actual = date.addMonthOfYear(testValue)
+                let actual = date.addMonthOfYear(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -244,9 +244,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let expected = date.safeAddMonthOfYear(testValue)
+                let expected = date.safeAddMonthOfYear(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)
@@ -256,9 +256,9 @@ class DateAloneTests: XCTestCase {
     }
     func testAddYearAdPerformance(){
         let myStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let actual = date.addYearAd(testValue)
+                let actual = date.addYearAd(value:testValue)
             }
         }
         let myDuration = Date().timeIntervalSince(myStart)
@@ -266,9 +266,9 @@ class DateAloneTests: XCTestCase {
         print("My: \(myDuration) seconds")
         
         let appleStart = Date()
-        for testValue in -4.toInt()...4.toInt() {
+        for testValue in -4...4 {
             for date in testDatesPerformance {
-                let expected = date.safeAddYearAd(testValue)
+                let expected = date.safeAddYearAd(value:testValue)
             }
         }
         let appleDuration = Date().timeIntervalSince(appleStart)

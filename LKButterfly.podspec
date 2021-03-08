@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name = "Butterfly"
+  s.name = "LKButterfly"
   s.version = "0.2.0"
   s.summary = "Standard library for code translated from Kotlin to Swift"
   s.description = "The Butterfly Gradle plugin translates code from Kotlin to Swift, but in order to do so, a set of libraries must be present on both sides.  This is the iOS portion."
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.author = { "Captain" => "joseph@lightningkite.com" }
   s.platform = :ios, "11.0"
   s.source = { :git => "https://github.com/lightningkite/butterfly-ios.git", :tag => "#{s.version}", :submodules => true }
-  s.source_files =  "Butterfly/**/*.{swift,swift.yml,swift.yaml}"
+  s.source_files =  "LKButterfly/**/*.{swift,swift.yml,swift.yaml}"
 
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 
@@ -22,28 +22,28 @@ Pod::Spec.new do |s|
   s.dependency "UITextView+Placeholder"
   s.dependency "Cosmos"
   s.dependency "SearchTextField"
-  s.dependency "RxSwift"
-  s.dependency "RxRelay"
+  s.dependency "RxSwift", "5.1.1" 
+  s.dependency "RxRelay", "5.1.1"
   s.dependency "Starscream"
   s.dependency "IBPCollectionViewCompositionalLayout"
 
   s.subspec 'Core' do |core|
-    core.source_files =  "Butterfly/src/**/*.{swift,swift.yml,swift.yaml}"
+    core.source_files =  "LKButterfly/src/**/*.{swift,swift.yml,swift.yaml}"
   end
   s.subspec 'Images' do |images|
-    images.source_files =  "Butterfly/srcImages/**/*.{swift,swift.yml,swift.yaml}"
-    images.dependency "Butterfly/Core"
+    images.source_files =  "LKButterfly/srcImages/**/*.{swift,swift.yml,swift.yaml}"
+    images.dependency "LKButterfly/Core"
     images.dependency "DKImagePickerController/Core"
     images.dependency "DKImagePickerController/ImageDataManager"
     images.dependency "DKImagePickerController/Resource"
     images.dependency "DKImagePickerController/Camera"
   end
   s.subspec 'Calendar' do |calendar|
-    calendar.dependency "Butterfly/Core"
-    calendar.source_files =  "Butterfly/srcCalendar/**/*.{swift,swift.yml,swift.yaml}"
+    calendar.dependency "LKButterfly/Core"
+    calendar.source_files =  "LKButterfly/srcCalendar/**/*.{swift,swift.yml,swift.yaml}"
   end
   s.subspec 'Location' do |location|
-    location.dependency "Butterfly/Core"
-    location.source_files =  "Butterfly/srcLocation/**/*.{swift,swift.yml,swift.yaml}"
+    location.dependency "LKButterfly/Core"
+    location.source_files =  "LKButterfly/srcLocation/**/*.{swift,swift.yml,swift.yaml}"
   end
 end
