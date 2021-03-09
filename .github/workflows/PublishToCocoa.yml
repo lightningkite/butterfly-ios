@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:                 
-  run-unit-tests:
+  publish-release:
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v1
