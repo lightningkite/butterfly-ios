@@ -73,8 +73,11 @@
   template: '(~this~.index(forKey: ~0~) != nil)'
 - id: kotlin.collections.MutableMap.put
   type: call
-  usedAsExpression: false
   template: ~this~[~0~] = ~1~
+- id: kotlin.collections.MutableMap.put
+  type: call
+  usedAsExpression: true
+  template: '~this~.updateValue(~1~, forKey: ~0~)'
 - id: kotlin.collections.set
   type: call
   receiver: kotlin.collections.MutableMap
@@ -94,3 +97,7 @@
 - id: kotlin.collections.mapValues
   type: call
   template: ~this~.mapValuesFromPairs(~*~)
+
+- id: kotlin.collections.Map.entries
+  type: get
+  template: ~this~

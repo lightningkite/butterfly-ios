@@ -6,10 +6,10 @@ public class TimeNames {
     public static let INSTANCE = TimeNames()
     
     private var formatter = DateFormatter()
-    public lazy var shortMonthNames = formatter.shortMonthSymbols!
-    public lazy var monthNames = formatter.monthSymbols!
-    public  lazy var shortWeekdayNames = formatter.shortWeekdaySymbols!
-    public  lazy var weekdayNames = formatter.weekdaySymbols!
+    public lazy var shortMonthNames: Array<String> = formatter.shortMonthSymbols
+    public lazy var monthNames: Array<String> = formatter.monthSymbols
+    public lazy var shortWeekdayNames: Array<String> = formatter.shortWeekdaySymbols
+    public lazy var weekdayNames: Array<String> = formatter.weekdaySymbols
     public func shortMonthName(oneIndexedPosition: Int) -> String {
         return shortMonthNames[oneIndexedPosition - 1]
     }

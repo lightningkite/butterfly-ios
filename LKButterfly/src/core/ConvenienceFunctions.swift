@@ -9,8 +9,8 @@ public func TODO(reason: String = "") -> Never {
     fatalError("TODO: \(reason)")
 }
 
-public func run<T>(_ action: ()->T)->T {
-    return action()
+public func run<T>(_ action: () throws->T) rethrows ->T {
+    return try action()
 }
 
 public func also<T>(_ value: T, _ action: (inout T)->Void)->T {
