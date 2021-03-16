@@ -83,11 +83,3 @@
 - id: array.set
   type: call
   template: ~this~[~0~] = ~1~
-
-- id: kotlin.collections.indices
-  type: get
-  actualReceiver: array
-  template:
-    pattern: new NumberRange(0, ~this~.length-1)
-    imports:
-      NumberRange: butterfly-web/dist/Kotlin
