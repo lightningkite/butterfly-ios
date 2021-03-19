@@ -173,6 +173,10 @@
   type: call
   template: "~this~.first(where: ~0~)"
 
+- id: kotlin.collections.firstOrNull
+  type: call
+  template: "~this~.first(where: ~0~)"
+
 # Join
 
 - id: kotlin.collections.joinToString
