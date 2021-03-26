@@ -88,9 +88,19 @@ public class Dropdown : UIButton {
             setNeedsLayout()
         }
     }
+    
+    public var selectedText: String {
+        get { return title(for: .normal) ?? "" }
+        set(value) {
+            currentView?.removeFromSuperview()
+            currentView = nil
+            setNeedsLayout()
+            textString = value
+        }
+    }
 
     override public func sizeThatFits(_ size: CGSize) -> CGSize {
-        return currentView?.sizeThatFits(size) ?? CGSize.zero
+        return currentView?.sizeThatFits(size) ?? super.sizeThatFits(size)
     }
 
     override public func layoutSubviews() {
