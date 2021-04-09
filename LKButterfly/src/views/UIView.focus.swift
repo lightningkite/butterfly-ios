@@ -141,3 +141,10 @@ extension UITextField {
         }
     }
 }
+
+public extension UITextView {
+    
+    public func setOnDoneClick(action: @escaping ()->Void) {
+        /* do nothing */
+    }
+}
