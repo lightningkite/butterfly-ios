@@ -18,6 +18,8 @@ public struct Pair<A, B> {
         self.second = second
     }
     public func toTuple() -> (A, B) { return (first, second) }
+    
+    public func copy( first:A? = nil, second:B? = nil ) -> Pair<A,B> { return Pair(first ?? self.first, second ?? self.second)}
 }
 
 extension Pair: Encodable where A: Encodable, B: Encodable { }

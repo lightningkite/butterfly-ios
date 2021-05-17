@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreGraphics
 
 @IBDesignable
 open class LinearLayout: UIView, ListensToChildSize {
@@ -171,15 +172,8 @@ open class LinearLayout: UIView, ListensToChildSize {
     internal var subviewsWithParams: Array<(UIView, LayoutParams)> = Array()
     
     public func childSizeUpdated(_ child: UIView){
-        if let p = getParams(for: child) {
-            if p.weight > 0 {
-                setNeedsLayout()
-            } else {
-                self.notifyParentSizeChanged()
-            }
-        } else {
-            setNeedsLayout()
-        }
+        setNeedsLayout()
+        self.notifyParentSizeChanged()
     }
     
     public func getParams(for view: UIView) -> LayoutParams? {
@@ -331,6 +325,7 @@ open class LinearLayout: UIView, ListensToChildSize {
         let remainingArea = size[orientation] - result[orientation]
         
         for (subview, params) in subviewsWithParams {
+            guard subview.includeInLayout else { continue }
             if params.weight == 0 { continue }
             let combined = params.combined
             let subMaximumsA = makeSize(
@@ -478,26 +473,29 @@ open class LinearLayout: UIView, ListensToChildSize {
 //    override open func draw(_ rect: CGRect) {
 //        super.draw(rect)
 //        if debugDraw {
-//            let ctx = UIGraphicsGetCurrentContext()
-//            ctx?.saveGState()
-//            ctx?.clear(rect)
+//            guard let ctx = UIGraphicsGetCurrentContext() else { return }
+//            ctx.saveGState()
+//            ctx.clear(rect)
 //            for (key, value) in childBounds {
-//                ctx?.setLineWidth(2)
-//                ctx?.setFillColor(UIColor.clear.cgColor)
+//                ctx.setLineWidth(2)
+//                ctx.setFillColor(UIColor.clear.cgColor)
 //                if key === lastHit {
-//                    ctx?.setStrokeColor(UIColor.green.cgColor)
+//                    ctx.setStrokeColor(UIColor.green.cgColor)
 //                } else {
-//                    ctx?.setStrokeColor(UIColor.blue.cgColor)
+//                    ctx.setStrokeColor(UIColor.blue.cgColor)
 //                }
 //                UIBezierPath(rect: value.insetBy(dx: 1, dy: 1)).stroke()
+//                ctx.setStrokeColor(UIColor.red.cgColor)
+//                UIBezierPath(rect: CGRect(origin: CGPoint(x: rect.centerX(), y: rect.centerY()), size: CGSize(width: 2, height: (measurements[key]?.height ?? 0) / 4))).stroke()
+////                String(measurements[key]?.height ?? 0).draw(at: CGPoint(x: value.left, y: value.top))
 //            }
 //            if let lastPoint = lastPoint {
-//                ctx?.setLineWidth(2)
-//                ctx?.setFillColor(UIColor.clear.cgColor)
-//                ctx?.setStrokeColor(UIColor.red.cgColor)
+//                ctx.setLineWidth(2)
+//                ctx.setFillColor(UIColor.clear.cgColor)
+//                ctx.setStrokeColor(UIColor.red.cgColor)
 //                UIBezierPath(ovalIn: CGRect(x: lastPoint.x, y: lastPoint.y, width: 1, height: 1)).stroke()
 //            }
-//            ctx?.restoreGState()
+//            ctx.restoreGState()
 //        }
 //    }
 }
