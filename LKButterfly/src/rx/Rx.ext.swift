@@ -332,6 +332,9 @@ extension Array where Element: ObservableType {
     func combineLatest() -> Observable<Array<Element.Element>> {
         return Observable.combineLatest(self)
     }
+    func combineLatest() -> Observable<Array<Element.Element>> {
+        return Observable.combineLatest(self)
+    }
 }
 
 public extension Observable {
