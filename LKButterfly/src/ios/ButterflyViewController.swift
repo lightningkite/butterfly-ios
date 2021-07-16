@@ -98,22 +98,7 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
         self.view = UIView(frame: .zero)
         self.view.backgroundColor = defaultBackgroundColor
         
-        let m = main.generate(dependency: ViewControllerAccess(self))
-        innerView = m
-        innerView.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(innerView)
-        
-        if drawOverSystemWindows {
-            m.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-            m.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
-            m.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-            m.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        } else {
-            m.leftAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.leftAnchor).isActive = true
-            m.rightAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.rightAnchor).isActive = true
-            m.topAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.topAnchor).isActive = true
-            m.bottomAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.bottomAnchor).isActive = true
-        }
+        rerender()
         
         showDialogEvent.addWeak(referenceA: self){ (this, request) in
             let dep = ViewControllerAccess(self)
@@ -144,6 +129,30 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
                 self.resignAllFirstResponders()
             }
         }).forever()
+    }
+    private func rerender(){
+        if let old = innerView {
+            old.removeFromSuperview()
+            post {
+                old.refreshLifecycle()
+            }
+        }
+        let m = main.generate(dependency: ViewControllerAccess(self))
+        innerView = m
+        innerView.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(innerView)
+        
+        if drawOverSystemWindows {
+            m.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+            m.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            m.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+            m.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        } else {
+            m.leftAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.leftAnchor).isActive = true
+            m.rightAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.rightAnchor).isActive = true
+            m.topAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.topAnchor).isActive = true
+            m.bottomAnchor.constraint(equalTo: self.viewSafeAreaLayoutGuide.bottomAnchor).isActive = true
+        }
     }
     
     private var suppressKeyboardUpdate: Bool = false
@@ -279,11 +288,44 @@ open class ButterflyViewController: UIViewController, UINavigationControllerDele
     }
 
     override open func viewWillLayoutSubviews(){
+        if layoutsChanged() {
+            post { [weak self] in
+                guard let self = self else { return }
+                self.rerender()
+            }
+        }
         if self.viewSafeAreaInsets != UIView.fullScreenSafeInsetsObs.value {
             UIView.fullScreenSafeInsetsObs.value = self.viewSafeAreaInsets
             innerView.updateSafeInsets(self.viewSafeAreaInsets)
         }
         super.viewWillLayoutSubviews()
     }
+    
+    private var layoutBoundaries: Dictionary<ObjectIdentifier, LayoutBoundaryInfo> = [:]
+    public func pickLayout(view: UIView, passOrFail: @escaping () -> Bool) -> Bool {
+        let key = ObjectIdentifier(view)
+        let newInfo = LayoutBoundaryInfo(check: passOrFail, last: passOrFail())
+        layoutBoundaries[key] = newInfo
+        view.removed.call(DisposableLambda { [weak self] in
+            guard let self = self else { return }
+            self.layoutBoundaries.removeValue(forKey: key)
+        })
+        return newInfo.last
+    }
+    private func layoutsChanged() -> Bool {
+        var changed = false
+        layoutBoundaries = layoutBoundaries.mapValues { (value) in
+            let newValue = value.check()
+            if newValue != value.last {
+                changed = true
+            }
+            return LayoutBoundaryInfo(check: value.check, last: newValue)
+        }
+        return changed
+    }
 }
 
+private struct LayoutBoundaryInfo {
+    let check: ()->Bool
+    var last: Bool
+}
