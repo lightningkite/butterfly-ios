@@ -75,7 +75,7 @@ public class Random {
     public func nextDouble(from: Double, until: Double) -> Double {
         return nextDouble(from, until)
     }
-
+    
     public func nextFloat() -> Float {
         return Float.random(in: 0..<1, using: &twister)
     }
@@ -92,6 +92,24 @@ public class Random {
     }
     public func nextFloat(from: Float, until: Float) -> Float {
         return nextFloat(from, until)
+    }
+    
+    public func nextGFloat() -> CGFloat {
+        return CGFloat.random(in: 0..<1, using: &twister)
+    }
+
+    public func nextGFloat(_ until: CGFloat) -> CGFloat {
+        return CGFloat.random(in: 0..<until, using: &twister)
+    }
+    public func nextGFloat(until: CGFloat) -> CGFloat {
+        return nextGFloat(until)
+    }
+
+    public func nextGFloat(_ from: CGFloat, _ until: CGFloat) -> CGFloat {
+        return CGFloat.random(in: from..<until, using: &twister)
+    }
+    public func nextGFloat(from: CGFloat, until: CGFloat) -> CGFloat {
+        return nextGFloat(from, until)
     }
 
 }
