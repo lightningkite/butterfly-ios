@@ -35,7 +35,9 @@ public extension Dropdown {
         options.subscribeBy(onNext:  { value in
             self.pickerView.reloadAllComponents()
         }).until(self.removed)
-        self.selectedView = Dropdown.defaultRow(selected.map(read: toString))
+        selected.map(read: toString).subscribeBy(onNext: {
+            self.selectedText = $0
+        }).until(self.removed)
         selected.subscribeBy(onNext:  { value in
             let index = options.value.firstIndex(of: value) ?? -1
             if index != -1 {
@@ -55,7 +57,9 @@ public extension Dropdown {
         options.subscribeBy(onNext:  { value in
             self.pickerView.reloadAllComponents()
         }).until(self.removed)
-        self.selectedView = Dropdown.defaultRow(selected.flatMap(transformation: toString))
+        selected.flatMap(transformation: toString).subscribeBy(onNext: {
+            self.selectedText = $0
+        }).until(self.removed)
         selected.subscribeBy(onNext:  { value in
             let index = options.value.firstIndex(of: value) ?? -1
             if index != -1 {

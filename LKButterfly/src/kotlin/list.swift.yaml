@@ -265,6 +265,7 @@
   template: ~this~.first!
 - id: kotlin.collections.firstOrNull
   type: call
+  arguments: []
   actualReceiver: kotlin.collections.List
   template: ~this~.first
 - id: kotlin.collections.last

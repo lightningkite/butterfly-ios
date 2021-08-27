@@ -39,6 +39,22 @@
 - id: kotlin.math.exp
   type: call
   template: pow(M_E, ~0~)
+- id: kotlin.math.pow
+  type: call
+  receiver: kotlin.Double
+  template: pow(~this~, ~0~)
+- id: kotlin.math.pow
+  type: call
+  receiver: kotlin.Float
+  template: Float(pow(~this~, ~0~))
+- id: kotlin.math.pow
+  type: call
+  receiver: kotlin.Int
+  template: Int32(pow(~this~, ~0~))
+- id: kotlin.math.pow
+  type: call
+  receiver: kotlin.Long
+  template: Int64(pow(~this~, ~0~))
 - id: kotlin.math.PI
   type: get
   template: .pi

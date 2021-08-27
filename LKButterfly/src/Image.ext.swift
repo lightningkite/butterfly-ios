@@ -66,6 +66,13 @@ public extension Image {
             } else {
                 return Single.error(IllegalArgumentException("Invalid URL \(self.url)"))
             }
+        case let self as ImageResource:
+            if let layer = (self.resource.makeLayer(nil) as? CAImageLayer){
+                if let image = layer.image{
+                    return Single.just(image)
+                }
+            }
+            return Single.error(IllegalArgumentException("Could not convert Resource into image."))
         default:
             return Single.error(IllegalArgumentException("Unknown image type \(self)"))
         }

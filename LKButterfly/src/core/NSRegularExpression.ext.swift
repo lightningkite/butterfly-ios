@@ -25,6 +25,11 @@ public extension NSRegularExpression {
         }
         return Match(value: groupValues[0], groupValues: groupValues)
     }
+    
+    
+    func matches(input string: String) -> Bool {
+        return self.firstMatch(in: string, options: [], range: NSRange(string.startIndex ..< string.endIndex, in: string)) != nil
+    }
 
     func matchEntire(input: String) -> Match?{
         let x = find(input: input)

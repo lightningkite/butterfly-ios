@@ -4,10 +4,6 @@ import UIKit
 
 
 public extension CGRect {
-    
-    init(){
-        self = .zero
-    }
 
     init(_ left: CGFloat, _ top: CGFloat, _ right: CGFloat, _ bottom: CGFloat) {
         self.init(x: left, y: top, width: right - left, height: bottom - top)

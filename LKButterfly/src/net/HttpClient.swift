@@ -111,7 +111,7 @@ public enum HttpClient {
         if let resp = responseScheduler {
             single = single.observeOn(resp)
         }
-        return single
+        return single.cache()
     }
 
     public static func callWithProgress<T>(url: String, method: String = "GET", headers: Dictionary<String, String> = [:], body: HttpBody? = nil, options: HttpOptions = HttpClient.defaultOptions, parse: @escaping (HttpResponse) -> Single<T>) -> Observable<HttpProgress<T>> {
@@ -205,7 +205,7 @@ public enum HttpClient {
         if let resp = responseScheduler {
             obs = obs.observeOn(resp)
         }
-        return obs.replay(1).refCount()
+        return obs.share(replay: 1)
     }
 
     public static func call(url: String, method: String = "GET", headers: Dictionary<String, String> = [:], body: HttpBody? = nil, callTimeout:Int64? = nil, writeTimeout:Int64? = nil, readTimeout:Int64?=nil,connectTimeout:Int64?=nil) -> Single<HttpResponse> {

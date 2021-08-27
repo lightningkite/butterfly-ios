@@ -106,6 +106,13 @@
   type: call
   template: '~this~.max(by: deferComparison(~0~))'
 
+- id: kotlin.collections.minByOrNull
+  type: call
+  template: '~this~.min(by: deferComparison(~0~))'
+- id: kotlin.collections.maxByOrNull
+  type: call
+  template: '~this~.max(by: deferComparison(~0~))'
+
 - id: kotlin.collections.associate
   type: call
   template: "Dictionary(~this~.map(~0~), uniquingKeysWith: { (a, _) in a })"
@@ -170,6 +177,10 @@
   template: ~this~.allSatisfy({ !~0~($0) })
 
 - id: kotlin.collections.find
+  type: call
+  template: "~this~.first(where: ~0~)"
+
+- id: kotlin.collections.firstOrNull
   type: call
   template: "~this~.first(where: ~0~)"
 

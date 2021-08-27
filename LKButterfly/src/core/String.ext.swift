@@ -157,6 +157,7 @@ public extension String {
     }()
 
     func formatList(arguments: Array<Any>) -> String {
+        #if os(iOS)
         let fixedArgs: Array<CVarArg> = arguments.map { it in
             if let it = it as? CVarArg {
                 return it
@@ -164,6 +165,31 @@ public extension String {
                 return String(describing: it)
             }
         }
+        #else
+        for argIndex in arguments.indices {
+            let item = arguments[argIndex]
+            if item is CVarArg {}
+            else if let str = item as? String {
+                var result = ""
+                str.withCString { ptr in
+                    var copy = arguments
+                    copy[argIndex] = ptr
+                    result = formatList(arguments: copy)
+                }
+                return result
+            }
+            else {
+                var result = ""
+                String(describing: item).withCString { ptr in
+                    var copy = arguments
+                    copy[argIndex] = ptr
+                    result = formatList(arguments: copy)
+                }
+                return result
+            }
+        }
+        let fixedArgs = arguments.map { $0 as! CVarArg }
+        #endif
         let fixedTemplate = String.fixTemplateRegex.stringByReplacingMatches(in: self, options: [], range: NSMakeRange(0, self.count), withTemplate: "%$1@")
         return String(format: fixedTemplate, arguments: fixedArgs)
     }

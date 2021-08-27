@@ -150,13 +150,12 @@ protocol HasAtPosition {
     var atPosition: (Int) -> Void { get set }
 }
 
-class CollectionBoundDataSource<T>: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, HasAtEnd, HasAtPosition {
+class CollectionBoundDataSource<T>: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, HasAtPosition {
     var reversedDirection: Bool = false
 
     var source: ObservableProperty<[T]>
     let makeView: (ObservableProperty<T>) -> UIView
     let defaultValue: T
-    var atEnd: () -> Void = {}
     let spacing: CGFloat
 
     init(source: ObservableProperty<[T]>, defaultValue: T, spacing: CGFloat, makeView: @escaping (ObservableProperty<T>) -> UIView) {
@@ -167,10 +166,6 @@ class CollectionBoundDataSource<T>: NSObject, UICollectionViewDataSource, UIColl
         super.init()
     }
 
-    func setAtEnd(action: @escaping () -> Void) {
-        self.atEnd = action
-    }
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let value = self.source.value
         let count = value.count
@@ -179,7 +174,9 @@ class CollectionBoundDataSource<T>: NSObject, UICollectionViewDataSource, UIColl
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.row >= (source.value.count) - 1 {
-            atEnd()
+            if let atEnd = UICollectionView.atEndExtension.get(collectionView) {
+                atEnd()
+            }
         }
         let s = source.value
         let cell: CustomUICollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "main-cell", for: indexPath) as! CustomUICollectionViewCell
@@ -207,7 +204,7 @@ class CollectionBoundDataSource<T>: NSObject, UICollectionViewDataSource, UIColl
 }
 
 
-class CollectionSimpleDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, HasAtEnd, HasAtPosition {
+class CollectionSimpleDataSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegate, HasAtPosition {
     var reversedDirection: Bool = false
 
     var atPosition: (Int) -> Void = { _ in }
@@ -220,7 +217,6 @@ class CollectionSimpleDataSource: NSObject, UICollectionViewDataSource, UICollec
 
     var count: Int
     let makeView: (Int) -> UIView
-    var atEnd: () -> Void = {}
     let spacing: CGFloat
 
     init(count: Int, spacing: CGFloat, makeView: @escaping (Int) -> UIView) {
@@ -230,17 +226,15 @@ class CollectionSimpleDataSource: NSObject, UICollectionViewDataSource, UICollec
         super.init()
     }
 
-    func setAtEnd(action: @escaping () -> Void) {
-        self.atEnd = action
-    }
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return Int(count)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.row >= count - 1 {
-            atEnd()
+            if let atEnd = UICollectionView.atEndExtension.get(collectionView) {
+                atEnd()
+            }
         }
         let cell: CustomUICollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "main-cell", for: indexPath) as! CustomUICollectionViewCell
         cell.spacing = self.spacing

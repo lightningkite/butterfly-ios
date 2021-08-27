@@ -76,6 +76,8 @@ public extension DateButton {
                 date.value = newValue
             }
         }.until(self.removed)
+        self.defaultText = startText.get(dependency: dependency)
+        self.updateText()
     }
 }
 

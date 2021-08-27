@@ -183,14 +183,9 @@ public extension UICollectionView {
             print("Cell \(centerId) is now at \(newScreenY) after a post")
         }
     }
+    static let atEndExtension = ExtensionProperty<UICollectionView, ()->Void>()
     func whenScrolledToEnd(action: @escaping () -> Void) -> Void{
-        post{
-            if let delegate = self.delegate as? HasAtEnd {
-                delegate.setAtEnd(action: action)
-            } else {
-                fatalError("You must give the view a delegate implementing the HasAtEnd protocol first.  You can do so using a 'bind'.")
-            }
-        }
+        UICollectionView.atEndExtension.set(self, action)
     }
 
     //--- RecyclerView.bind(ObservableProperty<List<T>>, T, (ObservableProperty<T>)->UIView)
@@ -399,18 +394,7 @@ public class RVTypeHandler {
     //--- RVTypeHandler.}
 }
 
-protocol HasAtEnd {
-    var atEnd: () -> Void { get set }
-    func setAtEnd(action: @escaping () -> Void)
-}
-
-class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollectionViewDataSource, HasAtEnd {
-    var atEnd: () -> Void = {}
-
-    func setAtEnd(action: @escaping () -> Void) {
-        self.atEnd = action
-    }
-
+class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollectionViewDataSource {
     var items: Array<T> = []
     let makeView: (ObservableProperty<T>, Int) -> UIView
     let getType: (T) -> Int
@@ -468,7 +452,9 @@ class GeneralCollectionDelegate<T>: NSObject, UICollectionViewDelegate, UICollec
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if(indexPath.row >= items.count - 1 && items.count > 1){
             print("Triggered end with \(indexPath.row) size \(items.count)")
-            atEnd()
+            if let atEnd = UICollectionView.atEndExtension.get(collectionView) {
+                atEnd()
+            }
         }
     }
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
