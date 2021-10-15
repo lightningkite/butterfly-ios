@@ -9,3 +9,5 @@ UUID.ext.swift
 
 xAnyToJsonHttpBody
 Preferences.swift
+
+Remove all layout stuff
