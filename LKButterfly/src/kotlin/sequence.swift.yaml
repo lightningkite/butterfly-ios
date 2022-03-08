@@ -109,6 +109,12 @@
 - id: kotlin.sequences.maxBy
   type: call
   template: '~this~.max(by: deferComparison(~0~))'
+- id: kotlin.sequences.minOrNull
+  type: call
+  template: '~this~.min()'
+- id: kotlin.sequences.maxOrNull
+  type: call
+  template: '~this~.max()'
 
 - id: kotlin.sequences.associate
   type: call
