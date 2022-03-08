@@ -1,0 +1,731 @@
+---
+
+# -----FORMAT CHEATSHEET-----
+#
+# A cheat sheet for the format is below.
+#
+# attribute: A traditional XML attribute in the XIB, like `name="value"`
+# property: A child of the XML node with a 'key' property.
+# userDefined: A child of the XML node's 'userDefinedRuntimeAttributes'.  You'll recognize it.
+
+# - id: fullyQualifiedNameOfView
+#  name: viewTypeNameInXib
+#
+#  # The defaults below are applied to every view of this type.
+#  defaults:
+#    attribute/nameOfAttribute: constantValue
+#    attribute/nameOfAttribute2:
+#      type: raw  # can be: color, dimension, number, raw, text, font, bool
+#      value: constantValue
+#    property/key:type:
+#      type: raw  # can be: color, dimension, number, raw, text, font, bool
+#      value: constantValue
+#    userDefined/key:
+#      type: raw  # can be: color, dimension, number, raw, text, font, bool
+#      value: constantValue
+#    property/key:type/attribute/key:
+#      type: raw  # can be: color, dimension, number, raw, text, font, bool
+#      value: constantValue
+#
+#  # The attribute handlers below give instructions for each Android XML attribute
+#  attributes:
+#
+#    # Use this kind for attributes split using the vertical bars (`|`).
+#    android:attributeWithSplitValues:
+#      mapValues:
+#        value1:
+#        # Same things that are in the 'defaults' section
+#        value2:
+#        # ...
+#        value3:
+#        # ...
+#
+#    # This ones below are for more typical attributes.
+#    android:someAttribute:
+#      path: attribute/key
+#      as: text  # can be: color, dimension, number, raw, text, font, bool
+#    android:someAttribute2:
+#      path: property/key:type
+#      as: color  # can be: color, dimension, number, raw, text, font, bool
+#    android:someAttribute3:
+#      path: userDefined/key
+#      as: bool  # can be: color, dimension, number, raw, text, font, bool
+#    android:someAttribute4:
+#      multiple:
+#        - path: attribute/key
+#          as: text  # can be: color, dimension, number, raw, text, font, bool
+#        - path: property/key:type
+#          as: color  # can be: color, dimension, number, raw, text, font, bool
+#        - path: userDefined/key
+#          as: bool  # can be: color, dimension, number, raw, text, font, bool
+
+
+# Let the real views begin.
+
+- id: android.view.View
+  name: view
+  defaults:
+    attribute/opaque: NO
+    attribute/translatesAutoresizingMaskIntoConstraints: NO
+    attribute/clipsSubviews: YES
+  attributes:
+    android:alpha:
+      path: attribute/alpha
+      as: number
+    android:elevation:
+      path: userDefined/elevation
+      as: dimension
+    android:rotation:
+      path: userDefined/rotation
+      as: number
+    android:visibility:
+      mapValues:
+        visible:
+        invisible:
+          attribute/hidden: true
+        gone:
+          attribute/hidden: true
+          userDefined/includeInLayout:
+            type: boolean
+            value: false
+    tools:systemEdges: #TODO
+    tools:systemEdgesSizing: #TODO
+    tools:systemEdgesBoth: #TODO
+
+- id: nonandroid.UseMarginInsets
+  name: view
+  deferTo: android.view.View
+  attributes:
+    android:padding:
+      multiple:
+        - path: property/layoutMargins:edgeInsets/attribute/top
+          as: dimension
+        - path: property/layoutMargins:edgeInsets/attribute/left
+          as: dimension
+        - path: property/layoutMargins:edgeInsets/attribute/bottom
+          as: dimension
+        - path: property/layoutMargins:edgeInsets/attribute/right
+          as: dimension
+    android:paddingTop:
+      path: property/layoutMargins:edgeInsets/attribute/top
+      as: dimension
+    android:paddingLeft:
+      path: property/layoutMargins:edgeInsets/attribute/left
+      as: dimension
+    android:paddingBottom:
+      path: property/layoutMargins:edgeInsets/attribute/bottom
+      as: dimension
+    android:paddingRight:
+      path: property/layoutMargins:edgeInsets/attribute/right
+      as: dimension
+
+- id: android.widget.Space
+  name: view
+  deferTo: android.view.View
+
+- id: android.widget.ProgressBar
+  name: activityIndicatorView
+  deferTo: android.view.View
+  attributes:
+    android:indeterminateTint:
+      path: property/color
+      as: color
+
+- id: com.lightningkite.butterfly.views.widget.HorizontalProgressBar
+  name: progressView
+  deferTo: android.view.View
+  attributes:
+    android:progressTint:
+      path: property/progressTintColor:color
+      as: color
+
+- id: android.widget.ImageView
+  name: imageView
+  deferTo: android.view.View
+  attributes:
+    android:src:
+      path: attribute/image
+      as: image
+    android:scaleType:
+      mapValues:
+        center:
+          attribute/contentMode: center
+        center_crop:
+          attribute/contentMode: scaleAspectFill
+        center_inside:
+          attribute/contentMode: scaleAspectFit
+        fit_xy:
+          attribute/contentMode: scaleToFill
+
+- id: com.lightningkite.butterfly.views.widget.VideoPlayer
+  name: view
+  deferTo: android.view.View
+  defaults:
+    attribute/customClass: UIVideoView
+    attribute/customModule: LKButterfly
+
+- id: de.hdodenhof.circleimageview.CircleImageView
+  name: imageView
+  deferTo: android.widget.ImageView
+  defaults:
+    attribute/customClass: CircleImageView
+    attribute/customModule: LKButterfly
+
+- id: android.widget.TextView
+  name: label
+  deferTo: android.view.View
+  defaults:
+    property/fontDescription/attribute/type: system
+    property/fontDescription/attribute/pointSize: 17
+    attribute/numberOfLines: 999
+  attributes:
+    android:text:
+      path: attribute/text
+      as: string
+    tools:text:
+      path: attribute/text
+      as: string
+    android:textSize:
+      path: property/fontDescription/attribute/pointSize
+      as: dimension
+    android:fontFamily:
+      multiple:
+        - path: property/fontDescription
+          as: font
+#        - path: property/fontDescription/attribute/type
+#          as: raw
+#          constant: ""
+    android:textStyle:
+      mapValues:
+        bold:
+          property/fontDescription/attribute/type: boldSystem
+        italic:
+          property/fontDescription/attribute/type: italicSystem
+    android:textAllCaps:
+      path: userDefined/textAllCaps
+      as: boolean
+    android:maxLines:
+      path: attribute/numberOfLines
+      as: number
+    android:textColor:
+      path: property/textColor:color
+      as: color
+    android:gravity:
+      mapValues:
+        start:
+          attribute/textAlignment: natural
+        left:
+          attribute/textAlignment: left
+        center:
+          attribute/textAlignment: center
+        center_horizontal:
+          attribute/textAlignment: center
+        right:
+          attribute/textAlignment: right
+        end:
+          attribute/textAlignment: right
+
+- id: com.lightningkite.butterfly.views.widget.SelectableText
+  name: label
+  deferTo: android.widget.TextView
+  defaults:
+    attribute/customClass: SelectableText
+    attribute/customModule: LKButterfly
+
+- id: com.lightningkite.butterfly.views.widget.CustomView
+  name: view
+  deferTo: android.view.View
+  defaults:
+    attribute/customClass: CustomView
+    attribute/customModule: LKButterfly
+
+
+- id: android.widget.Button
+  name: button
+  deferTo: android.view.View
+  attributes:
+    tools:text:
+      path: property/normal:state/attribute/title
+      as: string
+    android:text:
+      path: property/normal:state/attribute/title
+      as: string
+    android:textSize:
+      path: property/fontDescription/attribute/pointSize
+      as: dimension
+    android:fontFamily:
+      multiple:
+        - path: property/fontDescription
+          as: font
+#        - path: property/fontDescription/attribute/type
+#          as: raw
+#          constant: ""
+    android:textStyle:
+      mapValues:
+        bold:
+          property/fontDescription/attribute/type: boldSystem
+        italic:
+          property/fontDescription/attribute/type: italicSystem
+    android:textAllCaps:
+      path: userDefined/textAllCaps
+      as: boolean
+    android:textColor:
+      path: property/normal:state/property/titleColor
+      as: color
+    android:gravity:
+      mapValues:
+        left:
+          attribute/contentHorizontalAlignment: left
+        start:
+          attribute/contentHorizontalAlignment: left
+        center:
+          attribute/contentHorizontalAlignment: center
+          attribute/contentVerticalAlignment: center
+        center_horizontal:
+          attribute/contentHorizontalAlignment: center
+        end:
+          attribute/contentHorizontalAlignment: left
+        right:
+          attribute/contentHorizontalAlignment: left
+        top:
+          attribute/contentVerticalAlignment: top
+        bottom:
+          attribute/contentVerticalAlignment: bottom
+        center_vertical:
+          attribute/contentVerticalAlignment: center
+    android:drawablePadding:
+      multiple:
+        - path: userDefined/iconPadding
+          as: dimension
+        - path: attribute/customClass
+          constant: UIButtonWithLayer
+        - path: attribute/customModule
+          constant: LKButterfly
+    android:drawableTint:
+      multiple:
+        - path: userDefined/iconTint
+          as: color
+        - path: attribute/customClass
+          constant: UIButtonWithLayer
+        - path: attribute/customModule
+          constant: LKButterfly
+    android:drawableLeft:
+      multiple:
+        - path: userDefined/iconResource
+          as: drawable
+        - path: userDefined/iconPosition
+          as: number
+          constant: 0
+        - path: attribute/customClass
+          constant: UIButtonWithLayer
+        - path: attribute/customModule
+          constant: LKButterfly
+    android:drawableTop:
+      multiple:
+        - path: userDefined/iconResource
+          as: drawable
+        - path: userDefined/iconPosition
+          as: number
+          constant: 1
+        - path: attribute/customClass
+          constant: UIButtonWithLayer
+        - path: attribute/customModule
+          constant: LKButterfly
+    android:drawableRight:
+      multiple:
+        - path: userDefined/iconResource
+          as: drawable
+        - path: userDefined/iconPosition
+          as: number
+          constant: 2
+        - path: attribute/customClass
+          constant: UIButtonWithLayer
+        - path: attribute/customModule
+          constant: LKButterfly
+    android:drawableBottom:
+      multiple:
+        - path: userDefined/iconResource
+          as: drawable
+        - path: userDefined/iconPosition
+          as: number
+          constant: 3
+        - path: attribute/customClass
+          constant: UIButtonWithLayer
+        - path: attribute/customModule
+          constant: LKButterfly
+    android:padding:
+      multiple:
+        - path: property/contentEdgeInsets:inset/attribute/minX
+          as: dimension
+        - path: property/contentEdgeInsets:inset/attribute/minY
+          as: dimension
+        - path: property/contentEdgeInsets:inset/attribute/maxX
+          as: dimension
+        - path: property/contentEdgeInsets:inset/attribute/maxY
+          as: dimension
+    android:paddingTop:
+      path: property/contentEdgeInsets:inset/attribute/minY
+      as: dimension
+    android:paddingLeft:
+      path: property/contentEdgeInsets:inset/attribute/minX
+      as: dimension
+    android:paddingBottom:
+      path: property/contentEdgeInsets:inset/attribute/maxY
+      as: dimension
+    android:paddingRight:
+      path: property/contentEdgeInsets:inset/attribute/maxX
+      as: dimension
+
+- id: android.widget.ImageButton
+  name: button
+  deferTo: android.widget.Button
+  attributes:
+    android:src:
+      path: property/normal:state/attribute/image
+      as: image
+    android:scaleType: #TODO - iOS can't do this with a regular button!
+
+- id: android.widget.ToggleButton
+  name: button
+  deferTo: android.widget.Button
+  defaults:
+    attribute/customClass: ToggleButton
+    attribute/customModule: LKButterfly
+
+- id: android.widget.Spinner
+  name: button
+  deferTo: android.widget.Button
+  defaults:
+    attribute/customClass: Dropdown
+    attribute/customModule: LKButterfly
+
+- id: android.widget.SeekBar
+  name: slider
+  deferTo: android.view.View
+  attributes:
+    android:progressTint:
+      multiple:
+        - path: property/minimumTrackTintColor:color
+          as: color
+        - path: property/maximumTrackTintColor:color
+          as: color
+    android:thumbTint:
+      path: property/thumbTintColor:color
+      as: color
+
+- id: android.widget.RatingBar
+  name: view
+  deferTo: android.view.View
+  defaults:
+    attribute/customClass: UIRatingBar
+    attribute/customModule: LKButterfly
+  attributes:
+    android:numStars:
+      path: userDefined/totalStars
+      as: number
+    app:empty_color:
+      multiple:
+        - path: userDefined/emptyColor
+          as: color
+        - path: userDefined/emptyBorderColor
+          as: color
+    app:progress_color:
+      multiple:
+        - path: userDefined/filledColor
+          as: color
+        - path: userDefined/filledBorderColor
+          as: color
+    style:
+      mapValues:
+        ?android:attr/ratingBarStyle:
+          userDefined/startSize:
+            type: number
+            value: 48
+          userDefined/updateOnTouch:
+            type: boolean
+            value: true
+        ?android:attr/ratingBarStyleIndicator:
+          userDefined/startSize:
+            type: number
+            value: 32
+          userDefined/updateOnTouch:
+            type: boolean
+            value: false
+        ?android:attr/ratingBarStyleSmall:
+          userDefined/startSize:
+            type: number
+            value: 16
+          userDefined/updateOnTouch:
+            type: boolean
+            value: false
+
+- id: com.lightningkite.butterfly.views.widget.ColorRatingBar
+  name: view
+  deferTo: android.widget.RatingBar
+
+- id: android.widget.CheckBox
+  name: view
+  deferTo: android.widget.Button
+  defaults:
+    attribute/customClass: LabeledCheckbox
+    attribute/customModule: LKButterfly
+
+- id: android.widget.RadioButton
+  name: view
+  deferTo: android.widget.Button
+  defaults:
+    attribute/customClass: LabeledCheckbox
+    attribute/customModule: LKButterfly
+
+- id: android.widget.Switch
+  name: view
+  deferTo: android.widget.Button
+  defaults:
+    attribute/customClass: LabeledSwitch
+    attribute/customModule: LKButterfly
+
+- id: android.widget.RadioGroup
+  name: view
+  deferTo: android.widget.LinearLayout
+
+
+
+- id: android.widget.EditText
+  name: textField
+  deferTo: nonandroid.UseMarginInsets
+  defaults:
+    attribute/customClass: UITextFieldPadded
+    attribute/customModule: LKButterfly
+  attributes:
+    android:drawableLeft: # Skip until proven neccessary
+    android:drawableRight: # Skip until proven neccessary
+    android:compoundPadding:
+      path: userDefined/compoundPadding
+      as: dimension
+    android:hint:
+      path: attribute/placeholder
+      as: string
+    android:textColorHint: #This should never be necessary in iOS.  If it is, we'll handle it.
+    android:imeOptions:
+      mapValues:
+        actionSend:
+          "property/textInputTraits/attribute/returnKeyType": send
+        actionDone:
+          property/textInputTraits/attribute/returnKeyType: done
+        actionGo:
+          property/textInputTraits/attribute/returnKeyType: go
+        actionNext:
+          property/textInputTraits/attribute/returnKeyType: next
+        actionNone:
+          property/textInputTraits/attribute/returnKeyType: none
+        actionPrevious:
+          property/textInputTraits/attribute/returnKeyType: previous
+        actionSearch:
+          property/textInputTraits/attribute/returnKeyType: search
+    android:inputType:
+      mapValues:
+        text:
+          property/textInputTraits/attribute/keyboardType: alphabet
+        textCapCharacters:
+          property/textInputTraits/attribute/autocapitilizationType: allcharacters
+        textCapWords:
+          property/textInputTraits/attribute/autocapitilizationType: words
+        textCapSentences:
+          property/textInputTraits/attribute/autocapitilizationType: sentences
+        textAutoCorrect:
+          property/textInputTraits/attribute/autoCorrectionType: yes
+        textMultiLine: # Invalid - use other type instead
+        textUri:
+          property/textInputTraits/attribute/keyboardType: URL
+        textEmailAddress:
+          property/textInputTraits/attribute/keyboardType: emailAddress
+          property/textInputTraits/attribute/contentType: email
+        textPersonName:
+          property/textInputTraits/attribute/contentType: givenName
+        textPostalAddress:
+          property/textInputTraits/attribute/contentType: fullStreetAddress
+        textPassword:
+          property/textInputTraits/attribute/contentType: password
+          property/textInputTraits/attribute/secureTextEntry: YES
+        textVisiblePassword:
+          property/textInputTraits/attribute/contentType: password
+          property/textInputTraits/attribute/secureTextEntry: NO
+        number:
+          property/textInputTraits/attribute/keyboardType: numberPad
+        numberSigned:
+          property/textInputTraits/attribute/keyboardType: numbersAndPunctuation
+        numberDecimal:
+          property/textInputTraits/attribute/keyboardType: decimalPad
+        numberPassword:
+          property/textInputTraits/attribute/keyboardType: numberPad
+          property/textInputTraits/attribute/secureTextEntry: NO
+        phone:
+          property/textInputTraits/attribute/keyboardType: phonePad
+          property/textInputTraits/attribute/contentType: tel
+    android:textColor:
+      path: property/textColor:color
+      as: color
+    tools:text:
+      path: attribute/text
+      as: string
+    android:text:
+      path: attribute/text
+      as: string
+    android:textSize:
+      path: property/fontDescription/attribute/pointSize
+      as: dimension
+    android:fontFamily:
+      multiple:
+        - path: property/fontDescription
+          as: font
+#        - path: property/fontDescription/attribute/type
+#          as: raw
+#          constant: ""
+    android:textStyle:
+      mapValues:
+        bold:
+          property/fontDescription/attribute/type: boldSystem
+        italic:
+          property/fontDescription/attribute/type: italicSystem
+    android:textAllCaps:
+      path: userDefined/textAllCaps
+      as: boolean
+    android:maxLines: #Use multiline
+    android:gravity:
+      mapValues:
+        start:
+          attribute/textAlignment: natural
+        left:
+          attribute/textAlignment: left
+        center:
+          attribute/textAlignment: center
+        center_horizontal:
+          attribute/textAlignment: center
+        right:
+          attribute/textAlignment: right
+        end:
+          attribute/textAlignment: right
+
+- id: android.widget.AutoCompleteTextView
+  name: textField
+  deferTo: android.widget.EditText
+  defaults:
+    attribute/customClass: UIAutoCompleteTextFieldPadded
+    attribute/customModule: LKButterfly
+
+- id: com.lightningkite.butterfly.views.widget.MultilineEditText
+  name: textView
+  deferTo: android.widget.EditText
+
+
+- id: com.lightningkite.butterfly.views.widget.TimeButton
+  name: button
+  deferTo: android.widget.Button
+  defaults:
+    attribute/customClass: TimeButton
+    attribute/customModule: LKButterfly
+
+- id: com.lightningkite.butterfly.views.widget.DateButton
+  name: button
+  deferTo: android.widget.Button
+  defaults:
+    attribute/customClass: DateButton
+    attribute/customModule: LKButterfly
+
+- id: android.widget.LinearLayout
+  name: stackView
+  deferTo: nonandroid.UseMarginInsets
+  attributes:
+    android:orientation:
+      mapValues:
+        horizontal:
+        vertical:
+          attribute/axis: vertical
+
+- id: android.widget.FrameLayout
+  name: view
+  deferTo: nonandroid.UseMarginInsets
+
+- id: androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+  name: view
+  deferTo: android.widget.FrameLayout
+
+- id: android.widget.ViewFlipper
+  name: view
+  deferTo: android.widget.FrameLayout
+  defaults:
+    attribute/customClass: ViewFlipper
+    attribute/customModule: LKButterfly
+
+- id: com.lightningkite.butterfly.views.widget.SwapView
+  name: view
+  deferTo: android.widget.FrameLayout
+  defaults:
+    attribute/customClass: SwapView
+    attribute/customModule: LKButterfly
+
+- id: android.widget.ScrollView
+  name: scrollView
+  deferTo: nonandroid.UseMarginInsets
+
+- id: android.widget.HorizontalScrollView
+  name: scrollView
+  deferTo: nonandroid.UseMarginInsets
+
+- id: androidx.core.widget.NestedScrollView
+  name: scrollView
+  deferTo: android.widget.ScrollView
+
+- id: com.google.android.material.tabs.TabLayout
+  name: segmentedControl
+  deferTo: android.view.View
+  defaults:
+    attribute/customClass: MaterialSegmentedControl
+    attribute/customModule: LKButterfly
+  attributes:
+    app:tabMode:
+      mapValues:
+        scrollable:
+          attribute/apportionsSegmentWidthsByContent: YES
+    app:tabGravity: # Not exactly an equivalent available in iOS
+    app:tabTextColor:
+      path: userDefined/textColor
+      as: color
+    app:tabTextSize:
+      path: userDefined/textSize
+      as: dimension
+
+- id: androidx.recyclerview.widget.RecyclerView
+  name: collectionView
+  deferTo: android.view.View
+  defaults:
+    property/collectionViewLayout:collectionViewFlowLayout/attribute/id: "<id>"
+    property/backgroundColor:
+      type: color
+      value: "#0000"
+
+- id: com.lightningkite.butterfly.views.widget.VerticalRecyclerView
+  name: collectionView
+  deferTo: androidx.recyclerview.widget.RecyclerView
+
+- id: com.rd.PageIndicatorView
+  name: pageControl
+  deferTo: android.view.View
+  attributes:
+    app:piv_selectedColor:
+      path: property/currentPageIndicatorTintColor:color
+      as: color
+    app:piv_unselectedColor:
+      path: property/pageIndicatorTintColor:color
+      as: color
+
+- id: androidx.viewpager.widget.ViewPager
+  name: collectionView
+  deferTo: android.view.View
+  defaults:
+    property/collectionViewLayout:collectionViewFlowLayout/attribute/id: "<id>"
+    property/collectionViewLayout:collectionViewFlowLayout/attribute/customClass: ViewPagerLayout
+    property/collectionViewLayout:collectionViewFlowLayout/attribute/customModule: LKButterfly
+    property/backgroundColor:
+      type: color
+      value: "#0000"
